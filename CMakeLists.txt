@@ -6,3 +6,4 @@ include(cmake/doxygen.txt)
 
 add_subdirectory(lib/common)
 add_subdirectory(tools/sandbox)
+add_subdirectory(test)

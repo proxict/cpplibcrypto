@@ -10,9 +10,16 @@
 namespace crypto {
 
 /**
+ * \brief An exception thrown when a function is passed an illegal argument.
+ */
+class IllegalArgumentException {
+};
+
+/**
  * \brief Calculates the square of a given number.
  * \param x the number to square
  * \return the square of \c x
+ * \throws IllegalArgumentException if the square of x does not fit to an \c int
  */
 int square(int x);
 

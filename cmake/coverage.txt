@@ -1,0 +1,13 @@
+option(CRYPTO_COVERAGE "Compile with coverage info" ON)
+
+if(CRYPTO_COVERAGE)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
+    add_definitions(-DCRYPTO_COVERAGE)
+
+    add_custom_target(coverage
+        COMMAND ${CMAKE_SOURCE_DIR}/cmake/coverage.sh ${CMAKE_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    )
+
+    add_dependencies(coverage unittests)
+endif(CRYPTO_COVERAGE)

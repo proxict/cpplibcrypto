@@ -3,10 +3,6 @@ language: c
 compiler:
   - gcc
 
-install:
-  - sudo apt-get -qq -y update
-  - sudo apt-get install cmake
-
 build:
   ci:
     - mkdir build

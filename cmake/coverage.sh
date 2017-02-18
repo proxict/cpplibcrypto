@@ -16,5 +16,6 @@ lcov -a initial-coverage.info -a test-coverage.info -o coverage.info
 lcov -r coverage.info '/usr/*' -o coverage.info
 lcov -r coverage.info '*/test/*' -o coverage.info
 lcov -r coverage.info '*/googletest*/*' -o coverage.info
+lcov -r coverage.info '*/sandbox/*' -o coverage.info
 genhtml coverage.info -o coverage -s -p $1 --highlight --demangle-cpp
 rm *coverage.info

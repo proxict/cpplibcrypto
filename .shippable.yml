@@ -1,0 +1,10 @@
+language: c
+
+compiler:
+  - gcc
+
+build:
+  ci:
+    - mkdir build
+    - cd build
+    - cmake .. && make && bin/unittests

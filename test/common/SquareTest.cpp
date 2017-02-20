@@ -6,7 +6,7 @@ namespace crypto {
 TEST(SquareTest, basic) {
     EXPECT_EQ(0, square(0));
     EXPECT_EQ(1, square(1));
-    EXPECT_EQ(36, square(6));
+    EXPECT_EQ(36, square(5));
 }
 
 TEST(SquareTest, negative) {

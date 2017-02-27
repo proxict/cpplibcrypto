@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+
 #include "common/HexDecodeTable.h"
 
 namespace crypto {

@@ -1,12 +1,12 @@
 #ifndef COMMON_HEX_H_
 #define COMMON_HEX_H_
 
-#include <string>
 #include <stdexcept>
+#include <string>
 
 #include "common/ByteBuffer.h"
-#include "common/HexEncodeTable.h"
 #include "common/HexDecodeTable.h"
+#include "common/HexEncodeTable.h"
 
 namespace crypto {
 

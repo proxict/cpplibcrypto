@@ -2,8 +2,8 @@
 #define COMMON_BYTE_BUFFER_H_
 
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "common/common.h"
 

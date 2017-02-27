@@ -61,7 +61,7 @@ public:
         *this = std::move(other);
     }
 
-    ByteBuffer& operator = (ByteBuffer&& other) noexcept {
+    ByteBuffer& operator=(ByteBuffer&& other) noexcept {
         std::vector<byte>::operator =(other);
         return *this;
     }
@@ -76,19 +76,25 @@ public:
         return *this;
     }
 
-    ByteBuffer& operator+(const byte rhs) {
-        push_back(rhs);
-        return *this;
+    const ByteBuffer operator+(const byte rhs) const {
+        ByteBuffer bb;
+        bb += *this;
+        bb += rhs;
+        return bb;
     }
 
-    ByteBuffer& operator+(const ByteBuffer& rhs) {
-        insert(end(), rhs.begin(), rhs.end());
-        return *this;
+    const ByteBuffer operator+(const ByteBuffer& rhs) const {
+        ByteBuffer bb;
+        bb += *this;
+        bb += rhs;
+        return bb;
     }
 
-    friend ByteBuffer& operator+(const byte lhs, ByteBuffer& rhs) {
-        rhs.insert(rhs.begin(), lhs);
-        return rhs;
+    friend const ByteBuffer operator+(const byte lhs, const ByteBuffer& rhs) {
+        ByteBuffer bb;
+        bb += lhs;
+        bb += rhs;
+        return bb;
     }
 
     bool operator==(const ByteBuffer& rhs) const {

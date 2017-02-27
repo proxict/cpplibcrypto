@@ -24,13 +24,16 @@ public:
         return *this;
     }
 
-    HexString& operator+(const HexString& rhs) {
-        m_decoded += rhs.m_decoded;
-        return *this;
+    friend ByteBuffer& operator+=(ByteBuffer& lhs, const HexString& rhs) {
+        lhs += rhs.m_decoded;
+        return lhs;
     }
 
-    friend ByteBuffer& operator+=(ByteBuffer& lhs, const HexString& rhs) {
-        return lhs + rhs.m_decoded;
+    const HexString operator+(const HexString& rhs) const {
+        HexString hexString("");
+        hexString += *this;
+        hexString += rhs;
+        return hexString;
     }
 
     bool operator==(const HexString& rhs) const {

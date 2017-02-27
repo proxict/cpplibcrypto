@@ -95,8 +95,6 @@ public:
         return size() == rhs.size() && std::equal(begin(), end(), rhs.begin());
     }
 
-    virtual ~ByteBuffer() = default;
-
 private:
     ByteBuffer(const std::vector<byte>&) = delete;
     ByteBuffer& operator=(const std::vector<byte>&) = delete;

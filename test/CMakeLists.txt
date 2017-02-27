@@ -4,8 +4,6 @@ add_executable(unittests
     common/ByteBufferTest.cpp
     common/HexTest.cpp
     common/HexStringTest.cpp
-    common/HexDecodeTableTest.cpp
-    common/HexEncodeTableTest.cpp
 )
 
 target_link_libraries(unittests

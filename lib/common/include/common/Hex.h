@@ -28,7 +28,7 @@ public:
 
         ByteBuffer output(hexStr.size() / 2);
         constexpr HexDecodeTable table;
-        for (size_t i = 0; i < hexStr.size(); i += 2) {
+        for (std::size_t i = 0; i < hexStr.size(); i += 2) {
             output[i / 2] = table.hex2byte(hexStr[i], hexStr[i + 1]);
         }
         return output;

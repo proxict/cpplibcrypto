@@ -15,8 +15,8 @@ public:
     static std::string encode(const ByteBuffer& buf) {
         std::string hexString;
         hexString.reserve(buf.size() * 2);
-        for (const auto& it : buf) {
-            hexString += HexEncodeTable::byte2char(it);
+        for (const byte b : buf) {
+            hexString += HexEncodeTable::byte2char(b);
         }
         return hexString;
     }

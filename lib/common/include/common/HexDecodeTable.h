@@ -33,8 +33,9 @@ public:
         m_tab['F'] = 15;
     }
     constexpr byte hex2byte(const byte h, const byte l) const {
-        if (!isValid(h) || !isValid(l))
+        if (!isValid(h) || !isValid(l)) {
             throw std::invalid_argument("Invalid HEX char passed");
+        }
         return m_tab[h] << 4 | m_tab[l];
     }
 

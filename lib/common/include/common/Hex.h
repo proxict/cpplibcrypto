@@ -22,8 +22,9 @@ public:
     }
 
     static ByteBuffer decode(const std::string& hexStr) {
-        if (hexStr.size() & 1)
+        if (hexStr.size() & 1) {
             throw std::invalid_argument("Odd HEX data length passed");
+        }
 
         ByteBuffer output(hexStr.size() / 2);
         constexpr HexDecodeTable table;

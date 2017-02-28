@@ -3,18 +3,93 @@
 
 #include <string>
 #include <utility>
-#include <memory>
+#include <vector>
+#include <limits>
+#include <iostream>
 
 #include "common/common.h"
 
 namespace crypto {
 
+template <class T>
+class Allocator {
+public:
+    using value_type = T;
+    using pointer = T*;
+    using const_pointer = const T*;
+    using reference = T&;
+    using const_reference = const T&;
+    using size_type = std::size_t;
+    using difference_type = std::ptrdiff_t;
+
+    template <class U>
+    struct rebind {
+        using other = Allocator<U>;
+    };
+
+    pointer address(reference value) const {
+        return &value;
+    }
+
+    const_pointer address(const_reference value) const {
+        return &value;
+    }
+
+    Allocator() throw() = default;
+
+    Allocator(const Allocator&) throw() = default;
+
+    template <class U>
+    Allocator(const Allocator<U>&) throw() {}
+
+    ~Allocator() throw() = default;
+
+    size_type max_size() const throw() {
+        return std::numeric_limits<std::size_t>::max() / sizeof(T);
+    }
+
+    pointer allocate(const size_type num, const void* = 0) {
+        pointer ret = static_cast<pointer>(::operator new(num * sizeof(T)));
+        return ret;
+    }
+
+    void construct(pointer p, const value_type& value) {
+        new(static_cast<void*>(p))T(value);
+    }
+
+    void destroy(pointer p) {
+        p->~T();
+    }
+
+    void deallocate(pointer p, const size_type) {
+        ::operator delete((void*)p);
+    }
+};
+
+template <class T1, class T2>
+bool operator==(const Allocator<T1>&,
+                 const Allocator<T2>&) throw() {
+    return true;
+}
+template <class T1, class T2>
+bool operator!=(const Allocator<T1>&,
+                 const Allocator<T2>&) throw() {
+    return false;
+}
+
 class ByteBuffer {
 public:
+    using const_iterator = std::vector<byte>::const_iterator;
+    using iterator = std::vector<byte>::iterator;
+
     ByteBuffer() = default;
 
-    ByteBuffer(const std::size_t n) noexcept {
-        m_allocator.allocate(n);
+    ByteBuffer(const std::size_t n) {
+        m_data.resize(n);
+    }
+
+    ByteBuffer(const std::initializer_list<byte>& il) {
+        m_data.insert(m_data.end(), il.begin(), il.end());
     }
 
     ByteBuffer(ByteBuffer&& other) noexcept {
@@ -22,21 +97,17 @@ public:
     }
 
     ByteBuffer& operator=(ByteBuffer&& other) noexcept {
-        m_allocator = std::move(other.m_allocator);
+        m_data = std::move(other.m_data);
         return *this;
     }
 
-    ~ByteBuffer() {
-        m_allocator.deallocate(nullptr);
-    }
-
     ByteBuffer& operator+=(const ByteBuffer& b) {
-        insert(this->end(), b.begin(), b.end());
+        m_data.insert(end(), b.begin(), b.end());
         return *this;
     }
 
     ByteBuffer& operator+=(const byte b) {
-        append(b);
+        m_data.push_back(b);
         return *this;
     }
 
@@ -61,36 +132,31 @@ public:
         return bb;
     }
 
+    std::size_t size() const {
+        return m_data.size();
+    }
+
+    const_iterator begin() const {
+        return m_data.begin();
+    }
+
+    const_iterator end() const {
+        return m_data.end();
+    }
+
+    byte& operator[](const std::size_t idx) {
+        return m_data[idx];
+    }
+
     bool operator==(const ByteBuffer& rhs) const {
         return size() == rhs.size() && std::equal(begin(), end(), rhs.begin());
-    }
-
-    std::size_t size() const {
-        return 0;
-    }
-
-    byte* begin() const {
-        return 0;
-    }
-
-    byte* end() const {
-        return 0;
-    }
-
-    template <typename T>
-    void insert(const T& pos, const T& begin, const T& end) {
-
-    }
-
-    void append(const byte b) {
-
     }
 
 private:
     ByteBuffer(const ByteBuffer&) = delete;
     ByteBuffer& operator=(const ByteBuffer&) = delete;
 
-    std::allocator<byte> m_allocator;
+    std::vector<byte> m_data;
 };
 
 } // namespace crypto

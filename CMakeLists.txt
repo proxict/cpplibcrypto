@@ -8,5 +8,6 @@ include(cmake/coverage.txt)
 add_subdirectory(external/googletest)
 
 add_subdirectory(lib/common)
+add_subdirectory(lib/cipher)
 add_subdirectory(tools/sandbox)
 add_subdirectory(test)

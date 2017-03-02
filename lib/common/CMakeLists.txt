@@ -1,5 +1,4 @@
 add_library(common STATIC
-    src/Square.cpp
     src/Hex.cpp
 )
 

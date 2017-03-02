@@ -1,6 +1,5 @@
 add_executable(unittests
     main.cpp
-    common/SquareTest.cpp
     common/ByteBufferTest.cpp
     common/HexTest.cpp
     common/HexStringTest.cpp

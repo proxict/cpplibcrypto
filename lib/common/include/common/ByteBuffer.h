@@ -1,7 +1,6 @@
-#ifndef COMMON_BYTE_BUFFER_H_
-#define COMMON_BYTE_BUFFER_H_
+#ifndef COMMON_BYTEBUFFER_H_
+#define COMMON_BYTEBUFFER_H_
 
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -9,81 +8,60 @@
 
 namespace crypto {
 
-class ByteBuffer : private std::vector<byte> {
-public:
-    using std::vector<byte>::vector;
-    using std::vector<byte>::assign;
-    using std::vector<byte>::at;
-    using std::vector<byte>::back;
-    using std::vector<byte>::begin;
-    using std::vector<byte>::capacity;
-    using std::vector<byte>::cbegin;
-    using std::vector<byte>::cend;
-    using std::vector<byte>::clear;
-    using std::vector<byte>::const_iterator;
-    using std::vector<byte>::const_pointer;
-    using std::vector<byte>::const_reference;
-    using std::vector<byte>::const_reverse_iterator;
-    using std::vector<byte>::crbegin;
-    using std::vector<byte>::crend;
-    using std::vector<byte>::data;
-    using std::vector<byte>::difference_type;
-    using std::vector<byte>::emplace;
-    using std::vector<byte>::emplace_back;
-    using std::vector<byte>::empty;
-    using std::vector<byte>::end;
-    using std::vector<byte>::erase;
-    using std::vector<byte>::front;
-    using std::vector<byte>::get_allocator;
-    using std::vector<byte>::insert;
-    using std::vector<byte>::iterator;
-    using std::vector<byte>::max_size;
-    using std::vector<byte>::operator=;
-    using std::vector<byte>::operator[];
-    using std::vector<byte>::pointer;
-    using std::vector<byte>::pop_back;
-    using std::vector<byte>::push_back;
-    using std::vector<byte>::rbegin;
-    using std::vector<byte>::reference;
-    using std::vector<byte>::rend;
-    using std::vector<byte>::reserve;
-    using std::vector<byte>::resize;
-    using std::vector<byte>::reverse_iterator;
-    using std::vector<byte>::shrink_to_fit;
-    using std::vector<byte>::size;
-    using std::vector<byte>::size_type;
-    using std::vector<byte>::swap;
-    using std::vector<byte>::value_type;
+class ByteBuffer {
 
+public:
+    using iterator = std::vector<byte>::iterator;
+    using const_iterator = std::vector<byte>::const_iterator;
+    using size_type = std::vector<byte>::size_type;
+
+public:
     ByteBuffer() = default;
 
-    ByteBuffer(ByteBuffer&& other) noexcept {
-        *this = std::move(other);
+    explicit ByteBuffer(size_type size) : data(size) {
     }
 
-    ByteBuffer& operator=(ByteBuffer&& other) noexcept {
-        std::vector<byte>::operator =(other);
+    ByteBuffer(std::initializer_list<byte> list) : data(std::move(list)) {
+    }
+
+    ByteBuffer(ByteBuffer&& src) noexcept : data(std::move(src.data)) {
+    }
+
+    ByteBuffer& operator=(ByteBuffer&& src) noexcept {
+        data = std::move(src.data);
         return *this;
     }
 
+    const_iterator begin() const {
+        return data.begin();
+    }
+
+    const_iterator end() const {
+        return data.end();
+    }
+
+    byte& operator[](size_type index) {
+        return data[index];
+    }
+
     ByteBuffer& operator+=(const ByteBuffer& b) {
-        this->insert(this->end(), b.begin(), b.end());
+        data.insert(data.end(), b.data.begin(), b.data.end());
         return *this;
     }
 
     ByteBuffer& operator+=(const byte b) {
-        this->push_back(b);
+        data.push_back(b);
         return *this;
     }
 
-    const ByteBuffer operator+(const byte rhs) const {
+    const ByteBuffer operator+(const ByteBuffer& rhs) const {
         ByteBuffer bb;
         bb += *this;
         bb += rhs;
         return bb;
     }
 
-    const ByteBuffer operator+(const ByteBuffer& rhs) const {
+    const ByteBuffer operator+(const byte rhs) const {
         ByteBuffer bb;
         bb += *this;
         bb += rhs;
@@ -98,17 +76,25 @@ public:
     }
 
     bool operator==(const ByteBuffer& rhs) const {
-        return size() == rhs.size() && std::equal(begin(), end(), rhs.begin());
+        return data.size() == rhs.data.size() && std::equal(data.begin(), data.end(), rhs.data.begin());
+    }
+
+    bool operator!=(const ByteBuffer& rhs) const {
+        return !(*this == rhs);
+    }
+
+    size_type size() const {
+        return data.size();
     }
 
 private:
-    ByteBuffer(const std::vector<byte>&) = delete;
-    ByteBuffer& operator=(const std::vector<byte>&) = delete;
     ByteBuffer(const ByteBuffer&) = delete;
     ByteBuffer& operator=(const ByteBuffer&) = delete;
+
+private:
+    std::vector<byte> data;
 };
 
 } // namespace crypto
 
-#endif
-
+#endif // COMMON_BYTEBUFFER_H_

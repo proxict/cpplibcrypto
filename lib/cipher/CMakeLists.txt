@@ -1,5 +1,5 @@
 add_library(cipher STATIC
-    src/AES.cpp
+    src/Aes.cpp
 )
 
 target_link_libraries(cipher

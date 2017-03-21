@@ -92,6 +92,10 @@ public:
         m_data.insert(m_data.end(), il.begin(), il.end());
     }
 
+    ByteBuffer(const byte* begin, const byte* end) {
+        m_data.insert(m_data.end(), begin, end);
+    }
+
     ByteBuffer(ByteBuffer&& other) noexcept {
         *this = std::move(other);
     }
@@ -145,6 +149,10 @@ public:
     }
 
     byte& operator[](const std::size_t idx) {
+        return m_data[idx];
+    }
+
+    const byte& operator[](const std::size_t idx) const {
         return m_data[idx];
     }
 

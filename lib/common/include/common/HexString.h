@@ -29,6 +29,14 @@ public:
         return lhs;
     }
 
+    friend bool operator==(const ByteBuffer& lhs, const HexString& rhs) {
+        return lhs == rhs.m_decoded;
+    }
+
+    friend bool operator==(const HexString& lhs, const ByteBuffer& rhs) {
+        return lhs.m_decoded == rhs;
+    }
+
     const HexString operator+(const HexString& rhs) const {
         HexString hexString("");
         hexString += *this;

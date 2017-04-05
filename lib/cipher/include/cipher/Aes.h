@@ -193,30 +193,20 @@ public:
 
     virtual ~Aes() {}
 
-    ByteBuffer encryptBlock(const ByteBuffer& in) override {
-        ByteBuffer buffer;
-        buffer += in;
-
+    void encryptBlock(ByteBuffer& buffer) override {
         processFirstRound(buffer);
         for (byte i = 0; i < getNumberOfRounds() - 1; ++i) {
             processRound(buffer, i);
         }
         processLastRound(buffer);
-
-        return buffer;
     }
 
-    ByteBuffer decryptBlock(const ByteBuffer& in) override {
-        ByteBuffer buffer;
-        buffer += in;
-
+    void decryptBlock(ByteBuffer& buffer) override {
         processFirstRoundInv(buffer);
         for(byte i = getNumberOfRounds() - 1; i >= 1; --i) {
             processRoundInv(buffer, i);
         }
         processLastRoundInv(buffer);
-
-        return buffer;
     }
 
     ByteBuffer getNthRoundKey(const std::size_t index) const {

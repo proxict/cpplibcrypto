@@ -13,9 +13,9 @@ public:
 
     virtual std::size_t getBlockSize() const = 0;
 
-    virtual ByteBuffer encryptBlock(const ByteBuffer&) = 0;
+    virtual void encryptBlock(ByteBuffer&) = 0;
 
-    virtual ByteBuffer decryptBlock(const ByteBuffer&) = 0;
+    virtual void decryptBlock(ByteBuffer&) = 0;
 };
 
 } // namespace crypto

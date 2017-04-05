@@ -9,6 +9,7 @@ add_executable(unittests
 
 target_link_libraries(unittests
     PRIVATE cipher
+    PRIVATE padding
     PRIVATE common
     PRIVATE gtest
     PRIVATE gmock

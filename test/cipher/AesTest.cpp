@@ -14,6 +14,14 @@ struct AesTestSubroutines : public testing::Test, Aes {
     virtual ~AesTestSubroutines() = default;
 };
 
+TEST_F(AesTestSubroutines, subBytes) {
+    ByteBuffer buffer;
+    buffer += HexString("000102030405060708090A0B0C0D0E0F");
+    subBytes(buffer);
+    subBytesInv(buffer);
+    EXPECT_EQ(HexString("000102030405060708090A0B0C0D0E0F"), buffer);
+}
+
 TEST_F(AesTestSubroutines, shiftRows) {
     /*
       original state:
@@ -29,19 +37,28 @@ TEST_F(AesTestSubroutines, shiftRows) {
       0F 03 07 0B
     */
 
-    ByteBuffer shifted;
-    shifted += HexString("000102030405060708090A0B0C0D0E0F");
-    shiftRows(shifted);
-    EXPECT_EQ(HexString("00050A0F04090E03080D02070C01060B"), shifted);
+    ByteBuffer buffer;
+    buffer += HexString("000102030405060708090A0B0C0D0E0F");
+    shiftRows(buffer);
+    EXPECT_EQ(HexString("00050A0F04090E03080D02070C01060B"), buffer);
+    shiftRowsInv(buffer);
+    EXPECT_EQ(HexString("000102030405060708090A0B0C0D0E0F"), buffer);
 }
 
-// TODO(ProXicT): mixColumns test
+TEST_F(AesTestSubroutines, mixColumns) {
+    ByteBuffer buffer;
+    buffer += HexString("000102030405060708090A0B0C0D0E0F");
+    mixColumns(buffer);
+    EXPECT_EQ(HexString("02070005060304010a0f080d0e0b0c09"), buffer);
+    mixColumnsInv(buffer);
+    EXPECT_EQ(HexString("000102030405060708090A0B0C0D0E0F"), buffer);
+}
 
 TEST(Aes128Test, keySchedule1) {
-    Aes aes(Aes::Aes128);
     ByteBuffer key;
     key += HexString("00000000000000000000000000000000");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes128, std::move(key));
+
     EXPECT_EQ(HexString("00000000000000000000000000000000"), aes.getNthRoundKey(0));
     EXPECT_EQ(HexString("62636363626363636263636362636363"), aes.getNthRoundKey(1));
     EXPECT_EQ(HexString("9b9898c9f9fbfbaa9b9898c9f9fbfbaa"), aes.getNthRoundKey(2));
@@ -56,10 +73,10 @@ TEST(Aes128Test, keySchedule1) {
 }
 
 TEST(Aes128Test, keySchedule2) {
-    Aes aes(Aes::Aes128);
     ByteBuffer key;
     key += HexString("ffffffffffffffffffffffffffffffff");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes128, std::move(key));
+
     EXPECT_EQ(HexString("ffffffffffffffffffffffffffffffff"), aes.getNthRoundKey(0));
     EXPECT_EQ(HexString("e8e9e9e917161616e8e9e9e917161616"), aes.getNthRoundKey(1));
     EXPECT_EQ(HexString("adaeae19bab8b80f525151e6454747f0"), aes.getNthRoundKey(2));
@@ -74,10 +91,10 @@ TEST(Aes128Test, keySchedule2) {
 }
 
 TEST(Aes128Test, keySchedule3) {
-    Aes aes(Aes::Aes128);
     ByteBuffer key;
     key += HexString("000102030405060708090a0b0c0d0e0f");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes128, std::move(key));
+
     EXPECT_EQ(HexString("000102030405060708090a0b0c0d0e0f"), aes.getNthRoundKey(0));
     EXPECT_EQ(HexString("d6aa74fdd2af72fadaa678f1d6ab76fe"), aes.getNthRoundKey(1));
     EXPECT_EQ(HexString("b692cf0b643dbdf1be9bc5006830b3fe"), aes.getNthRoundKey(2));
@@ -91,77 +108,11 @@ TEST(Aes128Test, keySchedule3) {
     EXPECT_EQ(HexString("13111d7fe3944a17f307a78b4d2b30c5"), aes.getNthRoundKey(10));
 }
 
-TEST(Aes128Test, keySchedule4) {
-    Aes aes(Aes::Aes128);
-    ByteBuffer key;
-    key += HexString("6920e299a5202a6d656e636869746f2a");
-    aes.setKey(std::move(key));
-    EXPECT_EQ(HexString("6920e299a5202a6d656e636869746f2a"), aes.getNthRoundKey(0));
-    EXPECT_EQ(HexString("fa8807605fa82d0d3ac64e6553b2214f"), aes.getNthRoundKey(1));
-    EXPECT_EQ(HexString("cf75838d90ddae80aa1be0e5f9a9c1aa"), aes.getNthRoundKey(2));
-    EXPECT_EQ(HexString("180d2f1488d0819422cb6171db62a0db"), aes.getNthRoundKey(3));
-    EXPECT_EQ(HexString("baed96ad323d173910f67648cb94d693"), aes.getNthRoundKey(4));
-    EXPECT_EQ(HexString("881b4ab2ba265d8baad02bc36144fd50"), aes.getNthRoundKey(5));
-    EXPECT_EQ(HexString("b34f195d096944d6a3b96f15c2fd9245"), aes.getNthRoundKey(6));
-    EXPECT_EQ(HexString("a7007778ae6933ae0dd05cbbcf2dcefe"), aes.getNthRoundKey(7));
-    EXPECT_EQ(HexString("ff8bccf251e2ff5c5c32a3e7931f6d19"), aes.getNthRoundKey(8));
-    EXPECT_EQ(HexString("24b7182e7555e77229674495ba78298c"), aes.getNthRoundKey(9));
-    EXPECT_EQ(HexString("ae127cdadb479ba8f220df3d4858f6b1"), aes.getNthRoundKey(10));
-}
-
-TEST(Aes128Test, encrypt1) {
-    Aes aes(Aes::Aes128);
-    ByteBuffer key;
-    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
-    aes.setKey(std::move(key));
-    ByteBuffer data;
-    data += HexString("6bc1bee22e409f96e93d7e117393172a");
-    ByteBuffer out;
-    out += aes.encryptBlock(data);
-    EXPECT_EQ(HexString("3ad77bb40d7a3660a89ecaf32466ef97"), HexString(Hex::encode(out)));
-}
-
-TEST(Aes128Test, encrypt2) {
-    Aes aes(Aes::Aes128);
-    ByteBuffer key;
-    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
-    aes.setKey(std::move(key));
-    ByteBuffer data;
-    data += HexString("ae2d8a571e03ac9c9eb76fac45af8e51");
-    ByteBuffer out;
-    out += aes.encryptBlock(data);
-    EXPECT_EQ(HexString("f5d3d58503b9699de785895a96fdbaaf"), HexString(Hex::encode(out)));
-}
-
-TEST(Aes128Test, encrypt3) {
-    Aes aes(Aes::Aes128);
-    ByteBuffer key;
-    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
-    aes.setKey(std::move(key));
-    ByteBuffer data;
-    data += HexString("30c81c46a35ce411e5fbc1191a0a52ef");
-    ByteBuffer out;
-    out += aes.encryptBlock(data);
-    EXPECT_EQ(HexString("43b1cd7f598ece23881b00e3ed030688"), HexString(Hex::encode(out)));
-}
-
-TEST(Aes128Test, encrypt4) {
-    Aes aes(Aes::Aes128);
-    ByteBuffer key;
-    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
-    aes.setKey(std::move(key));
-    ByteBuffer data;
-    data += HexString("f69f2445df4f9b17ad2b417be66c3710");
-    ByteBuffer out;
-    out += aes.encryptBlock(data);
-    EXPECT_EQ(HexString("7b0c785e27e8ad3f8223207104725dd4"), HexString(Hex::encode(out)));
-}
-
 TEST(Aes192Test, keySchedule1) {
-    Aes aes(Aes::Aes192);
     ByteBuffer key;
     key += HexString("000000000000000000000000000000000000000000000000");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes192, std::move(key));
+
     EXPECT_EQ(HexString("00000000000000000000000000000000"), aes.getNthRoundKey(0));
     EXPECT_EQ(HexString("00000000000000006263636362636363"), aes.getNthRoundKey(1));
     EXPECT_EQ(HexString("62636363626363636263636362636363"), aes.getNthRoundKey(2));
@@ -178,11 +129,10 @@ TEST(Aes192Test, keySchedule1) {
 }
 
 TEST(Aes192Test, keySchedule2) {
-    Aes aes(Aes::Aes192);
     ByteBuffer key;
-
     key += HexString("ffffffffffffffffffffffffffffffffffffffffffffffff");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes192, std::move(key));
+
     EXPECT_EQ(HexString("ffffffffffffffffffffffffffffffff"), aes.getNthRoundKey(0));
     EXPECT_EQ(HexString("ffffffffffffffffe8e9e9e917161616"), aes.getNthRoundKey(1));
     EXPECT_EQ(HexString("e8e9e9e917161616e8e9e9e917161616"), aes.getNthRoundKey(2));
@@ -199,10 +149,10 @@ TEST(Aes192Test, keySchedule2) {
 }
 
 TEST(Aes192Test, keySchedule3) {
-    Aes aes(Aes::Aes192);
     ByteBuffer key;
     key += HexString("000102030405060708090a0b0c0d0e0f1011121314151617");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes192, std::move(key));
+
     EXPECT_EQ(HexString("000102030405060708090a0b0c0d0e0f"), aes.getNthRoundKey(0));
     EXPECT_EQ(HexString("10111213141516175846f2f95c43f4fe"), aes.getNthRoundKey(1));
     EXPECT_EQ(HexString("544afef55847f0fa4856e2e95c43f4fe"), aes.getNthRoundKey(2));
@@ -218,59 +168,11 @@ TEST(Aes192Test, keySchedule3) {
     EXPECT_EQ(HexString("a4970a331a78dc09c418c271e3a41d5d"), aes.getNthRoundKey(12));
 }
 
-TEST(Aes192Test, encrypt1) {
-    Aes aes(Aes::Aes192);
-    ByteBuffer key;
-    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
-    aes.setKey(std::move(key));
-    ByteBuffer data;
-    data += HexString("6bc1bee22e409f96e93d7e117393172a");
-    ByteBuffer out;
-    out += aes.encryptBlock(data);
-    EXPECT_EQ(HexString("bd334f1d6e45f25ff712a214571fa5cc"), HexString(Hex::encode(out)));
-}
-
-TEST(Aes192Test, encrypt2) {
-    Aes aes(Aes::Aes192);
-    ByteBuffer key;
-    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
-    aes.setKey(std::move(key));
-    ByteBuffer data;
-    data += HexString("ae2d8a571e03ac9c9eb76fac45af8e51");
-    ByteBuffer out;
-    out += aes.encryptBlock(data);
-    EXPECT_EQ(HexString("974104846d0ad3ad7734ecb3ecee4eef"), HexString(Hex::encode(out)));
-}
-
-TEST(Aes192Test, encrypt3) {
-    Aes aes(Aes::Aes192);
-    ByteBuffer key;
-    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
-    aes.setKey(std::move(key));
-    ByteBuffer data;
-    data += HexString("30c81c46a35ce411e5fbc1191a0a52ef");
-    ByteBuffer out;
-    out += aes.encryptBlock(data);
-    EXPECT_EQ(HexString("ef7afd2270e2e60adce0ba2face6444e"), HexString(Hex::encode(out)));
-}
-
-TEST(Aes192Test, encrypt4) {
-    Aes aes(Aes::Aes192);
-    ByteBuffer key;
-    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
-    aes.setKey(std::move(key));
-    ByteBuffer data;
-    data += HexString("f69f2445df4f9b17ad2b417be66c3710");
-    ByteBuffer out;
-    out += aes.encryptBlock(data);
-    EXPECT_EQ(HexString("9a4b41ba738d6c72fb16691603c18e0e"), HexString(Hex::encode(out)));
-}
-
 TEST(Aes256Test, keySchedule1) {
-    Aes aes(Aes::Aes256);
     ByteBuffer key;
     key += HexString("0000000000000000000000000000000000000000000000000000000000000000");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes256, std::move(key));
+
     EXPECT_EQ(HexString("00000000000000000000000000000000"), aes.getNthRoundKey(0));
     EXPECT_EQ(HexString("00000000000000000000000000000000"), aes.getNthRoundKey(1));
     EXPECT_EQ(HexString("62636363626363636263636362636363"), aes.getNthRoundKey(2));
@@ -289,10 +191,10 @@ TEST(Aes256Test, keySchedule1) {
 }
 
 TEST(Aes256Test, keySchedule2) {
-    Aes aes(Aes::Aes256);
     ByteBuffer key;
     key += HexString("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes256, std::move(key));
+
     EXPECT_EQ(HexString("ffffffffffffffffffffffffffffffff"), aes.getNthRoundKey(0));
     EXPECT_EQ(HexString("ffffffffffffffffffffffffffffffff"), aes.getNthRoundKey(1));
     EXPECT_EQ(HexString("e8e9e9e917161616e8e9e9e917161616"), aes.getNthRoundKey(2));
@@ -311,10 +213,10 @@ TEST(Aes256Test, keySchedule2) {
 }
 
 TEST(Aes256Test, keySchedule3) {
-    Aes aes(Aes::Aes256);
     ByteBuffer key;
     key += HexString("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes256, std::move(key));
+
     EXPECT_EQ(HexString("000102030405060708090a0b0c0d0e0f"), aes.getNthRoundKey(0));
     EXPECT_EQ(HexString("101112131415161718191a1b1c1d1e1f"), aes.getNthRoundKey(1));
     EXPECT_EQ(HexString("a573c29fa176c498a97fce93a572c09c"), aes.getNthRoundKey(2));
@@ -332,11 +234,107 @@ TEST(Aes256Test, keySchedule3) {
     EXPECT_EQ(HexString("24fc79ccbf0979e9371ac23c6d68de36"), aes.getNthRoundKey(14));
 }
 
+TEST(Aes128Test, encrypt1) {
+    ByteBuffer key;
+    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
+    Aes aes(Aes::Aes128, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("6bc1bee22e409f96e93d7e117393172a");
+    ByteBuffer out;
+    out += aes.encryptBlock(data);
+    EXPECT_EQ(HexString("3ad77bb40d7a3660a89ecaf32466ef97"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes128Test, encrypt2) {
+    ByteBuffer key;
+    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
+    Aes aes(Aes::Aes128, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("ae2d8a571e03ac9c9eb76fac45af8e51");
+    ByteBuffer out;
+    out += aes.encryptBlock(data);
+    EXPECT_EQ(HexString("f5d3d58503b9699de785895a96fdbaaf"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes128Test, encrypt3) {
+    ByteBuffer key;
+    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
+    Aes aes(Aes::Aes128, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("30c81c46a35ce411e5fbc1191a0a52ef");
+    ByteBuffer out;
+    out += aes.encryptBlock(data);
+    EXPECT_EQ(HexString("43b1cd7f598ece23881b00e3ed030688"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes128Test, encrypt4) {
+    ByteBuffer key;
+    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
+    Aes aes(Aes::Aes128, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("f69f2445df4f9b17ad2b417be66c3710");
+    ByteBuffer out;
+    out += aes.encryptBlock(data);
+    EXPECT_EQ(HexString("7b0c785e27e8ad3f8223207104725dd4"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes192Test, encrypt1) {
+    ByteBuffer key;
+    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
+    Aes aes(Aes::Aes192, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("6bc1bee22e409f96e93d7e117393172a");
+    ByteBuffer out;
+    out += aes.encryptBlock(data);
+    EXPECT_EQ(HexString("bd334f1d6e45f25ff712a214571fa5cc"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes192Test, encrypt2) {
+    ByteBuffer key;
+    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
+    Aes aes(Aes::Aes192, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("ae2d8a571e03ac9c9eb76fac45af8e51");
+    ByteBuffer out;
+    out += aes.encryptBlock(data);
+    EXPECT_EQ(HexString("974104846d0ad3ad7734ecb3ecee4eef"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes192Test, encrypt3) {
+    ByteBuffer key;
+    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
+    Aes aes(Aes::Aes192, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("30c81c46a35ce411e5fbc1191a0a52ef");
+    ByteBuffer out;
+    out += aes.encryptBlock(data);
+    EXPECT_EQ(HexString("ef7afd2270e2e60adce0ba2face6444e"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes192Test, encrypt4) {
+    ByteBuffer key;
+    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
+    Aes aes(Aes::Aes192, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("f69f2445df4f9b17ad2b417be66c3710");
+    ByteBuffer out;
+    out += aes.encryptBlock(data);
+    EXPECT_EQ(HexString("9a4b41ba738d6c72fb16691603c18e0e"), HexString(Hex::encode(out)));
+}
+
 TEST(Aes256Test, encrypt1) {
-    Aes aes(Aes::Aes256);
     ByteBuffer key;
     key += HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes256, std::move(key));
+
     ByteBuffer data;
     data += HexString("6bc1bee22e409f96e93d7e117393172a");
     ByteBuffer out;
@@ -345,10 +343,10 @@ TEST(Aes256Test, encrypt1) {
 }
 
 TEST(Aes256Test, encrypt2) {
-    Aes aes(Aes::Aes256);
     ByteBuffer key;
     key += HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes256, std::move(key));
+
     ByteBuffer data;
     data += HexString("ae2d8a571e03ac9c9eb76fac45af8e51");
     ByteBuffer out;
@@ -357,10 +355,10 @@ TEST(Aes256Test, encrypt2) {
 }
 
 TEST(Aes256Test, encrypt3) {
-    Aes aes(Aes::Aes256);
     ByteBuffer key;
     key += HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes256, std::move(key));
+
     ByteBuffer data;
     data += HexString("30c81c46a35ce411e5fbc1191a0a52ef");
     ByteBuffer out;
@@ -369,15 +367,159 @@ TEST(Aes256Test, encrypt3) {
 }
 
 TEST(Aes256Test, encrypt4) {
-    Aes aes(Aes::Aes256);
     ByteBuffer key;
     key += HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
-    aes.setKey(std::move(key));
+    Aes aes(Aes::Aes256, std::move(key));
+
     ByteBuffer data;
     data += HexString("f69f2445df4f9b17ad2b417be66c3710");
     ByteBuffer out;
     out += aes.encryptBlock(data);
     EXPECT_EQ(HexString("23304b7a39f9f3ff067d8d8f9e24ecc7"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes128Test, decrypt1) {
+    ByteBuffer key;
+    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
+    Aes aes(Aes::Aes128, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("3ad77bb40d7a3660a89ecaf32466ef97");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("6bc1bee22e409f96e93d7e117393172a"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes128Test, decrypt2) {
+    ByteBuffer key;
+    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
+    Aes aes(Aes::Aes128, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("f5d3d58503b9699de785895a96fdbaaf");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("ae2d8a571e03ac9c9eb76fac45af8e51"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes128Test, decrypt3) {
+    ByteBuffer key;
+    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
+    Aes aes(Aes::Aes128, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("43b1cd7f598ece23881b00e3ed030688");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("30c81c46a35ce411e5fbc1191a0a52ef"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes128Test, decrypt4) {
+    ByteBuffer key;
+    key += HexString("2b7e151628aed2a6abf7158809cf4f3c");
+    Aes aes(Aes::Aes128, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("7b0c785e27e8ad3f8223207104725dd4");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes192Test, decrypt1) {
+    ByteBuffer key;
+    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
+    Aes aes(Aes::Aes192, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("bd334f1d6e45f25ff712a214571fa5cc");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("6bc1bee22e409f96e93d7e117393172a"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes192Test, decrypt2) {
+    ByteBuffer key;
+    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
+    Aes aes(Aes::Aes192, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("974104846d0ad3ad7734ecb3ecee4eef");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("ae2d8a571e03ac9c9eb76fac45af8e51"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes192Test, decrypt3) {
+    ByteBuffer key;
+    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
+    Aes aes(Aes::Aes192, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("ef7afd2270e2e60adce0ba2face6444e");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("30c81c46a35ce411e5fbc1191a0a52ef"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes192Test, decrypt4) {
+    ByteBuffer key;
+    key += HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b");
+    Aes aes(Aes::Aes192, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("9a4b41ba738d6c72fb16691603c18e0e");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes256Test, decrypt1) {
+    ByteBuffer key;
+    key += HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
+    Aes aes(Aes::Aes256, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("f3eed1bdb5d2a03c064b5a7e3db181f8");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("6bc1bee22e409f96e93d7e117393172a"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes256Test, decrypt2) {
+    ByteBuffer key;
+    key += HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
+    Aes aes(Aes::Aes256, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("591ccb10d410ed26dc5ba74a31362870");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("ae2d8a571e03ac9c9eb76fac45af8e51"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes256Test, decrypt3) {
+    ByteBuffer key;
+    key += HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
+    Aes aes(Aes::Aes256, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("b6ed21b99ca6f4f9f153e7b1beafed1d");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("30c81c46a35ce411e5fbc1191a0a52ef"), HexString(Hex::encode(out)));
+}
+
+TEST(Aes256Test, decrypt4) {
+    ByteBuffer key;
+    key += HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
+    Aes aes(Aes::Aes256, std::move(key));
+
+    ByteBuffer data;
+    data += HexString("23304b7a39f9f3ff067d8d8f9e24ecc7");
+    ByteBuffer out;
+    out += aes.decryptBlock(data);
+    EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(out)));
 }
 
 } // namespace crypto

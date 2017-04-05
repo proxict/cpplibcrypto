@@ -201,7 +201,7 @@ private:
     static byte getPkcs7Size(const std::size_t dataLen, const std::size_t blockSize) {
         const std::size_t padding = blockSize - dataLen % blockSize;
         if (padding > std::numeric_limits<byte>::max()) {
-            throw std::range_error("PKCS7 padding allows maximum block size of 255");
+            throw std::range_error("PKCS7 padding allows maximum block size of 255 bytes");
         }
         return static_cast<byte>(padding);
     }
@@ -288,7 +288,12 @@ class Aes : public BlockCipherParams<16, 16, 32, 8> {
 public:
     enum { Aes128 = 16, Aes192 = 24, Aes256 = 32 };
 
-    Aes(const int keySize) : m_keySize(keySize) {}
+    Aes(const byte keySize) : m_keySize(keySize) {}
+
+    Aes(const byte keySize, ByteBuffer&& key) : m_keySize(keySize) {
+        assert(key.size() == keySize);
+        setKey(std::move(key));
+    }
 
     virtual ~Aes() {}
 
@@ -305,9 +310,17 @@ public:
         return buffer;
     }
 
-    ByteBuffer decryptBlock(const ByteBuffer&) override {
-        // TODO(ProXicT)
-        return ByteBuffer{};
+    ByteBuffer decryptBlock(const ByteBuffer& in) override {
+        ByteBuffer buffer;
+        buffer += in;
+
+        processFirstRoundInv(buffer);
+        for(byte i = getNumberOfRounds() - 1; i >= 1; --i) {
+            processRoundInv(buffer, i);
+        }
+        processLastRoundInv(buffer);
+
+        return buffer;
     }
 
     ByteBuffer getNthRoundKey(const std::size_t index) const {
@@ -355,9 +368,32 @@ protected:
         addRoundKey(buffer, getNthRoundKey(getNumberOfRounds()));
     }
 
+    void processFirstRoundInv(ByteBuffer& buffer) const {
+        addRoundKey(buffer, getNthRoundKey(getNumberOfRounds()));
+        shiftRowsInv(buffer);
+        subBytesInv(buffer);
+    }
+
+    void processRoundInv(ByteBuffer& buffer, const byte round) const {
+        addRoundKey(buffer, getNthRoundKey(round));
+        mixColumnsInv(buffer);
+        shiftRowsInv(buffer);
+        subBytesInv(buffer);
+    }
+
+    void processLastRoundInv(ByteBuffer& buffer) const {
+        addRoundKey(buffer, getNthRoundKey(0));
+    }
+
     static void subBytes(ByteBuffer& buffer) {
         for (byte i = 0; i < buffer.size(); ++i) {
             buffer[i] = sbox[buffer[i]];
+        }
+    }
+
+    static void subBytesInv(ByteBuffer& buffer) {
+        for (byte i = 0; i < buffer.size(); ++i) {
+            buffer[i] = sboxinv[buffer[i]];
         }
     }
 
@@ -382,27 +418,49 @@ protected:
         buffer[6]  = j;
     }
 
+    static void shiftRowsInv(ByteBuffer& buffer) {
+        byte i = buffer[1];
+        buffer[1] = buffer[13];
+        buffer[13] = buffer[9];
+        buffer[9] = buffer[5];
+        buffer[5] = i;
+
+        i = buffer[2];
+        buffer[2] = buffer[10];
+        buffer[10] = i;
+        byte j = buffer[3];
+
+        buffer[3] = buffer[7];
+        buffer[7] = buffer[11];
+        buffer[11] = buffer[15];
+        buffer[15] = j;
+        j = buffer[6];
+        buffer[6] = buffer[14];
+        buffer[14] = j;
+    }
+
     static void mixColumns(ByteBuffer& buffer) {
-        byte tmp[16]; // TODO(ProXicT): Use FixedSizeBuffer instead
-        tmp[0] = static_cast<byte>(mul2[buffer[0]] ^ mul3[buffer[1]] ^ buffer[2] ^ buffer[3]);
-        tmp[1] = static_cast<byte>(buffer[0] ^ mul2[buffer[1]] ^ mul3[buffer[2]] ^ buffer[3]);
-        tmp[2] = static_cast<byte>(buffer[0] ^ buffer[1] ^ mul2[buffer[2]] ^ mul3[buffer[3]]);
-        tmp[3] = static_cast<byte>(mul3[buffer[0]] ^ buffer[1] ^ buffer[2] ^ mul2[buffer[3]]);
+        ByteBuffer tmp; // TODO(ProXicT): Use FixedSizeBuffer instead
+        for (byte i = 0; i < 4; ++i) {
+            tmp += static_cast<byte>(mul2[buffer[4 * i]] ^ mul3[buffer[4 * i + 1]] ^ buffer[4 * i + 2] ^ buffer[4 * i + 3]);
+            tmp += static_cast<byte>(buffer[4 * i] ^ mul2[buffer[4 * i + 1]] ^ mul3[buffer[4 * i + 2]] ^ buffer[4 * i + 3]);
+            tmp += static_cast<byte>(buffer[4 * i] ^ buffer[4 * i + 1] ^ mul2[buffer[4 * i + 2]] ^ mul3[buffer[4 * i + 3]]);
+            tmp += static_cast<byte>(mul3[buffer[4 * i]] ^ buffer[4 * i + 1] ^ buffer[4 * i + 2] ^ mul2[buffer[4 * i + 3]]);
+        }
 
-        tmp[4] = static_cast<byte>(mul2[buffer[4]] ^ mul3[buffer[5]] ^ buffer[6] ^ buffer[7]);
-        tmp[5] = static_cast<byte>(buffer[4] ^ mul2[buffer[5]] ^ mul3[buffer[6]] ^ buffer[7]);
-        tmp[6] = static_cast<byte>(buffer[4] ^ buffer[5] ^ mul2[buffer[6]] ^ mul3[buffer[7]]);
-        tmp[7] = static_cast<byte>(mul3[buffer[4]] ^ buffer[5] ^ buffer[6] ^ mul2[buffer[7]]);
+        for (std::size_t i = 0; i < buffer.size(); ++i) {
+            buffer[i] = tmp[i];
+        }
+    }
 
-        tmp[8] = static_cast<byte>(mul2[buffer[8]] ^ mul3[buffer[9]] ^ buffer[10] ^ buffer[11]);
-        tmp[9] = static_cast<byte>(buffer[8] ^ mul2[buffer[9]] ^ mul3[buffer[10]] ^ buffer[11]);
-        tmp[10] = static_cast<byte>(buffer[8] ^ buffer[9] ^ mul2[buffer[10]] ^ mul3[buffer[11]]);
-        tmp[11] = static_cast<byte>(mul3[buffer[8]] ^ buffer[9] ^ buffer[10] ^ mul2[buffer[11]]);
-
-        tmp[12] = static_cast<byte>(mul2[buffer[12]] ^ mul3[buffer[13]] ^ buffer[14] ^ buffer[15]);
-        tmp[13] = static_cast<byte>(buffer[12] ^ mul2[buffer[13]] ^ mul3[buffer[14]] ^ buffer[15]);
-        tmp[14] = static_cast<byte>(buffer[12] ^ buffer[13] ^ mul2[buffer[14]] ^ mul3[buffer[15]]);
-        tmp[15] = static_cast<byte>(mul3[buffer[12]] ^ buffer[13] ^ buffer[14] ^ mul2[buffer[15]]);
+    static void mixColumnsInv(ByteBuffer& buffer) {
+        ByteBuffer tmp; // TODO(ProXicT): Use FixedSizeBuffer instead
+        for (byte i = 0; i < 4; ++i) {
+            tmp += static_cast<byte>(mul14[buffer[4 * i]] ^ mul11[buffer[4 * i + 1]] ^ mul13[buffer[4 * i + 2]] ^ mul9[buffer[4 * i + 3]]);
+            tmp += static_cast<byte>(mul9[buffer[4 * i]] ^ mul14[buffer[4 * i + 1]] ^ mul11[buffer[4 * i + 2]] ^ mul13[buffer[4 * i + 3]]);
+            tmp += static_cast<byte>(mul13[buffer[4 * i]] ^ mul9[buffer[4 * i + 1]] ^ mul14[buffer[4 * i + 2]] ^ mul11[buffer[4 * i + 3]]);
+            tmp += static_cast<byte>(mul11[buffer[4 * i]] ^ mul13[buffer[4 * i + 1]] ^ mul9[buffer[4 * i + 2]] ^ mul14[buffer[4 * i + 3]]);
+        }
 
         for (std::size_t i = 0; i < buffer.size(); ++i) {
             buffer[i] = tmp[i];

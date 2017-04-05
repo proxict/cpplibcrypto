@@ -297,7 +297,7 @@ public:
         buffer += in;
 
         processFirstRound(buffer);
-        for (byte i = 0; i < 9; ++i) {
+        for (byte i = 0; i < getNumberOfRounds() - 1; ++i) {
             processRound(buffer, i);
         }
         processLastRound(buffer);
@@ -310,79 +310,58 @@ public:
         return ByteBuffer{};
     }
 
-    void keySchedule(const ByteBuffer& key) override {
-        for (byte i = 0; i < getBlockSize(); ++i) {
-            m_roundKeys += key[i];
+    ByteBuffer getNthRoundKey(const std::size_t index) const {
+        ByteBuffer roundKey;
+        for (std::size_t i = 0; i < getBlockSize(); ++i) {
+            roundKey += m_roundKeys[i + getBlockSize() * index];
         }
 
-        byte rconIteration = 0;
-        byte tmp[4];
+        return roundKey;
+    }
 
-        while (m_roundKeys.size() < 11 * getBlockSize()) {
-            for (byte i = 0; i < 4; ++i) {
-                tmp[i] = m_roundKeys[i + m_roundKeys.size() - 4];
-            }
-
-            if (m_roundKeys.size() % getBlockSize() == 0) {
-                rotateLeft(tmp[0], tmp[1], tmp[2], tmp[3]);
-
-                // substitute 4 bytes
-                tmp[0] = sbox[tmp[0]];
-                tmp[1] = sbox[tmp[1]];
-                tmp[2] = sbox[tmp[2]];
-                tmp[3] = sbox[tmp[3]];
-
-                // rcon
-                tmp[0] ^= rcon[++rconIteration];
-            }
-
-            for (byte i = 0; i < 4; ++i) {
-                m_roundKeys += m_roundKeys[m_roundKeys.size() - getBlockSize()] ^ tmp[i];
-            }
+    byte getExpandedKeySize() const {
+        switch (m_keySize) {
+            case Aes128: return 176;
+            case Aes192: return 208;
+            case Aes256: return 240;
         }
+        return 0; // TODO(ProXicT): Throw exception
+    }
 
-        tmp[0] = tmp[1] = tmp[2] = tmp[3] = 0;
+    byte getNumberOfRounds() const {
+        switch (m_keySize) {
+            case Aes128: return 10;
+            case Aes192: return 12;
+            case Aes256: return 14;
+        }
+        return 0; // TODO(ProXicT): Throw exception
     }
 
 protected:
-    void processFirstRound(ByteBuffer& buffer) {
-        ByteBuffer roundKey;
-        for (byte i = 0; i < getBlockSize(); ++i) {
-            roundKey += m_roundKeys[i];
-        }
-        addRoundKey(buffer, roundKey);
+    void processFirstRound(ByteBuffer& buffer) const {
+        addRoundKey(buffer, getNthRoundKey(0));
     }
 
-    void processRound(ByteBuffer& buffer, const byte round) {
+    void processRound(ByteBuffer& buffer, const byte round) const {
         subBytes(buffer);
         shiftRows(buffer);
         mixColumns(buffer);
-
-        ByteBuffer roundKey;
-        for (byte i = 0; i < getBlockSize(); ++i) {
-            roundKey += m_roundKeys[i + getBlockSize() * (round + 1)];
-        }
-        addRoundKey(buffer, roundKey);
+        addRoundKey(buffer, getNthRoundKey(round + 1));
     }
 
-    void processLastRound(ByteBuffer& buffer) {
+    void processLastRound(ByteBuffer& buffer) const {
         subBytes(buffer);
         shiftRows(buffer);
-        ByteBuffer roundKey;
-        for (byte i = 0; i < getBlockSize(); ++i) {
-            roundKey += m_roundKeys[160 + i];
-        }
-        addRoundKey(buffer, roundKey);
+        addRoundKey(buffer, getNthRoundKey(getNumberOfRounds()));
     }
 
-    void subBytes(ByteBuffer& buffer) {
+    static void subBytes(ByteBuffer& buffer) {
         for (byte i = 0; i < buffer.size(); ++i) {
             buffer[i] = sbox[buffer[i]];
         }
     }
 
-    void shiftRows(ByteBuffer& buffer) {
-        assert(buffer.size() == getBlockSize());
+    static void shiftRows(ByteBuffer& buffer) {
         byte i = buffer[1];
         buffer[1] = buffer[5];
         buffer[5] = buffer[9];
@@ -403,8 +382,7 @@ protected:
         buffer[6]  = j;
     }
 
-    void mixColumns(ByteBuffer& buffer) {
-        assert(buffer.size() == getBlockSize());
+    static void mixColumns(ByteBuffer& buffer) {
         byte tmp[16]; // TODO(ProXicT): Use FixedSizeBuffer instead
         tmp[0] = static_cast<byte>(mul2[buffer[0]] ^ mul3[buffer[1]] ^ buffer[2] ^ buffer[3]);
         tmp[1] = static_cast<byte>(buffer[0] ^ mul2[buffer[1]] ^ mul3[buffer[2]] ^ buffer[3]);
@@ -426,24 +404,30 @@ protected:
         tmp[14] = static_cast<byte>(buffer[12] ^ buffer[13] ^ mul2[buffer[14]] ^ mul3[buffer[15]]);
         tmp[15] = static_cast<byte>(mul3[buffer[12]] ^ buffer[13] ^ buffer[14] ^ mul2[buffer[15]]);
 
-        for (std::size_t i = 0; i < getBlockSize(); ++i) {
+        for (std::size_t i = 0; i < buffer.size(); ++i) {
             buffer[i] = tmp[i];
         }
     }
 
-    void addRoundKey(ByteBuffer& buffer, const ByteBuffer& roundKey) {
-        assert(buffer.size() == getBlockSize() && roundKey.size() == getBlockSize());
-        for (std::size_t i = 0; i < getBlockSize(); ++i) {
+    static void addRoundKey(ByteBuffer& buffer, const ByteBuffer& roundKey) {
+        for (std::size_t i = 0; i < buffer.size(); ++i) {
             buffer[i] ^= roundKey[i];
         }
     }
 
-    void rotateLeft(byte& b1, byte& b2, byte& b3, byte& b4) {
-        const byte b = b1;
-        b1 = b2;
-        b2 = b3;
-        b3 = b4;
-        b4 = b;
+    static void rotateLeft(ByteBuffer& buffer) {
+        const byte b = buffer[0];
+        for (std::size_t i = 0; i < buffer.size() - 1; ++i) {
+            buffer[i] = buffer[i + 1];
+        }
+        buffer[buffer.size() - 1] = b;
+    }
+
+    static void keyScheduleCore(ByteBuffer& buffer, const byte i) {
+        assert(buffer.size() == 4); // TODO(ProXicT): Remove this assertion after changing the buffer type to FixedSizeBuffer
+        rotateLeft(buffer);
+        subBytes(buffer);
+        buffer[0] ^= rcon[i]; // rcon
     }
 
 private:
@@ -451,6 +435,32 @@ private:
     Aes(const Aes&) = delete;
     ByteBuffer m_roundKeys;
     short m_keySize;
+
+    void keySchedule(const ByteBuffer& key) override {
+        for (byte i = 0; i < m_keySize; ++i) {
+            m_roundKeys += key[i];
+        }
+
+        byte rconIteration = 0;
+        while (m_roundKeys.size() < getExpandedKeySize()) {
+            ByteBuffer word32;
+            for (byte i = 0; i < 4; ++i) {
+                word32 += m_roundKeys[i + m_roundKeys.size() - 4];
+            }
+
+            if (m_roundKeys.size() % m_keySize == 0) {
+                keyScheduleCore(word32, ++rconIteration);
+            }
+
+            if (m_keySize == Aes256 && m_roundKeys.size() % m_keySize == 16) {
+                subBytes(word32);
+            }
+
+            for (byte i = 0; i < 4; ++i) {
+                m_roundKeys += m_roundKeys[m_roundKeys.size() - m_keySize] ^ word32[i];
+            }
+        }
+    }
 };
 
 template <typename PaddingT>

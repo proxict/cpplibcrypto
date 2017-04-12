@@ -4,7 +4,11 @@ add_executable(unittests
     common/ByteBufferTest.cpp
     common/HexTest.cpp
     common/HexStringTest.cpp
-    cipher/AesTest.cpp
+    cipher/AesCoreTest.cpp
+    cipher/AesKeyScheduleTest.cpp
+    cipher/AesDecryptTest.cpp
+    cipher/AesEncryptTest.cpp
+    cipher/CbcTest.cpp
 )
 
 target_link_libraries(unittests

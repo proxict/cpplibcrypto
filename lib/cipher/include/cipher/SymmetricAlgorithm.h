@@ -1,37 +1,28 @@
 #ifndef CIPHER_SYMMETRICALGORITHM_H_
 #define CIPHER_SYMMETRICALGORITHM_H_
 
-#include <stdexcept>
-
-#include "cipher/KeySize.h"
 #include "common/ByteBuffer.h"
+#include "common/Key.h"
 
 namespace crypto {
 
 class SymmetricAlgorithm {
 public:
-    virtual KeySize getKeySize() const = 0;
+    SymmetricAlgorithm() : m_keySize(0) {}
 
-    std::size_t getMaxKeySize() const {
-        return getKeySize().getMax();
+    void setKey(Key&& key) {
+        m_keySize = key.size();
+        keySchedule(key.getKeyBytes());
     }
 
-    std::size_t getMinKeySize() const {
-        return getKeySize().getMin();
-    }
-
-    bool isKeySizeValid(const std::size_t keySize) const {
-        return getKeySize().isValid(keySize);
-    }
-
-    void setKey(ByteBuffer&& key) {
-        if(!isKeySizeValid(key.size()))
-            throw std::invalid_argument("Invalid key size");
-        keySchedule(key);
+    std::size_t getKeySize() const {
+        return m_keySize;
     }
 
 private:
     virtual void keySchedule(const ByteBuffer& key) = 0;
+
+    std::size_t m_keySize;
 };
 
 } // namespace crypto

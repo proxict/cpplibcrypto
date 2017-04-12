@@ -19,6 +19,10 @@ public:
         *this = std::move(other);
     }
 
+    std::size_t size() const {
+        return m_decoded.size();
+    }
+
     HexString& operator+=(const HexString& rhs) {
         m_decoded += rhs.m_decoded;
         return *this;

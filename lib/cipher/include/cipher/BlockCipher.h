@@ -2,8 +2,9 @@
 #define CIPHER_BLOCKCIPHER_H_
 
 #include "cipher/SymmetricAlgorithm.h"
-#include "cipher/KeySize.h"
+
 #include "common/ByteBuffer.h"
+#include "common/Key.h"
 
 namespace crypto {
 

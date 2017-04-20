@@ -13,7 +13,44 @@
 
 namespace crypto {
 
-using AesKey = KeyParams<16, 32, 8>;
+class AesKey : public KeyParams<16, 32, 8> {
+public:
+    AesKey() : KeyParams<16, 32, 8>() {}
+
+    AesKey(ByteBuffer&& key) {
+        if (!isValid(key.size())) {
+            throw Exception("Invalid key size passed");
+        }
+        m_key = std::move(key);
+    }
+
+    AesKey(const HexString& key) {
+        if (!isValid(key.size())) {
+            throw Exception("Invalid key size passed");
+        }
+        m_key += key;
+    }
+
+    AesKey& operator=(AesKey&& other) {
+        m_key = std::move(other.m_key);
+        return *this;
+    }
+
+    AesKey(AesKey&& other) {
+        *this = std::move(other);
+    }
+
+    std::size_t size() const override {
+        return m_key.size();
+    }
+
+    const ByteBuffer& getKeyBytes() const override {
+        return m_key;
+    }
+
+private:
+    ByteBuffer m_key;
+};
 
 class Aes : public BlockCipherSized<16> {
 public:
@@ -23,7 +60,7 @@ public:
 
     Aes() = default;
 
-    Aes(AesKey&& key) {
+    explicit Aes(AesKey&& key) {
         setKey(std::move(key));
     }
 

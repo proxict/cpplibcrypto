@@ -1,8 +1,6 @@
 #ifndef CIPHER_CBCMODE_H_
 #define CIPHER_CBCMODE_H_
 
-#include <memory>
-
 #include "cipher/CbcDecrypt.h"
 #include "cipher/CbcEncrypt.h"
 #include "common/ByteBuffer.h"
@@ -15,7 +13,7 @@ class CbcMode {
 public:
     CbcMode() = default;
     struct Encryption {
-        Encryption(Key&& key, ByteBuffer&& IV) : m_encryptor(m_cipher, std::move(key), std::move(IV)) {}
+        Encryption(const Key& key, InitializationVector& IV) : m_encryptor(m_cipher, key, IV) {}
 
         ByteBuffer update(const ByteBuffer& buffer) {
             return m_encryptor.update(buffer);
@@ -27,7 +25,7 @@ public:
     };
 
     struct Decryption {
-        Decryption(Key&& key, ByteBuffer&& IV) : m_decryptor(m_cipher, std::move(key), std::move(IV)) {}
+        Decryption(const Key& key, InitializationVector& IV) : m_decryptor(m_cipher, key, IV) {}
 
         ByteBuffer update(const ByteBuffer& buffer) {
             return m_decryptor.update(buffer);

@@ -8,7 +8,8 @@ add_executable(unittests
     cipher/AesKeyScheduleTest.cpp
     cipher/AesDecryptTest.cpp
     cipher/AesEncryptTest.cpp
-    cipher/CbcTest.cpp
+    cipher/CbcAesDecryptTest.cpp
+    cipher/CbcAesEncryptTest.cpp
 )
 
 target_link_libraries(unittests

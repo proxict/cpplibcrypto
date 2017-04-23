@@ -10,9 +10,9 @@ class SymmetricAlgorithm {
 public:
     SymmetricAlgorithm() : m_keySize(0) {}
 
-    void setKey(Key&& key) {
+    void setKey(const Key& key) {
         m_keySize = key.size();
-        keySchedule(key.getKeyBytes());
+        keySchedule(key.getBytes());
     }
 
     std::size_t getKeySize() const {

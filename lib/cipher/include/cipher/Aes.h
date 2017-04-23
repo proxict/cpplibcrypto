@@ -6,51 +6,12 @@
 #include <memory>
 
 #include "cipher/AesCore.h"
+#include "cipher/AesKey.h"
 #include "common/ByteBuffer.h"
 #include "common/common.h"
 #include "common/Exception.h"
-#include "common/KeyParams.h"
 
 namespace crypto {
-
-class AesKey : public KeyParams<16, 32, 8> {
-public:
-    AesKey() : KeyParams<16, 32, 8>() {}
-
-    AesKey(ByteBuffer&& key) {
-        if (!isValid(key.size())) {
-            throw Exception("Invalid key size passed");
-        }
-        m_key = std::move(key);
-    }
-
-    AesKey(const HexString& key) {
-        if (!isValid(key.size())) {
-            throw Exception("Invalid key size passed");
-        }
-        m_key += key;
-    }
-
-    AesKey& operator=(AesKey&& other) {
-        m_key = std::move(other.m_key);
-        return *this;
-    }
-
-    AesKey(AesKey&& other) {
-        *this = std::move(other);
-    }
-
-    std::size_t size() const override {
-        return m_key.size();
-    }
-
-    const ByteBuffer& getKeyBytes() const override {
-        return m_key;
-    }
-
-private:
-    ByteBuffer m_key;
-};
 
 class Aes : public BlockCipherSized<16> {
 public:
@@ -60,8 +21,8 @@ public:
 
     Aes() = default;
 
-    explicit Aes(AesKey&& key) {
-        setKey(std::move(key));
+    explicit Aes(const AesKey& key) {
+        setKey(key);
     }
 
     Aes& operator=(Aes&& other) {
@@ -97,7 +58,7 @@ public:
             case Aes192: return 208;
             case Aes256: return 240;
         }
-        return 0; // TODO(ProXicT): Throw exception
+        throw Exception("Key not set");
     }
 
     byte getNumberOfRounds() const {
@@ -106,7 +67,7 @@ public:
             case Aes192: return 12;
             case Aes256: return 14;
         }
-        return 0; // TODO(ProXicT): Throw exception
+        throw Exception("Key not set");
     }
 
 protected:

@@ -15,10 +15,9 @@ public:
 
     virtual std::size_t size() const = 0;
 
-    virtual const ByteBuffer& getKeyBytes() const = 0;
+    virtual const ByteBuffer& getBytes() const = 0;
 };
 
 } // namespace crypto
 
 #endif
-

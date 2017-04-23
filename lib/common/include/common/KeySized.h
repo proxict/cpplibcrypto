@@ -1,18 +1,16 @@
-#ifndef COMMON_KEYPARAMS_H_
-#define COMMON_KEYPARAMS_H_
+#ifndef COMMON_KEYSIZED_H_
+#define COMMON_KEYSIZED_H_
 
 #include "common/Key.h"
 
-#include <memory>
+#include <cstddef>
 
 #include "common/ByteBuffer.h"
-#include "common/Exception.h"
-#include "common/HexString.h"
 
 namespace crypto {
 
 template<std::size_t minKeySize, std::size_t maxKeySize = 0, std::size_t mod = 1>
-class KeyParams : public Key {
+class KeySized : public Key {
 public:
     bool isValid(const std::size_t keySize) const override {
         return ((keySize >= getMin()) && (keySize <= getMax()) && (keySize % getMod() == 0));
@@ -31,10 +29,9 @@ public:
     }
 
 protected:
-    KeyParams() = default;
+    KeySized() = default;
 };
 
 } // namespace crypto
 
 #endif
-

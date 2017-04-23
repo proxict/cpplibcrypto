@@ -3,18 +3,22 @@
 
 #include "cipher/ModeOfOperation.h"
 
-#include <memory>
-
 #include "common/ByteBuffer.h"
+#include "common/common.h"
 #include "common/Exception.h"
+#include "common/InitializationVector.h"
 #include "common/Key.h"
 
 namespace crypto {
 
 class CbcEncrypt : public ModeOfOperation {
 public:
-    CbcEncrypt(BlockCipher& cipher, Key&& key, ByteBuffer&& IV)
-        : ModeOfOperation(cipher, std::move(key)), m_IV(std::move(IV)) {}
+    CbcEncrypt(BlockCipher& cipher, const Key& key, InitializationVector& IV)
+        : ModeOfOperation(cipher, key), m_IV(IV) {
+        if (IV.size() != cipher.getBlockSize()) {
+            throw Exception("The Initialization Vector size does not match the cipher block size");
+        }
+    }
 
     ByteBuffer update(const ByteBuffer& in) override {
         assert(in.size() % m_blockCipher.getBlockSize() == 0);
@@ -36,11 +40,14 @@ public:
         return out;
     }
 
+    void resetChain() {
+        m_IV.reset();
+    }
+
 private:
-    ByteBuffer m_IV;
+    InitializationVector& m_IV;
 };
 
 } // namespace crypto
 
 #endif
-

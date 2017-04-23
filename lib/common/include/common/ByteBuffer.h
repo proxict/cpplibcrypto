@@ -1,46 +1,128 @@
-#ifndef COMMON_BYTE_BUFFER_H_
-#define COMMON_BYTE_BUFFER_H_
+#ifndef COMMON_BYTEBUFFER_H_
+#define COMMON_BYTEBUFFER_H_
 
-#include <string>
+#include <limits>
 #include <utility>
 #include <vector>
-#include <limits>
-#include <iostream>
 
 #include "common/common.h"
 
 namespace crypto {
 
-class ByteBuffer {
+template <class T>
+class SecureAllocator {
 public:
-    using const_iterator = std::vector<byte>::const_iterator;
-    using iterator = std::vector<byte>::iterator;
+    using value_type = T;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using size_type = std::size_t;
+    using difference_type = std::ptrdiff_t;
 
-    ByteBuffer() = default;
+    template <class TargetT>
+    class rebind {
+    public:
+        using other = SecureAllocator<TargetT>;
+    };
 
-    ByteBuffer(const std::size_t n) {
-        m_data.resize(n);
+    SecureAllocator(const bool sensitive = false) : m_wipe(sensitive) {}
+
+    ~SecureAllocator() = default;
+
+    template <class T2>
+    SecureAllocator(const SecureAllocator<T2>& other) : m_wipe(other.m_wipe) {}
+
+    pointer address(reference ref) {
+        return &ref;
     }
 
-    ByteBuffer(const std::initializer_list<byte>& il) {
-        m_data.insert(m_data.end(), il.begin(), il.end());
+    const_pointer address(const_reference ref) {
+        return &ref;
     }
 
-    ByteBuffer(const byte* begin, const byte* end) {
-        m_data.insert(m_data.end(), begin, end);
+    size_type max_size() const {
+        return std::numeric_limits<std::size_t>::max() / sizeof(value_type);
+    }
+
+    pointer allocate(const size_type count, const void* = 0) {
+        return static_cast<pointer>(::operator new(count * sizeof(value_type)));
+    }
+
+    void deallocate(pointer ptr, const size_type) {
+        ::operator delete((void*)ptr);
+    }
+
+    void construct(pointer ptr, const value_type& value) {
+        new(static_cast<void*>(ptr))T(value);
+    }
+
+    void destroy(pointer ptr) {
+        if (m_wipe) {
+            byte* bytePtr = reinterpret_cast<byte*>(ptr);
+            for (std::size_t i = 0; i < sizeof(value_type); ++i) {
+                bytePtr[i] = 0;
+            }
+        }
+        ptr->~T();
+    }
+
+    template <class T2> bool
+    operator==(SecureAllocator<T2> const&) const {
+        return true;
+    }
+
+    template <class T2> bool
+    operator!=(SecureAllocator<T2> const&) const {
+        return false;
+    }
+
+protected:
+    bool m_wipe;
+};
+
+class ByteBuffer {
+
+public:
+    using iterator = std::vector<byte, SecureAllocator<byte>>::iterator;
+    using const_iterator = std::vector<byte, SecureAllocator<byte>>::const_iterator;
+    using size_type = std::vector<byte, SecureAllocator<byte>>::size_type;
+
+public:
+    ByteBuffer(const bool sensitive = true) : m_allocator(sensitive), m_data(m_allocator) {}
+
+    explicit ByteBuffer(const size_type size, const bool sensitive = true) : m_allocator(sensitive), m_data(size, m_allocator) {}
+
+    ByteBuffer(const std::initializer_list<byte> list, const bool sensitive = true) : m_allocator(sensitive), m_data(std::move(list)) {}
+
+    ByteBuffer& operator=(ByteBuffer&& other) noexcept {
+        m_allocator = std::move(other.m_allocator);
+        m_data = std::move(other.m_data);
+        return *this;
     }
 
     ByteBuffer(ByteBuffer&& other) noexcept {
         *this = std::move(other);
     }
 
-    ByteBuffer& operator=(ByteBuffer&& other) noexcept {
-        m_data = std::move(other.m_data);
-        return *this;
+    const_iterator begin() const {
+        return m_data.begin();
+    }
+
+    const_iterator end() const {
+        return m_data.end();
+    }
+
+    byte& operator[](size_type index) {
+        return m_data[index];
+    }
+
+    const byte operator[](const std::size_t idx) const {
+        return m_data[idx];
     }
 
     ByteBuffer& operator+=(const ByteBuffer& b) {
-        m_data.insert(end(), b.begin(), b.end());
+        m_data.insert(m_data.end(), b.m_data.begin(), b.m_data.end());
         return *this;
     }
 
@@ -49,14 +131,14 @@ public:
         return *this;
     }
 
-    const ByteBuffer operator+(const byte rhs) const {
+    const ByteBuffer operator+(const ByteBuffer& rhs) const {
         ByteBuffer bb;
         bb += *this;
         bb += rhs;
         return bb;
     }
 
-    const ByteBuffer operator+(const ByteBuffer& rhs) const {
+    const ByteBuffer operator+(const byte rhs) const {
         ByteBuffer bb;
         bb += *this;
         bb += rhs;
@@ -70,38 +152,36 @@ public:
         return bb;
     }
 
-    std::size_t size() const {
+    bool operator==(const ByteBuffer& rhs) const {
+        return m_data.size() == rhs.m_data.size() && std::equal(m_data.begin(), m_data.end(), rhs.m_data.begin());
+    }
+
+    bool operator!=(const ByteBuffer& rhs) const {
+        return !(*this == rhs);
+    }
+
+    size_type size() const {
         return m_data.size();
     }
 
-    const_iterator begin() const {
-        return m_data.begin();
+    void clear() {
+        m_data.clear();
     }
 
-    const_iterator end() const {
-        return m_data.end();
-    }
-
-    byte& operator[](const std::size_t idx) {
-        return m_data[idx];
-    }
-
-    const byte& operator[](const std::size_t idx) const {
-        return m_data[idx];
-    }
-
-    bool operator==(const ByteBuffer& rhs) const {
-        return size() == rhs.size() && std::equal(begin(), end(), rhs.begin());
+    template<typename _InputIterator, typename = std::_RequireInputIter<_InputIterator>>
+    iterator insert(const_iterator position, _InputIterator first, _InputIterator last) {
+        return m_data.insert(position, first, last);
     }
 
 private:
     ByteBuffer(const ByteBuffer&) = delete;
     ByteBuffer& operator=(const ByteBuffer&) = delete;
 
-    std::vector<byte> m_data;
+private:
+    SecureAllocator<byte> m_allocator;
+    std::vector<byte, SecureAllocator<byte>> m_data;
 };
 
 } // namespace crypto
 
-#endif
-
+#endif // COMMON_BYTEBUFFER_H_

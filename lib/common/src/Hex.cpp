@@ -1,3 +1,9 @@
+//------------------------------------------------------------------------------
+///
+/// \file
+/// \brief Provides functions for converting base16 to base10 and vice versa
+///
+//------------------------------------------------------------------------------
 #include "common/Hex.h"
 
 #include <sstream>

@@ -2,9 +2,12 @@
 #define CIPHER_MODEOFOPERATION_H_
 
 #include "cipher/BlockCipher.h"
-#include "common/ByteBuffer.h"
+#include "common/StaticByteBuffer.h"
+#include "common/BufferView.h"
 
 namespace crypto {
+
+using ByteBufferView = BufferView<byte>;
 
 class ModeOfOperation {
 public:
@@ -12,7 +15,9 @@ public:
         m_blockCipher.setKey(key);
     }
 
-    virtual ByteBuffer update(const ByteBuffer&) = 0;
+    virtual std::size_t update(const ByteBufferView& in, StaticByteBufferBase& out) = 0;
+
+    virtual void doFinal(const ByteBufferView& in, StaticByteBufferBase& out) = 0;
 
 protected:
     BlockCipher& m_blockCipher;

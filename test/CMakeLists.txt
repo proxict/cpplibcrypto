@@ -1,6 +1,7 @@
 add_executable(unittests
     main.cpp
     common/ByteBufferTest.cpp
+    common/StaticByteBufferTest.cpp
     common/HexTest.cpp
     common/HexStringTest.cpp
     cipher/AesCoreTest.cpp

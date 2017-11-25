@@ -7,6 +7,7 @@
 #ifndef COMMON_HEX_H_
 #define COMMON_HEX_H_
 
+#include <sstream>
 #include <string>
 
 #include "common/ByteBuffer.h"
@@ -23,7 +24,8 @@ public:
      * \param buf the ByteBuffer to encode
      * \return std::string with encoded data
      */
-    static std::string encode(const ByteBuffer& buf);
+    template <typename TContainer>
+    static std::string encode(const TContainer& buf);
 
     /**
      * \brief decodes a base16 string
@@ -38,6 +40,16 @@ private:
 
     constexpr static byte hex2Byte(const char c);
 };
+
+    template <typename TContainer>
+    std::string Hex::encode(const TContainer& buf) {
+        constexpr static const char* lookupTable = "0123456789abcdef";
+        std::ostringstream bytes;
+        for (const byte b : buf) {
+            bytes << lookupTable[b >> 4] << lookupTable[b & 0x0f];
+        }
+        return bytes.str();
+    }
 
 } // namespace crypto
 

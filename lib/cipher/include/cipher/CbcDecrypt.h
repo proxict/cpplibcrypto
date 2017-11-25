@@ -11,6 +11,7 @@
 
 namespace crypto {
 
+
 class CbcDecrypt : public ModeOfOperation {
 public:
     CbcDecrypt(BlockCipher& cipher, const Key& key, InitializationVector& IV)
@@ -20,11 +21,10 @@ public:
         }
     }
 
-    ByteBuffer update(const ByteBuffer& in) override {
-        assert(in.size() % m_blockCipher.getBlockSize() == 0);
-        const std::size_t numberOfBlocks = in.size() / m_blockCipher.getBlockSize();
+    std::size_t update(const ByteBufferView& in, StaticByteBufferBase& out) override {
+        ASSERT(out.capacity() >= in.size());
+        const std::size_t numberOfBlocks = in.size() / m_blockCipher.getBlockSize() - 1;
 
-        ByteBuffer out;
         for (std::size_t block = 0; block < numberOfBlocks; ++block) {
             ByteBuffer buffer;
             for (byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
@@ -32,14 +32,32 @@ public:
             }
             m_blockCipher.decryptBlock(buffer);
             for (byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
-                out += buffer[i] ^ m_IV[i];
+                out.push(buffer[i] ^ m_IV[i]);
             }
 
             for (byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 m_IV[i] = in[block * m_blockCipher.getBlockSize() + i];
             }
         }
-        return out;
+        return out.size();
+    }
+    
+    void doFinal(const ByteBufferView& in, StaticByteBufferBase& out) override {
+        ASSERT(in.size() == m_blockCipher.getBlockSize());
+
+        ByteBuffer buffer;
+        for (byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
+            buffer += in[i];
+        }
+        m_blockCipher.decryptBlock(buffer);
+        for (byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
+            out.push(buffer[i] ^ m_IV[i]);
+        }
+        
+        const byte padding = out.back();
+        for (byte i = 0; i < padding; ++i) {
+            out.pop();
+        }
     }
 
     void resetChain() {

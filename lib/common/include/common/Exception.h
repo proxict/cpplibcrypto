@@ -3,6 +3,8 @@
 
 #include <string>
 
+namespace crypto {
+
 class Exception {
 public:
     Exception(const std::string& str) : m_str(str) {}
@@ -13,6 +15,8 @@ public:
 private:
     const std::string m_str;
 };
+
+} // namespace crypto
 
 #endif
 

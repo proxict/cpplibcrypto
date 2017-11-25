@@ -7,6 +7,7 @@
 
 #include "cipher/AesCore.h"
 #include "cipher/AesKey.h"
+#include "cipher/AesIV.h"
 #include "common/ByteBuffer.h"
 #include "common/common.h"
 #include "common/Exception.h"
@@ -18,6 +19,8 @@ public:
     static constexpr std::size_t Aes128 = 16;
     static constexpr std::size_t Aes192 = 24;
     static constexpr std::size_t Aes256 = 32;
+    using Key = AesKey;
+    using IV = AesIV;
 
     Aes() = default;
 

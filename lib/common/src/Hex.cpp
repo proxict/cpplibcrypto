@@ -6,21 +6,11 @@
 //------------------------------------------------------------------------------
 #include "common/Hex.h"
 
-#include <sstream>
 #include <stdexcept>
 
 namespace crypto {
 
-std::string Hex::encode(const crypto::ByteBuffer& buf) {
-    constexpr static const char* lookupTable = "0123456789abcdef";
-    std::ostringstream bytes;
-    for (const byte b : buf) {
-        bytes << lookupTable[b >> 4] << lookupTable[b & 0x0f];
-    }
-    return bytes.str();
-}
-
-crypto::ByteBuffer Hex::decode(const std::string& hexStr) {
+ByteBuffer Hex::decode(const std::string& hexStr) {
     if (hexStr.size() & 1) {
         throw std::invalid_argument("Odd HEX data length passed");
     }

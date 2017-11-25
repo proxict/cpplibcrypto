@@ -82,7 +82,6 @@ protected:
 };
 
 class ByteBuffer {
-
 public:
     using iterator = std::vector<byte, SecureAllocator<byte>>::iterator;
     using const_iterator = std::vector<byte, SecureAllocator<byte>>::const_iterator;
@@ -93,7 +92,7 @@ public:
 
     explicit ByteBuffer(const size_type size, const bool sensitive = true) : m_allocator(sensitive), m_data(size, m_allocator) {}
 
-    ByteBuffer(const std::initializer_list<byte> list, const bool sensitive = true) : m_allocator(sensitive), m_data(std::move(list)) {}
+    ByteBuffer(std::initializer_list<byte>&& list, const bool sensitive = true) : m_allocator(sensitive), m_data(std::move(list)) {}
 
     ByteBuffer& operator=(ByteBuffer&& other) noexcept {
         m_allocator = std::move(other.m_allocator);
@@ -111,6 +110,22 @@ public:
 
     const_iterator end() const {
         return m_data.end();
+    }
+
+    iterator begin() {
+        return m_data.begin();
+    }
+
+    iterator end() {
+        return m_data.end();
+    }
+
+    byte* data() {
+        return m_data.data();
+    }
+
+    const byte* data() const {
+        return m_data.data();
     }
 
     byte& operator[](size_type index) {

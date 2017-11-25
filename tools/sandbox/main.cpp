@@ -4,12 +4,79 @@
 /// \brief Defines the entry point of the sandbox application.
 ///
 //------------------------------------------------------------------------------
+#include <fstream>
 #include <iostream>
+#include <string>
+
+#include "cipher/Aes.h"
+#include "cipher/AesIV.h"
+#include "cipher/CbcMode.h"
+#include "common/Exception.h"
+#include "common/HexString.h"
+#include "common/StaticByteBuffer.h"
+#include "filemanip/BinaryFile.h"
+#include "filemanip/utils.h"
+
+template <typename Encryptor>
+void encFile(Encryptor& encryptor, const std::string& inputFileName, const std::string& outputFileName) {
+    crypto::BinaryFile input(inputFileName, crypto::BinaryFile::Mode::Read);
+    crypto::BinaryFile output(outputFileName, crypto::BinaryFile::Mode::Write);
+    crypto::StaticByteBuffer<16> plainBuffer;
+    crypto::StaticByteBuffer<16> cipherBuffer;
+
+    // Read max of plainBuffer.capacity()
+    while (input.read(plainBuffer)) {
+        // Encrypt max of plainBuffer.size(), save the encrypted bytes to cipherBuffer and remove the plain data, which
+        // got encrypted, from the plainBuffer.
+        std::size_t encrypted = encryptor.update(plainBuffer, cipherBuffer); // BufferView in the lower level???
+        plainBuffer.erase(0, encrypted);
+
+        // Save max of cipherBuffer.size() to output and erase the saved data from the cipherBuffer
+        output.write(cipherBuffer);
+        cipherBuffer.clear();
+    }
+
+    // Apply padding to the remaining bytes if any and save the result into cipherBuffer
+    encryptor.doFinal(plainBuffer, cipherBuffer);
+    // Write the last chunk to the output
+    output.write(cipherBuffer);
+}
+
+template <typename Decryptor>
+void decFile(Decryptor& decryptor, const std::string& inputFileName, const std::string& outputFileName) {
+    crypto::BinaryFile input(inputFileName, crypto::BinaryFile::Mode::Read);
+    crypto::BinaryFile output(outputFileName, crypto::BinaryFile::Mode::Write);
+    crypto::StaticByteBuffer<256> cipherBuffer;
+    crypto::StaticByteBuffer<256> plainBuffer;
+
+    while (input.read(cipherBuffer)) {
+        std::size_t decrypted = decryptor.update(cipherBuffer, plainBuffer);
+        cipherBuffer.erase(0, decrypted);
+        output.write(plainBuffer);
+        plainBuffer.clear();
+    }
+
+    decryptor.doFinal(cipherBuffer, plainBuffer);
+    output.write(plainBuffer);
+}
 
 /**
  * \brief The entry point of the application.
  * \return process exit code, \c 0 meaning success
  */
 int main() {
-    return 0;
+    try {
+        crypto::Aes::Key key(crypto::HexString("2b7e151628aed2a6abf7158809cf4f3c"));
+        crypto::Aes::IV iv(crypto::HexString("000102030405060708090A0B0C0D0E0F"));
+
+        crypto::CbcMode<crypto::Aes>::Encryption enc(key, iv);
+        encFile(enc, "CMakeCache.txt", "cipher");
+
+        iv.reset();
+        crypto::CbcMode<crypto::Aes>::Decryption dec(key, iv);
+        decFile(dec, "cipher", "plainOut");
+    } catch (const crypto::Exception& e) {
+        std::cout << e.what() << '\n';
+        return 1;
+    }
 }

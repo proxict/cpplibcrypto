@@ -4,6 +4,7 @@
 #include "cipher/BlockCipher.h"
 #include "common/StaticByteBuffer.h"
 #include "common/BufferView.h"
+#include "padding/Padding.h"
 
 namespace crypto {
 
@@ -17,7 +18,7 @@ public:
 
     virtual std::size_t update(const ByteBufferView& in, StaticByteBufferBase& out) = 0;
 
-    virtual void doFinal(const ByteBufferView& in, StaticByteBufferBase& out) = 0;
+    virtual void doFinal(const ByteBufferView& in, StaticByteBufferBase& out, const Padding& padder) = 0;
 
 protected:
     BlockCipher& m_blockCipher;

@@ -27,8 +27,8 @@ public:
             return m_encryptor.update(input, output);
         }
 
-        void doFinal(const ByteBufferView& input, StaticByteBufferBase& output) {
-             m_encryptor.doFinal(input, output);
+        void doFinal(const ByteBufferView& input, StaticByteBufferBase& output, const Padding& padder) {
+             m_encryptor.doFinal(input, output, padder);
         }
 
         std::size_t getBlockSize() const {
@@ -49,8 +49,8 @@ public:
             return m_decryptor.update(input, output);
         }
 
-        void doFinal(const ByteBufferView& input, StaticByteBufferBase& output) {
-             m_decryptor.doFinal(input, output);
+        void doFinal(const ByteBufferView& input, StaticByteBufferBase& output, const Padding& padder) {
+             m_decryptor.doFinal(input, output, padder);
         }
 
         std::size_t getBlockSize() const {

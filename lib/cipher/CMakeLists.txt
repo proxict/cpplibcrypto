@@ -4,6 +4,11 @@ add_library(cipher STATIC
 
 target_link_libraries(cipher
     PRIVATE common
+    PRIVATE padding
 )
 
-target_include_directories(cipher PUBLIC include PRIVATE src)
+target_include_directories(cipher
+    PUBLIC ../padding/include
+    PUBLIC include
+    PRIVATE src
+)

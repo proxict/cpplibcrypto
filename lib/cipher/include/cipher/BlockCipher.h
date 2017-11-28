@@ -3,7 +3,7 @@
 
 #include "cipher/SymmetricAlgorithm.h"
 
-#include "common/ByteBuffer.h"
+#include "common/StaticByteBuffer.h"
 #include "common/Key.h"
 
 namespace crypto {
@@ -14,9 +14,9 @@ public:
 
     virtual std::size_t getBlockSize() const = 0;
 
-    virtual void encryptBlock(ByteBuffer&) = 0;
+    virtual void encryptBlock(StaticByteBufferBase&) = 0;
 
-    virtual void decryptBlock(ByteBuffer&) = 0;
+    virtual void decryptBlock(StaticByteBufferBase&) = 0;
 };
 
 } // namespace crypto

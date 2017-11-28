@@ -14,15 +14,18 @@ class Pkcs7 : public Padding {
 public:
     Pkcs7() = default;
 
-    ByteBuffer pad(const ByteBuffer& buf, const std::size_t blockSize) const override {
-        ByteBuffer bb;
-
-        // Note(ProXicT): ByteBuffer::insert(byte, std::size_t) would fit much more
+    void pad(StaticByteBufferBase& buf, const std::size_t blockSize) const override {
         const byte numOfBytesToPad = getPkcs7Size(buf.size(), blockSize);
         for (byte i = 0; i < numOfBytesToPad; ++i) {
-            bb += numOfBytesToPad;
+            buf.push(numOfBytesToPad);
         }
-        return bb;
+    }
+
+    void unpad(StaticByteBufferBase& buf) const override {
+        byte bytesPadded = buf.back();
+        while (bytesPadded-- > 0) {
+            buf.pop();
+        }
     }
 
 private:

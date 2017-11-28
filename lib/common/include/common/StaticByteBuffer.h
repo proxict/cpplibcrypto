@@ -78,6 +78,8 @@ public:
 
     virtual void insert(Pointer first, Pointer last) = 0;
 
+    virtual void insert(const Type* first, const Type* last) = 0;
+
     virtual void pop() = 0;
 
     virtual void resize(const Size newSize) = 0;
@@ -200,6 +202,13 @@ public:
     }
 
     void insert(Pointer first, Pointer last) override {
+        ASSERT(Size(std::distance(first, last)) <= TCapacity);
+        for (auto it = first; it != last; ++it) {
+            push(*it);
+        }
+    }
+
+    void insert(const Type* first, const Type* last) override {
         ASSERT(Size(std::distance(first, last)) <= TCapacity);
         for (auto it = first; it != last; ++it) {
             push(*it);

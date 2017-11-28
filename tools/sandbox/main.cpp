@@ -16,13 +16,14 @@
 #include "common/StaticByteBuffer.h"
 #include "filemanip/BinaryFile.h"
 #include "filemanip/utils.h"
+#include "padding/Pkcs7.h"
 
 template <typename Encryptor>
 void encFile(Encryptor& encryptor, const std::string& inputFileName, const std::string& outputFileName) {
     crypto::BinaryFile input(inputFileName, crypto::BinaryFile::Mode::Read);
     crypto::BinaryFile output(outputFileName, crypto::BinaryFile::Mode::Write);
-    crypto::StaticByteBuffer<16> plainBuffer;
-    crypto::StaticByteBuffer<16> cipherBuffer;
+    crypto::StaticByteBuffer<32> plainBuffer;
+    crypto::StaticByteBuffer<32> cipherBuffer;
 
     // Read max of plainBuffer.capacity()
     while (input.read(plainBuffer)) {
@@ -37,7 +38,7 @@ void encFile(Encryptor& encryptor, const std::string& inputFileName, const std::
     }
 
     // Apply padding to the remaining bytes if any and save the result into cipherBuffer
-    encryptor.doFinal(plainBuffer, cipherBuffer);
+    encryptor.doFinal(plainBuffer, cipherBuffer, crypto::Pkcs7());
     // Write the last chunk to the output
     output.write(cipherBuffer);
 }
@@ -46,8 +47,8 @@ template <typename Decryptor>
 void decFile(Decryptor& decryptor, const std::string& inputFileName, const std::string& outputFileName) {
     crypto::BinaryFile input(inputFileName, crypto::BinaryFile::Mode::Read);
     crypto::BinaryFile output(outputFileName, crypto::BinaryFile::Mode::Write);
-    crypto::StaticByteBuffer<256> cipherBuffer;
-    crypto::StaticByteBuffer<256> plainBuffer;
+    crypto::StaticByteBuffer<4096> cipherBuffer;
+    crypto::StaticByteBuffer<4096> plainBuffer;
 
     while (input.read(cipherBuffer)) {
         std::size_t decrypted = decryptor.update(cipherBuffer, plainBuffer);
@@ -56,7 +57,7 @@ void decFile(Decryptor& decryptor, const std::string& inputFileName, const std::
         plainBuffer.clear();
     }
 
-    decryptor.doFinal(cipherBuffer, plainBuffer);
+    decryptor.doFinal(cipherBuffer, plainBuffer, crypto::Pkcs7());
     output.write(plainBuffer);
 }
 

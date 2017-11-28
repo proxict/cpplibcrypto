@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include "common/ByteBuffer.h"
+#include "common/StaticByteBuffer.h"
 #include "common/common.h"
 
 namespace crypto {
@@ -181,19 +182,20 @@ static constexpr byte rcon[256] = {
 
 class AesCore {
 public:
-    static void subBytes(ByteBuffer& buffer) {
+    static void subBytes(StaticByteBufferBase& buffer) {
         for (byte i = 0; i < buffer.size(); ++i) {
             buffer[i] = sbox[buffer[i]];
         }
     }
 
-    static void subBytesInv(ByteBuffer& buffer) {
+    static void subBytesInv(StaticByteBufferBase& buffer) {
         for (byte i = 0; i < buffer.size(); ++i) {
             buffer[i] = sboxinv[buffer[i]];
         }
     }
 
-    static void shiftRows(ByteBuffer& buffer) {
+    static void shiftRows(StaticByteBufferBase& buffer) {
+        ASSERT(buffer.size() == 16);
         byte i = buffer[1];
         buffer[1] = buffer[5];
         buffer[5] = buffer[9];
@@ -214,7 +216,8 @@ public:
         buffer[6]  = j;
     }
 
-    static void shiftRowsInv(ByteBuffer& buffer) {
+    static void shiftRowsInv(StaticByteBufferBase& buffer) {
+        ASSERT(buffer.size() == 16);
         byte i = buffer[1];
         buffer[1] = buffer[13];
         buffer[13] = buffer[9];
@@ -235,41 +238,42 @@ public:
         buffer[14] = j;
     }
 
-    static void mixColumns(ByteBuffer& buffer) {
-        ByteBuffer tmp; // TODO(ProXicT): Use FixedSizeBuffer instead
+    static void mixColumns(StaticByteBufferBase& buffer) {
+        ASSERT(buffer.size() == 16);
+        StaticByteBuffer<16> tmp;
         for (byte i = 0; i < 4; ++i) {
-            tmp += static_cast<byte>(mul2[buffer[4 * i]] ^ mul3[buffer[4 * i + 1]] ^ buffer[4 * i + 2] ^ buffer[4 * i + 3]);
-            tmp += static_cast<byte>(buffer[4 * i] ^ mul2[buffer[4 * i + 1]] ^ mul3[buffer[4 * i + 2]] ^ buffer[4 * i + 3]);
-            tmp += static_cast<byte>(buffer[4 * i] ^ buffer[4 * i + 1] ^ mul2[buffer[4 * i + 2]] ^ mul3[buffer[4 * i + 3]]);
-            tmp += static_cast<byte>(mul3[buffer[4 * i]] ^ buffer[4 * i + 1] ^ buffer[4 * i + 2] ^ mul2[buffer[4 * i + 3]]);
+            tmp.push(static_cast<byte>(mul2[buffer[4 * i]] ^ mul3[buffer[4 * i + 1]] ^ buffer[4 * i + 2] ^ buffer[4 * i + 3]));
+            tmp.push(static_cast<byte>(buffer[4 * i] ^ mul2[buffer[4 * i + 1]] ^ mul3[buffer[4 * i + 2]] ^ buffer[4 * i + 3]));
+            tmp.push(static_cast<byte>(buffer[4 * i] ^ buffer[4 * i + 1] ^ mul2[buffer[4 * i + 2]] ^ mul3[buffer[4 * i + 3]]));
+            tmp.push(static_cast<byte>(mul3[buffer[4 * i]] ^ buffer[4 * i + 1] ^ buffer[4 * i + 2] ^ mul2[buffer[4 * i + 3]]));
         }
 
-        for (std::size_t i = 0; i < buffer.size(); ++i) {
-            buffer[i] = tmp[i];
-        }
+        buffer.clear();
+        buffer.insert(tmp.begin(), tmp.end());
     }
 
-    static void mixColumnsInv(ByteBuffer& buffer) {
-        ByteBuffer tmp; // TODO(ProXicT): Use FixedSizeBuffer instead
+    static void mixColumnsInv(StaticByteBufferBase& buffer) {
+        ASSERT(buffer.size() == 16);
+        StaticByteBuffer<16> tmp;
         for (byte i = 0; i < 4; ++i) {
-            tmp += static_cast<byte>(mul14[buffer[4 * i]] ^ mul11[buffer[4 * i + 1]] ^ mul13[buffer[4 * i + 2]] ^ mul9[buffer[4 * i + 3]]);
-            tmp += static_cast<byte>(mul9[buffer[4 * i]] ^ mul14[buffer[4 * i + 1]] ^ mul11[buffer[4 * i + 2]] ^ mul13[buffer[4 * i + 3]]);
-            tmp += static_cast<byte>(mul13[buffer[4 * i]] ^ mul9[buffer[4 * i + 1]] ^ mul14[buffer[4 * i + 2]] ^ mul11[buffer[4 * i + 3]]);
-            tmp += static_cast<byte>(mul11[buffer[4 * i]] ^ mul13[buffer[4 * i + 1]] ^ mul9[buffer[4 * i + 2]] ^ mul14[buffer[4 * i + 3]]);
+            tmp.push(static_cast<byte>(mul14[buffer[4 * i]] ^ mul11[buffer[4 * i + 1]] ^ mul13[buffer[4 * i + 2]] ^ mul9[buffer[4 * i + 3]]));
+            tmp.push(static_cast<byte>(mul9[buffer[4 * i]] ^ mul14[buffer[4 * i + 1]] ^ mul11[buffer[4 * i + 2]] ^ mul13[buffer[4 * i + 3]]));
+            tmp.push(static_cast<byte>(mul13[buffer[4 * i]] ^ mul9[buffer[4 * i + 1]] ^ mul14[buffer[4 * i + 2]] ^ mul11[buffer[4 * i + 3]]));
+            tmp.push(static_cast<byte>(mul11[buffer[4 * i]] ^ mul13[buffer[4 * i + 1]] ^ mul9[buffer[4 * i + 2]] ^ mul14[buffer[4 * i + 3]]));
         }
 
-        for (std::size_t i = 0; i < buffer.size(); ++i) {
-            buffer[i] = tmp[i];
-        }
+        buffer.clear();
+        buffer.insert(tmp.begin(), tmp.end());
     }
 
-    static void addRoundKey(ByteBuffer& buffer, const ByteBuffer& roundKeys, const byte keyIndex) {
+    static void addRoundKey(StaticByteBufferBase& buffer, const ByteBuffer& roundKeys, const byte keyIndex) {
+        ASSERT(buffer.size() == 16);
         for (std::size_t i = 0; i < buffer.size(); ++i) {
             buffer[i] ^= roundKeys[i + buffer.size() * keyIndex];
         }
     }
 
-    static void rotateLeft(ByteBuffer& buffer) {
+    static void rotateLeft(StaticByteBufferBase& buffer) {
         const byte b = buffer[0];
         for (std::size_t i = 0; i < buffer.size() - 1; ++i) {
             buffer[i] = buffer[i + 1];
@@ -277,7 +281,7 @@ public:
         buffer[buffer.size() - 1] = b;
     }
 
-    static void keyScheduleCore(ByteBuffer& buffer, const byte i) {
+    static void keyScheduleCore(StaticByteBufferBase& buffer, const byte i) {
         assert(buffer.size() == 4); // TODO(ProXicT): Remove this assertion after changing the buffer type to FixedSizeBuffer
         rotateLeft(buffer);
         subBytes(buffer);

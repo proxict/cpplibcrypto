@@ -8,6 +8,7 @@
 #define COMMON_HEX_STRING_H_
 
 #include "common/ByteBuffer.h"
+#include "common/StaticByteBuffer.h"
 #include "common/Hex.h"
 
 namespace crypto {
@@ -72,6 +73,19 @@ public:
     }
 
     /**
+     * \brief operator+= append HexString to StaticByteBuffer
+     * \param lhs StaticByteBuffer instance
+     * \param rhs HexString instance
+     * \return StaticByteBuffer object
+     */
+    friend StaticByteBufferBase& operator+=(StaticByteBufferBase& lhs, const HexString& rhs) {
+        for (const byte b : rhs.m_decoded) {
+            lhs.push(b);
+        }
+        return lhs;
+    }
+
+    /**
      * \brief operator == compares if ByteBuffer and HexString are equal
      * \param lhs ByteBuffer object
      * \param rhs HexString object
@@ -89,6 +103,42 @@ public:
      */
     friend bool operator==(const HexString& lhs, const ByteBuffer& rhs) {
         return lhs.m_decoded == rhs;
+    }
+
+    /**
+     * \brief operator == compares if StaticByteBuffer and HexString are equal
+     * \param lhs StaticByteBuffer object
+     * \param rhs HexString object
+     * \return true if lhs is equal to rhs, false otherwise
+     */
+    friend bool operator==(const StaticByteBufferBase& lhs, const HexString& rhs) {
+        if (lhs.size() != rhs.size()) {
+            return false;
+        }
+        for (std::size_t i = 0; i < lhs.size(); ++i) {
+            if (lhs[i] != rhs.m_decoded[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * \brief operator == compares if HexString and StaticByteBuffer are equal
+     * \param lhs HexString object
+     * \param rhs StaticByteBuffer object
+     * \return true if lhs is equal to rhs, false otherwise
+     */
+    friend bool operator==(const HexString& lhs, const StaticByteBufferBase& rhs) {
+        if (lhs.size() != rhs.size()) {
+            return false;
+        }
+        for (std::size_t i = 0; i < lhs.size(); ++i) {
+            if (lhs.m_decoded[i] != rhs[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

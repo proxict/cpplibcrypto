@@ -22,8 +22,9 @@ TEST(CbcAes128DecryptTest, cbcDecrypt1) {
     buffer += HexString("7649abac8119b246cee98e9b12e9197d");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("6bc1bee22e409f96e93d7e117393172a"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes128DecryptTest, cbcDecrypt2) {
@@ -36,8 +37,9 @@ TEST(CbcAes128DecryptTest, cbcDecrypt2) {
     buffer += HexString("5086cb9b507219ee95db113a917678b2");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("ae2d8a571e03ac9c9eb76fac45af8e51"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes128DecryptTest, cbcDecrypt3) {
@@ -50,8 +52,9 @@ TEST(CbcAes128DecryptTest, cbcDecrypt3) {
     buffer += HexString("73bed6b8e3c1743b7116e69e22229516");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("30c81c46a35ce411e5fbc1191a0a52ef"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes128DecryptTest, cbcDecrypt4) {
@@ -64,8 +67,9 @@ TEST(CbcAes128DecryptTest, cbcDecrypt4) {
     buffer += HexString("3ff1caa1681fac09120eca307586e1a7");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes192DecryptTest, cbcDecrypt1) {
@@ -78,8 +82,9 @@ TEST(CbcAes192DecryptTest, cbcDecrypt1) {
     buffer += HexString("4f021db243bc633d7178183a9fa071e8");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("6bc1bee22e409f96e93d7e117393172a"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes192DecryptTest, cbcDecrypt2) {
@@ -92,8 +97,9 @@ TEST(CbcAes192DecryptTest, cbcDecrypt2) {
     buffer += HexString("b4d9ada9ad7dedf4e5e738763f69145a");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("ae2d8a571e03ac9c9eb76fac45af8e51"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes192DecryptTest, cbcDecrypt3) {
@@ -106,8 +112,9 @@ TEST(CbcAes192DecryptTest, cbcDecrypt3) {
     buffer += HexString("571b242012fb7ae07fa9baac3df102e0");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("30c81c46a35ce411e5fbc1191a0a52ef"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes192DecryptTest, cbcDecrypt4) {
@@ -120,8 +127,9 @@ TEST(CbcAes192DecryptTest, cbcDecrypt4) {
     buffer += HexString("08b0e27988598881d920a9e64f5615cd");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes256DecryptTest, cbcDecrypt1) {
@@ -134,8 +142,9 @@ TEST(CbcAes256DecryptTest, cbcDecrypt1) {
     buffer += HexString("f58c4c04d6e5f1ba779eabfb5f7bfbd6");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("6bc1bee22e409f96e93d7e117393172a"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes256DecryptTest, cbcDecrypt2) {
@@ -148,8 +157,9 @@ TEST(CbcAes256DecryptTest, cbcDecrypt2) {
     buffer += HexString("9cfc4e967edb808d679f777bc6702c7d");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("ae2d8a571e03ac9c9eb76fac45af8e51"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes256DecryptTest, cbcDecrypt3) {
@@ -162,8 +172,9 @@ TEST(CbcAes256DecryptTest, cbcDecrypt3) {
     buffer += HexString("39f23369a9d9bacfa530e26304231461");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("30c81c46a35ce411e5fbc1191a0a52ef"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes256DecryptTest, cbcDecrypt4) {
@@ -176,8 +187,9 @@ TEST(CbcAes256DecryptTest, cbcDecrypt4) {
     buffer += HexString("b2eb05e2c39be9fcda6c19078c6a9d1b");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
 }
 
 TEST(CbcAes256DecryptResetChainTest, cbcDecryptResetChain1) {
@@ -190,13 +202,16 @@ TEST(CbcAes256DecryptResetChainTest, cbcDecryptResetChain1) {
     buffer += HexString("b2eb05e2c39be9fcda6c19078c6a9d1b");
     StaticByteBuffer<16> out;
     std::size_t processed = cipher.update(buffer, out);
+    EXPECT_EQ(0U, processed);
+    cipher.doFinal(buffer, out, PaddingNone());
     EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(out)));
-    EXPECT_EQ(16, processed);
+
     cipher.resetChain();
     StaticByteBuffer<16> out2;
     std::size_t processed2 = cipher.update(buffer, out2);
+    EXPECT_EQ(0U, processed2);
+    cipher.doFinal(buffer, out2, PaddingNone());
     EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(out2)));
-    EXPECT_EQ(16, processed2);
 }
 
 } // namespace crypto

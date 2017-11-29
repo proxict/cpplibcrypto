@@ -6,9 +6,3 @@ build/
 .project
 .settings/
 
-#qt-creator project files
-/cpplibcrypto.creator
-/cpplibcrypto.creator.user
-/cpplibcrypto.config
-/cpplibcrypto.files
-/cpplibcrypto.includes

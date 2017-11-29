@@ -22,7 +22,7 @@ ByteBuffer Hex::decode(const std::string& hexStr) {
     return output;
 }
 
-constexpr byte Hex::hex2Byte(const char c) {
+constexpr Byte Hex::hex2Byte(const char c) {
     if ('0' <= c && c <= '9') {
         return c - '0';
     } else if ('a' <= c && c <= 'f') {

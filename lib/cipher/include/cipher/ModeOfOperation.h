@@ -8,7 +8,7 @@
 
 namespace crypto {
 
-using ByteBufferView = BufferView<byte>;
+using ByteBufferView = BufferView<Byte>;
 
 class ModeOfOperation {
 public:

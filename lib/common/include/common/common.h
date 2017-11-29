@@ -12,7 +12,7 @@
 
 namespace crypto {
 
-using byte = uint8_t;
+using Byte = uint8_t;
 
 #define ASSERT(x) assert(x)
 

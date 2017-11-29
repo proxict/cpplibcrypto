@@ -9,7 +9,7 @@
 
 namespace crypto {
 
-using ByteBufferView = BufferView<byte>;
+using ByteBufferView = BufferView<Byte>;
 
 template <typename CipherT>
 class CbcMode {

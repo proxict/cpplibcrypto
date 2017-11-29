@@ -29,14 +29,14 @@ public:
         const std::size_t numberOfBlocks = in.size() / m_blockCipher.getBlockSize();
         for (std::size_t block = 0; block < numberOfBlocks; ++block) {
             StaticByteBuffer<16> buffer;
-            for (byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
+            for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 buffer.push(in[block * m_blockCipher.getBlockSize() + i] ^ m_IV[i]);
             }
             m_blockCipher.encryptBlock(buffer);
 
             out.insert(&buffer[0], &buffer[0] + buffer.size());
 
-            for (byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
+            for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 m_IV[i] = buffer[i];
             }
         }
@@ -49,7 +49,7 @@ public:
         buffer.insert(in.begin(), in.end());
         padder.pad(buffer, m_blockCipher.getBlockSize());
         ASSERT(buffer.size() == m_blockCipher.getBlockSize());
-        for (byte i = 0; i < buffer.size(); ++i) {
+        for (Byte i = 0; i < buffer.size(); ++i) {
             buffer[i] ^= m_IV[i];
         }
 

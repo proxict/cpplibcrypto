@@ -3,36 +3,10 @@
 
 #include <cstddef>
 #include <iterator>
-#include <type_traits>
 
-template <bool TTest, typename TType = void>
-using EnableIf = typename std::enable_if_t<TTest, TType>;
+#include "common/TypeTraits.h"
 
-template <bool TTest, typename TType = void>
-using DisableIf = EnableIf<!TTest, TType>;
-
-template <typename T>
-using IsConst = std::is_const<T>;
-
-template <typename T>
-using HasVirtualDestructor = std::has_virtual_destructor<T>;
-
-template <typename T>
-DisableIf<HasVirtualDestructor<T>::value> destroy(T& object) {
-    object.T::~T();
-}
-
-template <typename T>
-EnableIf<HasVirtualDestructor<T>::value> destroy(T& object) {
-    object.~T();
-}
-
-template <typename TIterator>
-void destroy(TIterator first, TIterator last) {
-    for (auto it = first; it != last; ++it) {
-        destroy(*it);
-    }
-}
+namespace crypto {
 
 template <class T>
 class LinearIterator {
@@ -58,19 +32,19 @@ public:
         return *(LinearIterator<const Type>*)this;
     }
 
-    bool operator==(const LinearIterator& second) const { return mPtr == second.mPtr; }
+    bool operator==(const LinearIterator& other) const { return mPtr == other.mPtr; }
 
     bool operator!=(const LinearIterator& other) const { return !((*this) == other); }
 
-    bool operator<(const LinearIterator& second) const { return mPtr < second.mPtr; }
+    bool operator<(const LinearIterator& other) const { return mPtr < other.mPtr; }
 
-    bool operator>(const LinearIterator& second) const { return mPtr > second.mPtr; }
+    bool operator>(const LinearIterator& other) const { return mPtr > other.mPtr; }
 
-    bool operator<=(const LinearIterator& second) const { return mPtr <= second.mPtr; }
+    bool operator<=(const LinearIterator& other) const { return mPtr <= other.mPtr; }
 
-    bool operator>=(const LinearIterator& second) const { return mPtr >= second.mPtr; }
+    bool operator>=(const LinearIterator& other) const { return mPtr >= other.mPtr; }
 
-    ptrdiff_t operator-(const LinearIterator& second) const { return mPtr - second.mPtr; }
+    ptrdiff_t operator-(const LinearIterator& other) const { return mPtr - other.mPtr; }
 
     Type& data() { return *mPtr; }
 
@@ -150,5 +124,7 @@ public:
     using pointer = value_type*;
     using reference = value_type&;
 };
+
+} // namespace crypto
 
 #endif

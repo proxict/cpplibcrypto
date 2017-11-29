@@ -4,16 +4,16 @@
 #include <iostream>
 #include <utility>
 
-#include "common/ByteBuffer.h"
 #include "common/Exception.h"
 #include "common/LinearIterator.h"
+#include "common/Memory.h"
 #include "common/common.h"
 
 namespace crypto {
 
 class StaticByteBufferBase {
 public:
-    using Type = byte;
+    using Type = Byte;
     using Reference = Type&;
     using ConstReference = const Type&;
     using Pointer = Type*;
@@ -83,6 +83,10 @@ public:
     virtual void pop() = 0;
 
     virtual void resize(const Size newSize) = 0;
+
+    virtual StaticByteBufferBase& operator+=(const StaticByteBufferBase& b) = 0;
+
+    virtual StaticByteBufferBase& operator+=(const Byte b) = 0;
 };
 
 template <std::size_t TCapacity>
@@ -230,7 +234,39 @@ public:
             }
         }
     }
+
+    StaticByteBufferBase& operator+=(const StaticByteBufferBase& b) override {
+        insert(b.begin(), b.end());
+        return *this;
+    }
+
+    StaticByteBufferBase& operator+=(const Byte b) override {
+        push(b);
+        return *this;
+    }
+
+    const StaticByteBuffer operator+(const StaticByteBufferBase& rhs) const {
+        StaticByteBuffer sbb;
+        sbb += *this;
+        sbb += rhs;
+        return sbb;
+    }
+
+    const StaticByteBuffer operator+(const Byte rhs) const {
+        StaticByteBuffer sbb;
+        sbb += *this;
+        sbb += rhs;
+        return sbb;
+    }
 };
+
+template <std::size_t TCapacity>
+const StaticByteBuffer<TCapacity> operator+(const Byte lhs, const StaticByteBufferBase& rhs) {
+    StaticByteBuffer<TCapacity> sbb;
+    sbb += lhs;
+    sbb += rhs;
+    return sbb;
+}
 
 } // namespace crypto
 

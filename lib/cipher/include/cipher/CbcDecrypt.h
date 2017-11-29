@@ -26,15 +26,15 @@ public:
 
         for (std::size_t block = 0; block < numberOfBlocks; ++block) {
             StaticByteBuffer<16> buffer;
-            for (byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
+            for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 buffer.push(in[block * m_blockCipher.getBlockSize() + i]);
             }
             m_blockCipher.decryptBlock(buffer);
-            for (byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
+            for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 out.push(buffer[i] ^ m_IV[i]);
             }
 
-            for (byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
+            for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 m_IV[i] = in[block * m_blockCipher.getBlockSize() + i];
             }
         }
@@ -44,11 +44,11 @@ public:
     void doFinal(const ByteBufferView& in, StaticByteBufferBase& out, const Padding& padder) override {
         ASSERT(in.size() == m_blockCipher.getBlockSize());
         StaticByteBuffer<16> buffer;
-        for (const byte b : in) {
+        for (const Byte b : in) {
             buffer.push(b);
         }
         m_blockCipher.decryptBlock(buffer);
-        for (byte i = 0; i < buffer.size(); ++i) {
+        for (Byte i = 0; i < buffer.size(); ++i) {
             out.push(buffer[i] ^ m_IV[i]);
         }
         padder.unpad(out);

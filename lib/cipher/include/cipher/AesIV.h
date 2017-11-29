@@ -42,11 +42,11 @@ public:
         }
     }
 
-    byte operator[](const std::size_t index) const override {
+    Byte operator[](const std::size_t index) const override {
         return m_IV[index];
     }
 
-    byte& operator[](const std::size_t index) override {
+    Byte& operator[](const std::size_t index) override {
         return m_IV[index];
     }
 

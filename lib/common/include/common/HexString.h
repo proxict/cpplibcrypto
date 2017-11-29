@@ -79,7 +79,7 @@ public:
      * \return StaticByteBuffer object
      */
     friend StaticByteBufferBase& operator+=(StaticByteBufferBase& lhs, const HexString& rhs) {
-        for (const byte b : rhs.m_decoded) {
+        for (const Byte b : rhs.m_decoded) {
             lhs.push(b);
         }
         return lhs;

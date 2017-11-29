@@ -59,7 +59,7 @@ public:
 
     void destroy(pointer ptr) {
         if (m_wipe) {
-            byte* bytePtr = reinterpret_cast<byte*>(ptr);
+            Byte* bytePtr = reinterpret_cast<Byte*>(ptr);
             for (std::size_t i = 0; i < sizeof(value_type); ++i) {
                 bytePtr[i] = 0;
             }
@@ -83,16 +83,16 @@ protected:
 
 class ByteBuffer {
 public:
-    using iterator = std::vector<byte, SecureAllocator<byte>>::iterator;
-    using const_iterator = std::vector<byte, SecureAllocator<byte>>::const_iterator;
-    using size_type = std::vector<byte, SecureAllocator<byte>>::size_type;
+    using iterator = std::vector<Byte, SecureAllocator<Byte>>::iterator;
+    using const_iterator = std::vector<Byte, SecureAllocator<Byte>>::const_iterator;
+    using size_type = std::vector<Byte, SecureAllocator<Byte>>::size_type;
 
 public:
     ByteBuffer(const bool sensitive = true) : m_allocator(sensitive), m_data(m_allocator) {}
 
     explicit ByteBuffer(const size_type size, const bool sensitive = true) : m_allocator(sensitive), m_data(size, m_allocator) {}
 
-    ByteBuffer(std::initializer_list<byte>&& list, const bool sensitive = true) : m_allocator(sensitive), m_data(std::move(list)) {}
+    ByteBuffer(std::initializer_list<Byte>&& list, const bool sensitive = true) : m_allocator(sensitive), m_data(std::move(list)) {}
 
     ByteBuffer& operator=(ByteBuffer&& other) noexcept {
         m_allocator = std::move(other.m_allocator);
@@ -120,19 +120,19 @@ public:
         return m_data.end();
     }
 
-    byte* data() {
+    Byte* data() {
         return m_data.data();
     }
 
-    const byte* data() const {
+    const Byte* data() const {
         return m_data.data();
     }
 
-    byte& operator[](size_type index) {
+    Byte& operator[](size_type index) {
         return m_data[index];
     }
 
-    const byte operator[](const std::size_t idx) const {
+    const Byte operator[](const std::size_t idx) const {
         return m_data[idx];
     }
 
@@ -141,7 +141,7 @@ public:
         return *this;
     }
 
-    ByteBuffer& operator+=(const byte b) {
+    ByteBuffer& operator+=(const Byte b) {
         m_data.push_back(b);
         return *this;
     }
@@ -153,14 +153,14 @@ public:
         return bb;
     }
 
-    const ByteBuffer operator+(const byte rhs) const {
+    const ByteBuffer operator+(const Byte rhs) const {
         ByteBuffer bb;
         bb += *this;
         bb += rhs;
         return bb;
     }
 
-    friend const ByteBuffer operator+(const byte lhs, const ByteBuffer& rhs) {
+    friend const ByteBuffer operator+(const Byte lhs, const ByteBuffer& rhs) {
         ByteBuffer bb;
         bb += lhs;
         bb += rhs;
@@ -183,8 +183,8 @@ public:
         m_data.clear();
     }
 
-    template<typename _InputIterator, typename = std::_RequireInputIter<_InputIterator>>
-    iterator insert(const_iterator position, _InputIterator first, _InputIterator last) {
+    template<typename InputIterator, typename = std::_RequireInputIter<InputIterator>>
+    iterator insert(const_iterator position, InputIterator first, InputIterator last) {
         return m_data.insert(position, first, last);
     }
 
@@ -193,8 +193,8 @@ private:
     ByteBuffer& operator=(const ByteBuffer&) = delete;
 
 private:
-    SecureAllocator<byte> m_allocator;
-    std::vector<byte, SecureAllocator<byte>> m_data;
+    SecureAllocator<Byte> m_allocator;
+    std::vector<Byte, SecureAllocator<Byte>> m_data;
 };
 
 } // namespace crypto

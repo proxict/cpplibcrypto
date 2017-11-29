@@ -38,14 +38,14 @@ public:
 private:
     Hex() = delete;
 
-    constexpr static byte hex2Byte(const char c);
+    constexpr static Byte hex2Byte(const char c);
 };
 
     template <typename TContainer>
     std::string Hex::encode(const TContainer& buf) {
         constexpr static const char* lookupTable = "0123456789abcdef";
         std::ostringstream bytes;
-        for (const byte b : buf) {
+        for (const Byte b : buf) {
             bytes << lookupTable[b >> 4] << lookupTable[b & 0x0f];
         }
         return bytes.str();

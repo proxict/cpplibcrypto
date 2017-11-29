@@ -15,14 +15,14 @@ public:
         keySchedule(key.getBytes());
     }
 
-    std::size_t getKeySize() const {
+    Size getKeySize() const {
         return m_keySize;
     }
 
 private:
     virtual void keySchedule(const ByteBuffer& key) = 0;
 
-    std::size_t m_keySize;
+    Size m_keySize;
 };
 
 } // namespace crypto

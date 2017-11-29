@@ -3,14 +3,12 @@
 
 #include "cipher/BlockCipher.h"
 
-#include <cstddef> // std::size_t
-
 namespace crypto {
 
-template<std::size_t blockSize>
+template<Size TBlockSize>
 class BlockCipherSized : public BlockCipher {
 public:
-    std::size_t getBlockSize() const override { return blockSize; }
+    Size getBlockSize() const override { return TBlockSize; }
 
 protected:
     BlockCipherSized() = default;

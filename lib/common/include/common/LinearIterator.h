@@ -10,7 +10,6 @@ namespace crypto {
 
 template <class T>
 class LinearIterator {
-    using Size = std::size_t;
     using Type = T;
     using TypePtr = Type*;
 

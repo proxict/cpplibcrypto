@@ -19,15 +19,15 @@ public:
         }
     }
 
-    std::size_t update(const ByteBufferView& in, StaticByteBufferBase& out) override {
+    Size update(const ByteBufferView& in, StaticByteBufferBase& out) override {
         ASSERT(out.capacity() >= in.size());
         ASSERT(out.capacity() >= m_blockCipher.getBlockSize());
         if (in.size() < m_blockCipher.getBlockSize() && in.size() % m_blockCipher.getBlockSize() != 0) {
             return 0;
         }
 
-        const std::size_t numberOfBlocks = in.size() / m_blockCipher.getBlockSize();
-        for (std::size_t block = 0; block < numberOfBlocks; ++block) {
+        const Size numberOfBlocks = in.size() / m_blockCipher.getBlockSize();
+        for (Size block = 0; block < numberOfBlocks; ++block) {
             StaticByteBuffer<16> buffer;
             for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 buffer.push(in[block * m_blockCipher.getBlockSize() + i] ^ m_IV[i]);

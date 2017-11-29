@@ -268,14 +268,14 @@ public:
 
     static void addRoundKey(StaticByteBufferBase& buffer, const ByteBuffer& roundKeys, const Byte keyIndex) {
         ASSERT(buffer.size() == 16);
-        for (std::size_t i = 0; i < buffer.size(); ++i) {
+        for (Size i = 0; i < buffer.size(); ++i) {
             buffer[i] ^= roundKeys[i + buffer.size() * keyIndex];
         }
     }
 
     static void rotateLeft(StaticByteBufferBase& buffer) {
         const Byte b = buffer[0];
-        for (std::size_t i = 0; i < buffer.size() - 1; ++i) {
+        for (Size i = 0; i < buffer.size() - 1; ++i) {
             buffer[i] = buffer[i + 1];
         }
         buffer[buffer.size() - 1] = b;

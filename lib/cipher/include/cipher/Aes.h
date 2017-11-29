@@ -16,9 +16,9 @@ namespace crypto {
 
 class Aes : public BlockCipherSized<16> {
 public:
-    static constexpr std::size_t Aes128 = 16;
-    static constexpr std::size_t Aes192 = 24;
-    static constexpr std::size_t Aes256 = 32;
+    static constexpr Size Aes128 = 16;
+    static constexpr Size Aes192 = 24;
+    static constexpr Size Aes256 = 32;
     using Key = AesKey;
     using IV = AesIV;
 

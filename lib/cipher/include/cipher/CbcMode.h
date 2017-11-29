@@ -23,7 +23,7 @@ public:
 
         Encryption(const Key& key, InitializationVector& IV) : m_encryptor(m_cipher, key, IV) {}
 
-        std::size_t update(const ByteBufferView& input, StaticByteBufferBase& output) {
+        Size update(const ByteBufferView& input, StaticByteBufferBase& output) {
             return m_encryptor.update(input, output);
         }
 
@@ -31,7 +31,7 @@ public:
              m_encryptor.doFinal(input, output, padder);
         }
 
-        std::size_t getBlockSize() const {
+        Size getBlockSize() const {
             return m_cipher.getBlockSize();
         }
 
@@ -45,7 +45,7 @@ public:
 
         Decryption(const Key& key, InitializationVector& IV) : m_decryptor(m_cipher, key, IV) {}
 
-        std::size_t update(const ByteBufferView& input, StaticByteBufferBase& output) {
+        Size update(const ByteBufferView& input, StaticByteBufferBase& output) {
             return m_decryptor.update(input, output);
         }
 
@@ -53,7 +53,7 @@ public:
              m_decryptor.doFinal(input, output, padder);
         }
 
-        std::size_t getBlockSize() const {
+        Size getBlockSize() const {
             return m_cipher.getBlockSize();
         }
 

@@ -47,7 +47,7 @@ public:
      * \brief size getter
      * \return number of bytes of the decoded buffer
      */
-    std::size_t size() const {
+    Size size() const {
         return m_decoded.size();
     }
 
@@ -115,7 +115,7 @@ public:
         if (lhs.size() != rhs.size()) {
             return false;
         }
-        for (std::size_t i = 0; i < lhs.size(); ++i) {
+        for (Size i = 0; i < lhs.size(); ++i) {
             if (lhs[i] != rhs.m_decoded[i]) {
                 return false;
             }
@@ -133,7 +133,7 @@ public:
         if (lhs.size() != rhs.size()) {
             return false;
         }
-        for (std::size_t i = 0; i < lhs.size(); ++i) {
+        for (Size i = 0; i < lhs.size(); ++i) {
             if (lhs.m_decoded[i] != rhs[i]) {
                 return false;
             }

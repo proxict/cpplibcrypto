@@ -7,11 +7,11 @@
 
 namespace crypto {
 
-template<std::size_t Size>
+template<Size TSize>
 class InitializationVectorSized : public InitializationVector {
 public:
-    bool isValid(const std::size_t size) const override {
-        return (size == Size);
+    bool isValid(const Size size) const override {
+        return (size == TSize);
     }
 
 protected:

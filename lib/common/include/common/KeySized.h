@@ -9,23 +9,23 @@
 
 namespace crypto {
 
-template<std::size_t minKeySize, std::size_t maxKeySize = 0, std::size_t mod = 1>
+template<Size TMinKeySize, Size TMaxKeySize = 0, Size TMod = 1>
 class KeySized : public Key {
 public:
-    bool isValid(const std::size_t keySize) const override {
+    bool isValid(const Size keySize) const override {
         return ((keySize >= getMin()) && (keySize <= getMax()) && (keySize % getMod() == 0));
     }
 
-    static constexpr std::size_t getMin() {
-        return minKeySize;
+    static constexpr Size getMin() {
+        return TMinKeySize;
     }
 
-    static constexpr std::size_t getMax() {
-        return maxKeySize > 0 ? maxKeySize : minKeySize;
+    static constexpr Size getMax() {
+        return TMaxKeySize > 0 ? TMaxKeySize : TMinKeySize;
     }
 
-    static constexpr std::size_t getMod() {
-        return mod;
+    static constexpr Size getMod() {
+        return TMod;
     }
 
 protected:

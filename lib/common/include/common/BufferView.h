@@ -3,6 +3,10 @@
 
 #include <iterator>
 
+#include "common/common.h"
+
+namespace crypto {
+
 template <typename T>
 class BufferView {
 public:
@@ -16,13 +20,13 @@ public:
 
     const T* end() const { return mLast; }
 
-    std::size_t size() const { return std::distance(mFirst, mLast); }
+    Size size() const { return std::distance(mFirst, mLast); }
 
-    const T& operator[](const std::size_t index) const {
+    const T& operator[](const Size index) const {
         return *(mFirst + index);
     }
 
-    T& operator[](const std::size_t index) {
+    T& operator[](const Size index) {
         return *(mFirst + index);
     }
 
@@ -30,5 +34,7 @@ private:
     const T* mFirst;
     const T* mLast;
 };
+
+} // namespace crypto
 
 #endif

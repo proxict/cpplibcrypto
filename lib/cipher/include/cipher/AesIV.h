@@ -32,21 +32,21 @@ public:
         m_InitialIV += IV;
     }
 
-    std::size_t size() const override {
+    Size size() const override {
         return m_IV.size();
     }
 
-    void reset() {
-        for (std::size_t i = 0; i < m_IV.size(); ++i) {
+    void reset() override {
+        for (Size i = 0; i < m_IV.size(); ++i) {
             m_IV[i] = m_InitialIV[i];
         }
     }
 
-    Byte operator[](const std::size_t index) const override {
+    Byte operator[](const Size index) const override {
         return m_IV[index];
     }
 
-    Byte& operator[](const std::size_t index) override {
+    Byte& operator[](const Size index) override {
         return m_IV[index];
     }
 

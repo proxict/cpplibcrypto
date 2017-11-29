@@ -13,6 +13,7 @@
 namespace crypto {
 
 using Byte = uint8_t;
+using Size = std::size_t;
 
 #define ASSERT(x) assert(x)
 

@@ -12,7 +12,7 @@ class BlockCipher : public SymmetricAlgorithm {
 public:
     BlockCipher() = default;
 
-    virtual std::size_t getBlockSize() const = 0;
+    virtual Size getBlockSize() const = 0;
 
     virtual void encryptBlock(StaticByteBufferBase&) = 0;
 

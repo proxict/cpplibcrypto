@@ -20,7 +20,6 @@ public:
     using ConstPointer = const Type*;
     using Iterator = LinearIterator<Type>;
     using ConstIterator = LinearIterator<const Type>;
-    using Size = std::size_t;
 
     using value_type = Type;
     using size_type = Size;
@@ -89,7 +88,7 @@ public:
     virtual StaticByteBufferBase& operator+=(const Byte b) = 0;
 };
 
-template <std::size_t TCapacity>
+template <Size TCapacity>
 class StaticByteBuffer : public StaticByteBufferBase {
 protected:
     Type mData[TCapacity];
@@ -260,7 +259,7 @@ public:
     }
 };
 
-template <std::size_t TCapacity>
+template <Size TCapacity>
 const StaticByteBuffer<TCapacity> operator+(const Byte lhs, const StaticByteBufferBase& rhs) {
     StaticByteBuffer<TCapacity> sbb;
     sbb += lhs;

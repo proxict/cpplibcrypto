@@ -4,6 +4,9 @@
 #include <fstream>
 
 #include "common/Exception.h"
+#include "common/common.h"
+
+namespace crypto {
 
 /**
  * \brief fileExists check for file existence
@@ -20,12 +23,12 @@ inline bool fileExists(const std::string& filename) {
  * \param filename input filename
  * \return file size in bytes
  */
-inline std::size_t getFileSize(const std::string& filename) {
+inline Size getFileSize(const std::string& filename) {
     std::ifstream stream(filename, std::ios::binary | std::ios::ate);
-    if (!stream.is_open())
-        throw crypto::Exception("Could not open the file specified (" + filename + ')');
+    if (!stream.is_open()) throw crypto::Exception("Could not open the file specified (" + filename + ')');
     return stream.tellg();
 }
 
-#endif
+} // namespace crypto
 
+#endif

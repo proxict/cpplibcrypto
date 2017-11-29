@@ -16,7 +16,7 @@ public:
         m_blockCipher.setKey(key);
     }
 
-    virtual std::size_t update(const ByteBufferView& in, StaticByteBufferBase& out) = 0;
+    virtual Size update(const ByteBufferView& in, StaticByteBufferBase& out) = 0;
 
     virtual void doFinal(const ByteBufferView& in, StaticByteBufferBase& out, const Padding& padder) = 0;
 

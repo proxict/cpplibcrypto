@@ -11,9 +11,9 @@ class Key {
 public:
     Key() = default;
 
-    virtual bool isValid(const std::size_t) const = 0;
+    virtual bool isValid(const Size) const = 0;
 
-    virtual std::size_t size() const = 0;
+    virtual Size size() const = 0;
 
     virtual const ByteBuffer& getBytes() const = 0;
 };

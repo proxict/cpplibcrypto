@@ -29,7 +29,7 @@ void encFile(Encryptor& encryptor, const std::string& inputFileName, const std::
     while (input.read(plainBuffer)) {
         // Encrypt max of plainBuffer.size(), save the encrypted bytes to cipherBuffer and remove the plain data, which
         // got encrypted, from the plainBuffer.
-        std::size_t encrypted = encryptor.update(plainBuffer, cipherBuffer); // BufferView in the lower level???
+        crypto::Size encrypted = encryptor.update(plainBuffer, cipherBuffer); // BufferView in the lower level???
         plainBuffer.erase(0, encrypted);
 
         // Save max of cipherBuffer.size() to output and erase the saved data from the cipherBuffer
@@ -51,7 +51,7 @@ void decFile(Decryptor& decryptor, const std::string& inputFileName, const std::
     crypto::StaticByteBuffer<4096> plainBuffer;
 
     while (input.read(cipherBuffer)) {
-        std::size_t decrypted = decryptor.update(cipherBuffer, plainBuffer);
+        crypto::Size decrypted = decryptor.update(cipherBuffer, plainBuffer);
         cipherBuffer.erase(0, decrypted);
         output.write(plainBuffer);
         plainBuffer.clear();

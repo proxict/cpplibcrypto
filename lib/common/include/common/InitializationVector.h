@@ -11,13 +11,13 @@ class InitializationVector {
 public:
     InitializationVector() = default;
 
-    virtual bool isValid(const std::size_t) const = 0;
+    virtual bool isValid(const Size) const = 0;
 
-    virtual std::size_t size() const = 0;
+    virtual Size size() const = 0;
 
-    virtual Byte operator[](const std::size_t) const = 0;
+    virtual Byte operator[](const Size) const = 0;
 
-    virtual Byte& operator[](const std::size_t) = 0;
+    virtual Byte& operator[](const Size) = 0;
 
     virtual void reset() = 0;
 };

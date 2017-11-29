@@ -17,7 +17,7 @@ public:
     using const_pointer = const value_type*;
     using reference = value_type&;
     using const_reference = const value_type&;
-    using size_type = std::size_t;
+    using size_type = Size;
     using difference_type = std::ptrdiff_t;
 
     template <class TargetT>
@@ -42,7 +42,7 @@ public:
     }
 
     size_type max_size() const {
-        return std::numeric_limits<std::size_t>::max() / sizeof(value_type);
+        return std::numeric_limits<size_type>::max() / sizeof(value_type);
     }
 
     pointer allocate(const size_type count, const void* = 0) {
@@ -60,7 +60,7 @@ public:
     void destroy(pointer ptr) {
         if (m_wipe) {
             Byte* bytePtr = reinterpret_cast<Byte*>(ptr);
-            for (std::size_t i = 0; i < sizeof(value_type); ++i) {
+            for (Size i = 0; i < sizeof(value_type); ++i) {
                 bytePtr[i] = 0;
             }
         }
@@ -132,7 +132,7 @@ public:
         return m_data[index];
     }
 
-    const Byte operator[](const std::size_t idx) const {
+    const Byte operator[](const Size idx) const {
         return m_data[idx];
     }
 
@@ -183,8 +183,8 @@ public:
         m_data.clear();
     }
 
-    template<typename InputIterator, typename = std::_RequireInputIter<InputIterator>>
-    iterator insert(const_iterator position, InputIterator first, InputIterator last) {
+    template<typename TInputIterator, typename = std::_RequireInputIter<TInputIterator>>
+    iterator insert(const_iterator position, TInputIterator first, TInputIterator last) {
         return m_data.insert(position, first, last);
     }
 

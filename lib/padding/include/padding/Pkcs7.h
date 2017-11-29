@@ -14,7 +14,7 @@ class Pkcs7 : public Padding {
 public:
     Pkcs7() = default;
 
-    void pad(StaticByteBufferBase& buf, const std::size_t blockSize) const override {
+    void pad(StaticByteBufferBase& buf, const Size blockSize) const override {
         const Byte numOfBytesToPad = getPkcs7Size(buf.size(), blockSize);
         for (Byte i = 0; i < numOfBytesToPad; ++i) {
             buf.push(numOfBytesToPad);
@@ -29,8 +29,8 @@ public:
     }
 
 private:
-    static Byte getPkcs7Size(const std::size_t dataLen, const std::size_t blockSize) {
-        const std::size_t padding = blockSize - dataLen % blockSize;
+    static Byte getPkcs7Size(const Size dataLen, const Size blockSize) {
+        const Size padding = blockSize - dataLen % blockSize;
         if (padding > std::numeric_limits<Byte>::max()) {
             throw std::range_error("PKCS7 padding allows maximum block size of " +
                 std::to_string(std::numeric_limits<Byte>::max()) + " bytes");

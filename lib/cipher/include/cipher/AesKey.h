@@ -29,7 +29,7 @@ public:
         m_key += key;
     }
 
-    std::size_t size() const override {
+    Size size() const override {
         return m_key.size();
     }
 

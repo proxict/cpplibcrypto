@@ -13,9 +13,9 @@ public:
     AesKeyScheduleTest() = default;
     virtual ~AesKeyScheduleTest() = default;
 
-    ByteBuffer getNthRoundKey(const std::size_t index) const {
+    ByteBuffer getNthRoundKey(const Size index) const {
         ByteBuffer roundKey;
-        for (std::size_t i = 0; i < getBlockSize(); ++i) {
+        for (Size i = 0; i < getBlockSize(); ++i) {
             roundKey += m_roundKeys[i + getBlockSize() * index];
         }
 

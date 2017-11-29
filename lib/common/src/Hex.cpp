@@ -16,7 +16,7 @@ ByteBuffer Hex::decode(const std::string& hexStr) {
     }
 
     ByteBuffer output(hexStr.size() / 2);
-    for (std::size_t i = 0; i < hexStr.size(); i += 2) {
+    for (Size i = 0; i < hexStr.size(); i += 2) {
         output[i / 2] = hex2Byte(hexStr[i]) << 4 | (hex2Byte(hexStr[i + 1]) & 0x0f);
     }
     return output;

@@ -1,3 +1,7 @@
+if (NOT TARGET gmock AND NOT TARGET gtest)
+    add_subdirectory(external/googletest)
+endif()
+
 add_executable(unittests
     main.cpp
     common/ByteBufferTest.cpp

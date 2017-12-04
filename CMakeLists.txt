@@ -7,7 +7,4 @@ include(cmake/coverage.txt)
 
 add_subdirectory(lib)
 add_subdirectory(tools/sandbox)
-if (NOT TARGET gmock AND NOT TARGET gtest)
-    add_subdirectory(external/googletest)
-endif()
 add_subdirectory(test)

@@ -1,12 +1,12 @@
-add_library(filemanip STATIC
+add_library(filemanip_objects OBJECT
     src/FileManip.cpp
 )
 
-target_link_libraries(filemanip
-    PRIVATE common
+target_include_directories(filemanip_objects
+    PUBLIC include
+    PRIVATE ${common_includes}
 )
 
-target_include_directories(filemanip
-    PUBLIC include
-    PRIVATE src
-)
+get_property(filemanip_includes_local TARGET filemanip_objects PROPERTY INCLUDE_DIRECTORIES)
+set(filemanip_includes ${filemanip_includes_local} CACHE STRING "Include directories for filemanip module")
+

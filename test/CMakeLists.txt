@@ -12,10 +12,16 @@ add_executable(unittests
     cipher/CbcAesEncryptTest.cpp
 )
 
-target_link_libraries(unittests
-    PRIVATE cipher
-    PRIVATE padding
-    PRIVATE common
-    PRIVATE gtest
-    PRIVATE gmock
+target_include_directories(unittests
+    PRIVATE ${common_includes}
+    PRIVATE ${cipher_includes}
+    PRIVATE ${padding_includes}
+    PRIVATE ${filemanip_includes}
 )
+
+target_link_libraries(unittests
+    PRIVATE cpplibcrypto
+    PRIVATE gmock
+    PRIVATE gtest
+)
+

@@ -1,14 +1,12 @@
-add_library(cipher STATIC
+add_library(cipher_objects OBJECT
     src/Aes.cpp
 )
 
-target_link_libraries(cipher
-    PRIVATE common
-    PRIVATE padding
+target_include_directories(cipher_objects
+    PUBLIC include
+	PRIVATE ${common_includes}
 )
 
-target_include_directories(cipher
-    PUBLIC ../padding/include
-    PUBLIC include
-    PRIVATE src
-)
+get_property(cipher_includes_local TARGET cipher_objects PROPERTY INCLUDE_DIRECTORIES)
+set(cipher_includes ${cipher_includes_local} CACHE STRING "Include directories for cipher module")
+

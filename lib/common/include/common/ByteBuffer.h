@@ -5,197 +5,218 @@
 #include <utility>
 #include <vector>
 
-#include "common/common.h"
+#include "common/Exception.h"
+#include "common/LinearIterator.h"
+#include "common/SecureAllocator.h"
 
 namespace crypto {
 
-template <class T>
-class SecureAllocator {
+template <typename T>
+class DynamicBuffer {
 public:
-    using value_type = T;
-    using pointer = value_type*;
-    using const_pointer = const value_type*;
-    using reference = value_type&;
-    using const_reference = const value_type&;
+    using Type = T;
+    using Reference = Type&;
+    using ConstReference = const Type&;
+    using RValuetReference = Type&&;
+    using Pointer = Type*;
+    using ConstPointer = const Type*;
+    using Iterator = LinearIterator<Type>;
+    using ConstIterator = LinearIterator<const Type>;
+
+    using value_type = Type;
     using size_type = Size;
-    using difference_type = std::ptrdiff_t;
+    using reference = Reference;
+    using const_reference = ConstReference;
+    using pointer = Pointer;
+    using const_pointer = ConstPointer;
+    using iterator = Iterator;
+    using const_iterator = ConstIterator;
 
-    template <class TargetT>
-    class rebind {
-    public:
-        using other = SecureAllocator<TargetT>;
-    };
+    DynamicBuffer(const bool sensitive = true) : mAllocator(sensitive) {}
 
-    SecureAllocator(const bool sensitive = false) : m_wipe(sensitive) {}
-
-    ~SecureAllocator() = default;
-
-    template <class T2>
-    SecureAllocator(const SecureAllocator<T2>& other) : m_wipe(other.m_wipe) {}
-
-    pointer address(reference ref) {
-        return &ref;
-    }
-
-    const_pointer address(const_reference ref) {
-        return &ref;
-    }
-
-    size_type max_size() const {
-        return std::numeric_limits<size_type>::max() / sizeof(value_type);
-    }
-
-    pointer allocate(const size_type count, const void* = 0) {
-        return static_cast<pointer>(::operator new(count * sizeof(value_type)));
-    }
-
-    void deallocate(pointer ptr, const size_type) {
-        ::operator delete((void*)ptr);
-    }
-
-    void construct(pointer ptr, const value_type& value) {
-        new(static_cast<void*>(ptr))T(value);
-    }
-
-    void destroy(pointer ptr) {
-        if (m_wipe) {
-            Byte* bytePtr = reinterpret_cast<Byte*>(ptr);
-            for (Size i = 0; i < sizeof(value_type); ++i) {
-                bytePtr[i] = 0;
-            }
+    explicit DynamicBuffer(const Size size, const bool sensitive = true) : mAllocator(sensitive) {
+        reserve(size);
+        for (Size i = 0; i < size; ++i) {
+            push(Type());
         }
-        ptr->~T();
     }
 
-    template <class T2> bool
-    operator==(SecureAllocator<T2> const&) const {
-        return true;
+    DynamicBuffer(std::initializer_list<Byte> list, const bool sensitive = true) : mAllocator(sensitive) {
+        insert(begin(), list.begin(), list.end());
     }
 
-    template <class T2> bool
-    operator!=(SecureAllocator<T2> const&) const {
-        return false;
-    }
-
-protected:
-    bool m_wipe;
-};
-
-class ByteBuffer {
-public:
-    using iterator = std::vector<Byte, SecureAllocator<Byte>>::iterator;
-    using const_iterator = std::vector<Byte, SecureAllocator<Byte>>::const_iterator;
-    using size_type = std::vector<Byte, SecureAllocator<Byte>>::size_type;
-
-public:
-    ByteBuffer(const bool sensitive = true) : m_allocator(sensitive), m_data(m_allocator) {}
-
-    explicit ByteBuffer(const size_type size, const bool sensitive = true) : m_allocator(sensitive), m_data(size, m_allocator) {}
-
-    ByteBuffer(std::initializer_list<Byte>&& list, const bool sensitive = true) : m_allocator(sensitive), m_data(std::move(list)) {}
-
-    ByteBuffer& operator=(ByteBuffer&& other) noexcept {
-        m_allocator = std::move(other.m_allocator);
-        m_data = std::move(other.m_data);
+    DynamicBuffer& operator=(DynamicBuffer&& other) noexcept {
+        std::swap(mAllocator, other.mAllocator);
+        std::swap(mData, other.mData);
+        std::swap(mSize, other.mSize);
+        std::swap(mCapacity, other.mCapacity);
         return *this;
     }
 
-    ByteBuffer(ByteBuffer&& other) noexcept {
-        *this = std::move(other);
+    DynamicBuffer(DynamicBuffer&& other) noexcept { *this = std::move(other); }
+
+    ~DynamicBuffer() {
+        memory::deallocate(mData);
     }
 
-    const_iterator begin() const {
-        return m_data.begin();
+    void setSensitive(const bool sensitive) { mAllocator.setWipe(sensitive); }
+
+    bool isSensitive() const { return mAllocator.isWipe(); }
+
+    ConstReference get(const Size index) const { return mData[index]; }
+
+    Reference get(const Size index) { return mData[index]; }
+
+    ConstReference operator[](const Size index) const { return get(index); }
+
+    Reference operator[](const Size index) { return get(index); }
+
+    ConstReference back() const { return get(size() - 1); }
+
+    Reference back() { return get(size() - 1); }
+
+    ConstPointer data() const { return mData; }
+
+    Pointer data() { return mData; }
+
+    Iterator begin() { return Iterator(this, 0); }
+
+    Iterator end() { return Iterator(this, size()); }
+
+    ConstIterator begin() const { return cbegin(); }
+
+    ConstIterator end() const { return cend(); }
+
+    ConstIterator cbegin() const { return ConstIterator(this, 0); }
+
+    ConstIterator cend() const { return ConstIterator(this, size()); }
+
+    bool empty() const { return mSize == 0; }
+
+    Size size() const { return mSize; }
+
+    Size capacity() const { return mCapacity; }
+
+    void clear() {
+        destroy(begin(), end());
+        mSize = 0;
     }
 
-    const_iterator end() const {
-        return m_data.end();
+    void erase(const Size index) {
+        ASSERT(index <= mSize);
+        auto erased = begin() + index;
+        std::move(erased + 1, end(), erased);
+        pop();
     }
 
-    iterator begin() {
-        return m_data.begin();
+    // Maybe it's all wrong..
+    void erase(const Size from, const Size count) {
+        ASSERT(from + count <= mSize);
+        for (Size i = 0; i < count; ++i) {
+            mAllocator.destroy(get(from + i));
+            mData[from + i] = std::move(mData[from + i + count]);
+        }
+        mSize -= count;
     }
 
-    iterator end() {
-        return m_data.end();
+    void allocateMemory(const Size size) {
+        Pointer newData = mAllocator.allocate(size);
+        std::move(begin(), end(), newData);
+        if (mData) {
+            mAllocator.destroy(mData);
+        }
+        mData = newData;
     }
 
-    Byte* data() {
-        return m_data.data();
+    void reserve(const Size size) {
+        if (capacity() < size) {
+            mCapacity = std::max(size, capacity() + capacity() / 2);
+            allocateMemory(mCapacity);
+        }
+        ASSERT(capacity() >= size);
     }
 
-    const Byte* data() const {
-        return m_data.data();
+    template <typename... TArgs>
+    void emplaceBack(TArgs&&... args) {
+        reserve(size() + 1);
+        mAllocator.construct(mData + mSize, std::forward<TArgs>(args)...);
+        ++mSize;
     }
 
-    Byte& operator[](size_type index) {
-        return m_data[index];
+    void push(ConstReference value) { emplaceBack(value); }
+
+    void push(RValuetReference value = Type()) {
+        emplaceBack(std::move(value));
     }
 
-    const Byte operator[](const Size idx) const {
-        return m_data[idx];
+    void pop() {
+        mAllocator.destroy(back());
+        --mSize;
     }
 
-    ByteBuffer& operator+=(const ByteBuffer& b) {
-        m_data.insert(m_data.end(), b.m_data.begin(), b.m_data.end());
+    DynamicBuffer& operator+=(const DynamicBuffer& b) {
+        insert(end(), b.begin(), b.end());
         return *this;
     }
 
-    ByteBuffer& operator+=(const Byte b) {
-        m_data.push_back(b);
+    DynamicBuffer& operator+=(const Byte b) {
+        push(b);
         return *this;
     }
 
-    const ByteBuffer operator+(const ByteBuffer& rhs) const {
-        ByteBuffer bb;
-        bb += *this;
-        bb += rhs;
-        return bb;
+    const DynamicBuffer operator+(const DynamicBuffer& rhs) const {
+        DynamicBuffer sbb;
+        sbb += *this;
+        sbb += rhs;
+        return sbb;
     }
 
-    const ByteBuffer operator+(const Byte rhs) const {
-        ByteBuffer bb;
-        bb += *this;
-        bb += rhs;
-        return bb;
+    const DynamicBuffer operator+(const Byte rhs) const {
+        DynamicBuffer sbb;
+        sbb += *this;
+        sbb += rhs;
+        return sbb;
     }
 
-    friend const ByteBuffer operator+(const Byte lhs, const ByteBuffer& rhs) {
-        ByteBuffer bb;
+    friend const DynamicBuffer operator+(const Byte lhs, const DynamicBuffer& rhs) {
+        DynamicBuffer bb;
         bb += lhs;
         bb += rhs;
         return bb;
     }
 
-    bool operator==(const ByteBuffer& rhs) const {
-        return m_data.size() == rhs.m_data.size() && std::equal(m_data.begin(), m_data.end(), rhs.m_data.begin());
+    bool operator==(const DynamicBuffer& rhs) const {
+        if (size() != rhs.size()) {
+            return false;
+        }
+        for (Size i = 0; i < size(); ++i) {
+            if ((*this)[i] != rhs[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    bool operator!=(const ByteBuffer& rhs) const {
-        return !(*this == rhs);
-    }
+    bool operator!=(const DynamicBuffer& rhs) const { return !(*this == rhs); }
 
-    size_type size() const {
-        return m_data.size();
-    }
-
-    void clear() {
-        m_data.clear();
-    }
-
-    template<typename TInputIterator, typename = std::_RequireInputIter<TInputIterator>>
-    iterator insert(const_iterator position, TInputIterator first, TInputIterator last) {
-        return m_data.insert(position, first, last);
+    template <typename TInputIterator, typename = std::_RequireInputIter<TInputIterator>>
+    iterator insert(ConstIterator position, TInputIterator first, TInputIterator last) {
+        const Size length = std::distance(first, last);
+        reserve(size() + length);
+        for (TInputIterator it = first; it != last; ++it) {
+            push(*it);
+        }
+        return end();
     }
 
 private:
-    ByteBuffer(const ByteBuffer&) = delete;
-    ByteBuffer& operator=(const ByteBuffer&) = delete;
-
-private:
-    SecureAllocator<Byte> m_allocator;
-    std::vector<Byte, SecureAllocator<Byte>> m_data;
+    Pointer mData = nullptr;
+    Size mSize = 0;
+    Size mCapacity = 0;
+    SecureAllocator<Type> mAllocator;
 };
+
+using ByteBuffer = DynamicBuffer<Byte>;
 
 } // namespace crypto
 

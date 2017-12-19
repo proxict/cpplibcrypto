@@ -34,7 +34,7 @@ public:
             }
             m_blockCipher.encryptBlock(buffer);
 
-            out.insert(&buffer[0], &buffer[0] + buffer.size());
+            out.insert(buffer.begin(), buffer.end());
 
             for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 m_IV[i] = buffer[i];
@@ -54,7 +54,7 @@ public:
         }
 
         m_blockCipher.encryptBlock(buffer);
-        out.insert(&buffer[0], &buffer[0] + buffer.size());
+        out.insert(buffer.begin(), buffer.end());
     }
 
     void resetChain() { m_IV.reset(); }

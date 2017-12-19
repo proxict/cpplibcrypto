@@ -5,6 +5,7 @@
 #include <iterator>
 
 #include "common/TypeTraits.h"
+#include "common/common.h"
 
 namespace crypto {
 

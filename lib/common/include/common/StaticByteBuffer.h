@@ -177,7 +177,7 @@ public:
     Size capacity() const override { return TCapacity; }
 
     void clear() override {
-        destroy(begin(), end());
+        memory::destroy(begin(), end());
         mStored = 0;
     }
 
@@ -192,7 +192,7 @@ public:
     void erase(const Size from, const Size count) {
         ASSERT(from + count <= mStored);
         for (Size i = 0; i < count; ++i) {
-            destroy(mData[from + i]);
+            memory::destroy(mData[from + i]);
             mData[from + i] = std::move(mData[from + i + count]);
         }
         mStored -= count;
@@ -219,19 +219,20 @@ public:
     }
 
     void pop() override {
-        destroy(back());
+        memory::destroy(back());
         --mStored;
     }
 
     void resize(const Size newSize) override {
         ASSERT(newSize <= TCapacity);
         if (newSize < mStored) {
-            destroy(begin() + newSize, end());
+            memory::destroy(begin() + newSize, end());
         } else {
             for (Size i = mStored; i < newSize; ++i) {
                 mData[i] = Type();
             }
         }
+        mStored = newSize;
     }
 
     StaticByteBufferBase& operator+=(const StaticByteBufferBase& b) override {

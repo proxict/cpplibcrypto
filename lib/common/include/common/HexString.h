@@ -141,6 +141,8 @@ public:
         return true;
     }
 
+    // TODO(ProXicT): operator!=
+
     /**
      * \brief operator+ adding two HexStrings
      * \param rhs HexString instance

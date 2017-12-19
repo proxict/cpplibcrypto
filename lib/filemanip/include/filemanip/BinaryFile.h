@@ -6,6 +6,7 @@
 
 #include "common/Exception.h"
 #include "common/StaticByteBuffer.h"
+#include "common/ByteBuffer.h"
 
 namespace crypto {
 

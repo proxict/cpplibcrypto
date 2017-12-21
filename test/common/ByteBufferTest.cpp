@@ -2,7 +2,7 @@
 
 #include "gtest/gtest.h"
 
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/HexString.h"
 
 namespace crypto {
@@ -58,25 +58,44 @@ TEST(ByteBufferTest, eraseElements) {
     EXPECT_EQ(ByteBuffer({0x01, 0x05}), bb);
 }
 
+TEST(ByteBufferTest, insertElement) {
+    ByteBuffer bb{0x01, 0x02, 0x03};
+    bb.insert(1U, 0x00);
+    EXPECT_EQ(ByteBuffer({0x01, 0x00, 0x02, 0x03}), bb);
+    bb.insert(3U, 0x08);
+    EXPECT_EQ(ByteBuffer({0x01, 0x00, 0x02, 0x08, 0x03}), bb);
+    bb.insert(0U, 0x06);
+    EXPECT_EQ(ByteBuffer({0x06, 0x01, 0x00, 0x02, 0x08, 0x03}), bb);
+    bb.insert(2U, 0x07);
+    EXPECT_EQ(ByteBuffer({0x06, 0x01, 0x07, 0x00, 0x02, 0x08, 0x03}), bb);
+}
+
 TEST(ByteBufferTest, destroy) {
     struct A {
-        int& m;
-        A(int& k) : m(k) { ++m; };
-        virtual ~A() { ++m; }
+        int& mC;
+        int& mD;
+        A(int& c, int& d) : mC(c), mD(d) { ++mC; };
+        ~A() { ++mD; }
+
+        A& operator=(const A& other) {
+            mC = other.mC;
+            mD = other.mD;
+            return *this;
+        }
+
+        A(const A& other) : mC(other.mC), mD(other.mD) {}
     };
 
-    struct B : public A {
-        B(int& k) : A(k) { ++m; };
-        ~B() { ++m; };
-    };
-
-    int k = 0;
+    int c = 0;
+    int d = 0;
     {
-        DynamicBuffer<A*> db;
-        db.emplaceBack(new A(k));
-        EXPECT_EQ(2, k);
+        DynamicBuffer<A> db;
+        db.emplaceBack(c, d);
+        EXPECT_EQ(1, c);
+        EXPECT_EQ(0, d);
     }
-    EXPECT_EQ(4, k);
+    EXPECT_EQ(1, c);
+    EXPECT_EQ(1, d);
 }
 
 } // namespace crypto

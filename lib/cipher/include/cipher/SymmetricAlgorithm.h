@@ -1,7 +1,7 @@
 #ifndef CIPHER_SYMMETRICALGORITHM_H_
 #define CIPHER_SYMMETRICALGORITHM_H_
 
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/Key.h"
 
 namespace crypto {

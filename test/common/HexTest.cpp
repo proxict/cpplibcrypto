@@ -2,7 +2,7 @@
 
 #include "gtest/gtest.h"
 
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/Hex.h"
 
 namespace crypto {

@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 
 #include "cipher/AesCore.h"
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/HexString.h"
 
 namespace crypto {

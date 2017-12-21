@@ -56,7 +56,9 @@ public:
     DynamicBuffer(DynamicBuffer&& other) noexcept { *this = std::move(other); }
 
     ~DynamicBuffer() {
+        clear();
         memory::deallocate(mData);
+        mCapacity = 0;
     }
 
     void setSensitive(const bool sensitive) { mAllocator.setWipe(sensitive); }
@@ -98,7 +100,7 @@ public:
     Size capacity() const { return mCapacity; }
 
     void clear() {
-        destroy(begin(), end());
+        memory::destroy(begin(), end());
         mSize = 0;
     }
 
@@ -207,6 +209,13 @@ public:
             push(*it);
         }
         return end();
+    }
+
+    void insert(const Size position, ConstReference value) {
+        reserve(size() + 1);
+        std::move_backward(begin() + position, end(), end() + 1);
+        mAllocator.construct(begin() + position, value);
+        ++mSize;
     }
 
 private:

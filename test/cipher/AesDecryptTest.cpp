@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 
 #include "cipher/Aes.h"
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/Hex.h"
 #include "common/HexString.h"
 

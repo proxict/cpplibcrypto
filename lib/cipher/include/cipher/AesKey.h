@@ -5,7 +5,7 @@
 
 #include <memory>
 
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/Exception.h"
 #include "common/HexString.h"
 

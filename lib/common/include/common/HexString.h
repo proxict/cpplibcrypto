@@ -7,7 +7,7 @@
 #ifndef COMMON_HEX_STRING_H_
 #define COMMON_HEX_STRING_H_
 
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/StaticByteBuffer.h"
 #include "common/Hex.h"
 

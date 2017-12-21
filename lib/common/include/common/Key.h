@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 
 namespace crypto {
 

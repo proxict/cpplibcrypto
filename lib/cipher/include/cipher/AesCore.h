@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/StaticByteBuffer.h"
 #include "common/common.h"
 

@@ -10,7 +10,7 @@
 #include <sstream>
 #include <string>
 
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 
 namespace crypto {
 

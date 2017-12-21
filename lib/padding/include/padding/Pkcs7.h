@@ -6,7 +6,7 @@
 #include <limits>
 
 #include "padding/Padding.h"
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 
 namespace crypto {
 

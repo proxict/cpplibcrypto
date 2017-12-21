@@ -22,12 +22,7 @@ namespace memory {
     }
 
     template <typename T>
-    inline DisableIf<HasVirtualDestructor<T>::value> destroy(T& object) {
-        object.T::~T();
-    }
-
-    template <typename T>
-    inline EnableIf<HasVirtualDestructor<T>::value> destroy(T& object) {
+    inline void destroy(T& object) {
         object.~T();
     }
 

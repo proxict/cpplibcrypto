@@ -3,7 +3,7 @@
 
 #include "cipher/CbcDecrypt.h"
 #include "cipher/CbcEncrypt.h"
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/Key.h"
 #include "common/BufferView.h"
 

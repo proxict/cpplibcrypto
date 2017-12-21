@@ -3,7 +3,7 @@
 
 #include "cipher/ModeOfOperation.h"
 
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/Exception.h"
 #include "common/InitializationVector.h"
 #include "common/Key.h"

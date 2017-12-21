@@ -8,7 +8,7 @@
 #include "cipher/AesCore.h"
 #include "cipher/AesKey.h"
 #include "cipher/AesIV.h"
-#include "common/ByteBuffer.h"
+#include "common/DynamicBuffer.h"
 #include "common/common.h"
 #include "common/Exception.h"
 

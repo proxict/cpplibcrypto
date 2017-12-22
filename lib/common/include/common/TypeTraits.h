@@ -17,7 +17,15 @@ using IsConst = std::is_const<T>;
 template <typename T>
 using HasVirtualDestructor = std::has_virtual_destructor<T>;
 
+template <bool TTest, typename TTrue, typename TFalse>
+using Conditional = std::conditional_t<TTest, TTrue, TFalse>;
+
+template <typename T>
+using IsReference = std::is_reference<T>;
+
+template <typename T>
+using RemoveReference = std::remove_reference_t<T>;
+
 } // namespace crypto
 
 #endif
-

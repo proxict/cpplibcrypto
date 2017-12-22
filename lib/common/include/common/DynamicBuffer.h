@@ -4,6 +4,7 @@
 #include <limits>
 #include <utility>
 #include <vector>
+#include <type_traits>
 
 #include "common/Exception.h"
 #include "common/LinearIterator.h"
@@ -13,8 +14,11 @@ namespace crypto {
 
 template <typename T>
 class DynamicBuffer {
+    static constexpr bool TIsRef = IsReference<T>::value;
+    using TRaw = RemoveReference<T>;
+
 public:
-    using Type = T;
+    using Type = Conditional<TIsRef, std::reference_wrapper<TRaw>, TRaw>;
     using Reference = Type&;
     using ConstReference = const Type&;
     using RValuetReference = Type&&;
@@ -41,7 +45,7 @@ public:
         }
     }
 
-    DynamicBuffer(std::initializer_list<Byte> list, const bool sensitive = true) : mAllocator(sensitive) {
+    DynamicBuffer(std::initializer_list<Type> list, const bool sensitive = true) : mAllocator(sensitive) {
         insert(begin(), list.begin(), list.end());
     }
 
@@ -111,23 +115,15 @@ public:
         pop();
     }
 
-    // Maybe it's all wrong..
-    void erase(const Size from, const Size count) {
-        ASSERT(from + count <= mSize);
-        for (Size i = 0; i < count; ++i) {
-            mAllocator.destroy(get(from + i));
-            mData[from + i] = std::move(mData[from + i + count]);
-        }
-        mSize -= count;
+    void erase(Iterator first, Iterator last) {
+        ASSERT(first >= begin() && last <= end());
+        memory::destroy(first, last);
+        std::move(last, end(), first);
+        mSize -= std::distance(first, last);
     }
 
-    void allocateMemory(const Size size) {
-        Pointer newData = mAllocator.allocate(size);
-        std::move(begin(), end(), newData);
-        if (mData) {
-            mAllocator.destroy(mData);
-        }
-        mData = newData;
+    void erase(const Size from, const Size count) {
+        erase(begin() + from, begin() + from + count);
     }
 
     void reserve(const Size size) {
@@ -161,7 +157,7 @@ public:
         return *this;
     }
 
-    DynamicBuffer& operator+=(const Byte b) {
+    DynamicBuffer& operator+=(ConstReference b) {
         push(b);
         return *this;
     }
@@ -173,14 +169,14 @@ public:
         return sbb;
     }
 
-    const DynamicBuffer operator+(const Byte rhs) const {
+    const DynamicBuffer operator+(ConstReference rhs) const {
         DynamicBuffer sbb;
         sbb += *this;
         sbb += rhs;
         return sbb;
     }
 
-    friend const DynamicBuffer operator+(const Byte lhs, const DynamicBuffer& rhs) {
+    friend const DynamicBuffer operator+(ConstReference lhs, const DynamicBuffer& rhs) {
         DynamicBuffer bb;
         bb += lhs;
         bb += rhs;
@@ -217,6 +213,17 @@ public:
         mAllocator.construct(begin() + position, value);
         ++mSize;
     }
+
+private:
+    void allocateMemory(const Size size) {
+        Pointer newData = mAllocator.allocate(size);
+        std::move(begin(), end(), newData);
+        if (mData) {
+            mAllocator.destroy(mData);
+        }
+        mData = newData;
+    }
+
 
 private:
     Pointer mData = nullptr;

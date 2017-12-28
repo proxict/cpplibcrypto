@@ -12,13 +12,21 @@ namespace crypto {
 template <class T>
 class SecureAllocator {
 public:
-    using value_type = T;
-    using pointer = value_type*;
-    using const_pointer = const value_type*;
-    using reference = value_type&;
-    using const_reference = const value_type&;
-    using size_type = Size;
-    using difference_type = std::ptrdiff_t;
+    using ValueType = T;
+    using Reference = ValueType&;
+    using ConstReference = const ValueType&;
+    using Pointer = ValueType*;
+    using ConstPointer = const ValueType*;
+    using SizeType = Size;
+    using DifferenceType = std::ptrdiff_t;
+
+    using value_type = ValueType;
+    using reference = Reference;
+    using const_reference = ConstReference;
+    using pointer = Pointer;
+    using const_pointer = ConstPointer;
+    using size_type = SizeType;
+    using difference_type = DifferenceType;
 
     template <class TargetT>
     class rebind {
@@ -44,40 +52,40 @@ public:
     template <class T2>
     SecureAllocator(const SecureAllocator<T2>& other) : mWipe(other.mWipe) {}
 
-    pointer address(reference ref) { return &ref; }
+    Pointer address(Reference ref) { return &ref; }
 
-    const_pointer address(const_reference ref) { return &ref; }
+    ConstPointer address(ConstReference ref) { return &ref; }
 
-    size_type max_size() const { return std::numeric_limits<size_type>::max() / sizeof(value_type); }
+    SizeType max_size() const { return std::numeric_limits<SizeType>::max() / sizeof(ValueType); }
 
-    pointer allocate(const size_type count, const void* = 0) { return memory::allocate<value_type>(count); }
+    SizeType maxSize() const { return max_size(); };
 
-    void deallocate(pointer ptr, const size_type) { memory::deallocate(ptr); }
+    Pointer allocate(const SizeType count, const void* = 0) { return memory::allocate<ValueType>(count); }
 
-    // void construct(pointer ptr, const value_type& value) { memory::construct(ptr, value); }
+    void deallocate(Pointer ptr, const SizeType) { memory::deallocate(ptr); }
 
     template <typename... TArgs>
-    void construct(pointer ptr, TArgs&&... value) {
-        memory::construct<value_type>(ptr, std::forward<TArgs>(value)...);
+    void construct(Pointer ptr, TArgs&&... value) {
+        memory::construct<ValueType>(ptr, std::forward<TArgs>(value)...);
     }
 
-    void destroy(pointer ptr) {
+    void destroy(Pointer ptr) {
         if (mWipe) {
             wipe(ptr);
         }
         memory::destroy(*ptr);
     }
 
-    void destroy(reference ref) {
+    void destroy(Reference ref) {
         if (mWipe) {
             wipe(&ref);
         }
         memory::destroy(ref);
     }
 
-    void wipe(pointer ptr) {
+    void wipe(Pointer ptr) {
         Byte* bytePtr = reinterpret_cast<Byte*>(ptr);
-        for (Size i = 0; i < sizeof(value_type); ++i) {
+        for (Size i = 0; i < sizeof(ValueType); ++i) {
             bytePtr[i] = 0;
         }
     }

@@ -26,6 +26,12 @@ using IsReference = std::is_reference<T>;
 template <typename T>
 using RemoveReference = std::remove_reference_t<T>;
 
+template <typename T>
+using ReferenceWrapper = std::reference_wrapper<T>;
+
+template <typename T>
+using ReferenceStorage = Conditional<IsReference<T>::value, ReferenceWrapper<RemoveReference<T>>, RemoveReference<T>>;
+
 } // namespace crypto
 
 #endif

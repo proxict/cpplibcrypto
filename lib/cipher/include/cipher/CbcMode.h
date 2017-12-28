@@ -13,6 +13,7 @@ using ByteBufferView = BufferView<Byte>;
 
 template <typename CipherT>
 class CbcMode {
+    using StaticByteBufferBase = StaticBufferBase<Byte>;
 public:
     using CipherType = CipherT;
 

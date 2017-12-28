@@ -3,12 +3,13 @@
 
 #include "cipher/SymmetricAlgorithm.h"
 
-#include "common/StaticByteBuffer.h"
+#include "common/StaticBuffer.h"
 #include "common/Key.h"
 
 namespace crypto {
 
 class BlockCipher : public SymmetricAlgorithm {
+    using StaticByteBufferBase = StaticBufferBase<Byte>;
 public:
     BlockCipher() = default;
 

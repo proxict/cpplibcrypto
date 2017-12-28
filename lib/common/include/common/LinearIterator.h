@@ -12,18 +12,15 @@ namespace crypto {
 template <class T>
 class LinearIterator {
     using Type = T;
-    using TypePtr = Type*;
+    using Pointer = Type*;
 
 protected:
-    TypePtr mPtr;
+    Pointer mPtr;
 
 public:
-    template <class T2>
-    LinearIterator(T2* array, const Size ptr) : mPtr(array->data() + ptr) {}
+    LinearIterator(Pointer ptr, const Size offset) : mPtr(ptr + offset) {}
 
-    LinearIterator(TypePtr ptr, const Size offset) : mPtr(ptr + offset) {}
-
-    explicit LinearIterator(TypePtr ptr) : mPtr(ptr) {}
+    explicit LinearIterator(Pointer ptr) : mPtr(ptr) {}
 
     LinearIterator() = default;
 
@@ -110,11 +107,11 @@ public:
         return res;
     }
 
-    operator const TypePtr() const {
+    operator const Pointer() const {
         return mPtr;
     }
 
-    operator TypePtr() {
+    operator Pointer() {
         return mPtr;
     }
 

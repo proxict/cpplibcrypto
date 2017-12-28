@@ -27,6 +27,29 @@ TEST(DynamicBufferTest, addingByte) {
     EXPECT_EQ(0xac, bb[1]);
 }
 
+TEST(DynamicBufferTest, resize) {
+    ByteBuffer bb;
+    EXPECT_EQ(0U, bb.size());
+
+    bb.resize(7U);
+    EXPECT_EQ(7U, bb.size());
+    for (const Byte b : bb) {
+        EXPECT_EQ(ByteBuffer::ValueType(), b);
+    }
+
+    bb.resize(5U);
+    EXPECT_EQ(5U, bb.size());
+    for (const Byte b : bb) {
+        EXPECT_EQ(ByteBuffer::ValueType(), b);
+    }
+
+    bb.resize(12U);
+    EXPECT_EQ(12U, bb.size());
+    for (const Byte b : bb) {
+        EXPECT_EQ(ByteBuffer::ValueType(), b);
+    }
+}
+
 TEST(DynamicBufferTest, chainingBuffers) {
     ByteBuffer bb1;
     bb1 += 0xab;

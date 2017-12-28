@@ -1,12 +1,14 @@
 #ifndef PADDING_PADDING_H_
 #define PADDING_PADDING_H_
 
-#include "common/StaticByteBuffer.h"
+#include "common/StaticBuffer.h"
 
 namespace crypto {
 
 class Padding {
 public:
+    using StaticByteBufferBase = StaticBufferBase<Byte>;
+
     virtual void pad(StaticByteBufferBase&, const Size) const = 0;
 
     virtual void unpad(StaticByteBufferBase&) const = 0;

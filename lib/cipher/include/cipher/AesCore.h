@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include "common/DynamicBuffer.h"
-#include "common/StaticByteBuffer.h"
+#include "common/StaticBuffer.h"
 #include "common/common.h"
 
 namespace crypto {
@@ -181,6 +181,7 @@ static constexpr Byte rcon[256] = {
 };
 
 class AesCore {
+    using StaticByteBufferBase = StaticBufferBase<Byte>;
 public:
     static void subBytes(StaticByteBufferBase& buffer) {
         for (Byte i = 0; i < buffer.size(); ++i) {
@@ -240,7 +241,7 @@ public:
 
     static void mixColumns(StaticByteBufferBase& buffer) {
         ASSERT(buffer.size() == 16);
-        StaticByteBuffer<16> tmp;
+        StaticBuffer<Byte, 16> tmp;
         for (Byte i = 0; i < 4; ++i) {
             tmp += static_cast<Byte>(mul2[buffer[4 * i]] ^ mul3[buffer[4 * i + 1]] ^ buffer[4 * i + 2] ^ buffer[4 * i + 3]);
             tmp += static_cast<Byte>(buffer[4 * i] ^ mul2[buffer[4 * i + 1]] ^ mul3[buffer[4 * i + 2]] ^ buffer[4 * i + 3]);
@@ -254,7 +255,7 @@ public:
 
     static void mixColumnsInv(StaticByteBufferBase& buffer) {
         ASSERT(buffer.size() == 16);
-        StaticByteBuffer<16> tmp;
+        StaticBuffer<Byte, 16> tmp;
         for (Byte i = 0; i < 4; ++i) {
             tmp += static_cast<Byte>(mul14[buffer[4 * i]] ^ mul11[buffer[4 * i + 1]] ^ mul13[buffer[4 * i + 2]] ^ mul9[buffer[4 * i + 3]]);
             tmp += static_cast<Byte>(mul9[buffer[4 * i]] ^ mul14[buffer[4 * i + 1]] ^ mul11[buffer[4 * i + 2]] ^ mul13[buffer[4 * i + 3]]);
@@ -281,7 +282,7 @@ public:
         buffer[buffer.size() - 1] = b;
     }
 
-    static void keyScheduleCore(StaticByteBuffer<4>& buffer, const Byte i) {
+    static void keyScheduleCore(StaticBuffer<Byte, 4>& buffer, const Byte i) {
         rotateLeft(buffer);
         subBytes(buffer);
         buffer[0] ^= rcon[i]; // rcon

@@ -12,6 +12,7 @@
 namespace crypto {
 
 class CbcEncrypt : public ModeOfOperation {
+    using StaticByteBufferBase = StaticBufferBase<Byte>;
 public:
     CbcEncrypt(BlockCipher& cipher, const Key& key, InitializationVector& IV) : ModeOfOperation(cipher, key), m_IV(IV) {
         if (IV.size() != cipher.getBlockSize()) {
@@ -28,7 +29,7 @@ public:
 
         const Size numberOfBlocks = in.size() / m_blockCipher.getBlockSize();
         for (Size block = 0; block < numberOfBlocks; ++block) {
-            StaticByteBuffer<16> buffer;
+            StaticBuffer<Byte, 16> buffer;
             for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 buffer.push(in[block * m_blockCipher.getBlockSize() + i] ^ m_IV[i]);
             }
@@ -45,7 +46,7 @@ public:
 
     void doFinal(const ByteBufferView& in, StaticByteBufferBase& out, const Padding& padder) override {
         ASSERT(in.size() < m_blockCipher.getBlockSize());
-        StaticByteBuffer<16> buffer;
+        StaticBuffer<Byte, 16> buffer;
         buffer.insert(in.begin(), in.end());
         padder.pad(buffer, m_blockCipher.getBlockSize());
         ASSERT(buffer.size() == m_blockCipher.getBlockSize());

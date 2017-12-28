@@ -1,33 +1,25 @@
 #ifndef COMMON_BYTEBUFFER_H_
 #define COMMON_BYTEBUFFER_H_
 
-#include <limits>
-#include <utility>
-#include <vector>
-#include <type_traits>
-
 #include "common/Exception.h"
 #include "common/LinearIterator.h"
 #include "common/SecureAllocator.h"
 
 namespace crypto {
 
-template <typename T>
+template <typename T, typename TAllocator = SecureAllocator<ReferenceStorage<T>>>
 class DynamicBuffer {
-    static constexpr bool TIsRef = IsReference<T>::value;
-    using TRaw = RemoveReference<T>;
-
 public:
-    using Type = Conditional<TIsRef, std::reference_wrapper<TRaw>, TRaw>;
-    using Reference = Type&;
-    using ConstReference = const Type&;
-    using RValuetReference = Type&&;
-    using Pointer = Type*;
-    using ConstPointer = const Type*;
-    using Iterator = LinearIterator<Type>;
-    using ConstIterator = LinearIterator<const Type>;
+    using ValueType = ReferenceStorage<T>;
+    using Reference = ValueType&;
+    using ConstReference = const ValueType&;
+    using RValuetReference = ValueType&&;
+    using Pointer = ValueType*;
+    using ConstPointer = const ValueType*;
+    using Iterator = LinearIterator<ValueType>;
+    using ConstIterator = LinearIterator<const ValueType>;
 
-    using value_type = Type;
+    using value_type = ValueType;
     using size_type = Size;
     using reference = Reference;
     using const_reference = ConstReference;
@@ -41,11 +33,11 @@ public:
     explicit DynamicBuffer(const Size size, const bool sensitive = true) : mAllocator(sensitive) {
         reserve(size);
         for (Size i = 0; i < size; ++i) {
-            push(Type());
+            push(ValueType());
         }
     }
 
-    DynamicBuffer(std::initializer_list<Type> list, const bool sensitive = true) : mAllocator(sensitive) {
+    DynamicBuffer(std::initializer_list<ValueType> list, const bool sensitive = true) : mAllocator(sensitive) {
         insert(begin(), list.begin(), list.end());
     }
 
@@ -69,33 +61,33 @@ public:
 
     bool isSensitive() const { return mAllocator.isWipe(); }
 
-    ConstReference get(const Size index) const { return mData[index]; }
+    ConstReference at(const Size index) const { return mData[index]; }
 
-    Reference get(const Size index) { return mData[index]; }
+    Reference at(const Size index) { return mData[index]; }
 
-    ConstReference operator[](const Size index) const { return get(index); }
+    ConstReference operator[](const Size index) const { return at(index); }
 
-    Reference operator[](const Size index) { return get(index); }
+    Reference operator[](const Size index) { return at(index); }
 
-    ConstReference back() const { return get(size() - 1); }
+    ConstReference back() const { return at(size() - 1); }
 
-    Reference back() { return get(size() - 1); }
+    Reference back() { return at(size() - 1); }
 
     ConstPointer data() const { return mData; }
 
     Pointer data() { return mData; }
 
-    Iterator begin() { return Iterator(this, 0); }
+    Iterator begin() { return Iterator(data()); }
 
-    Iterator end() { return Iterator(this, size()); }
+    Iterator end() { return Iterator(data(), size()); }
 
     ConstIterator begin() const { return cbegin(); }
 
     ConstIterator end() const { return cend(); }
 
-    ConstIterator cbegin() const { return ConstIterator(this, 0); }
+    ConstIterator cbegin() const { return ConstIterator(data()); }
 
-    ConstIterator cend() const { return ConstIterator(this, size()); }
+    ConstIterator cend() const { return ConstIterator(data(), size()); }
 
     bool empty() const { return mSize == 0; }
 
@@ -122,9 +114,7 @@ public:
         mSize -= std::distance(first, last);
     }
 
-    void erase(const Size from, const Size count) {
-        erase(begin() + from, begin() + from + count);
-    }
+    void erase(const Size from, const Size count) { erase(begin() + from, begin() + from + count); }
 
     void reserve(const Size size) {
         if (capacity() < size) {
@@ -132,6 +122,20 @@ public:
             allocateMemory(mCapacity);
         }
         ASSERT(capacity() >= size);
+    }
+
+    void resize(const Size size) {
+        if (size == this->size()) {
+            return;
+        } else if (size < this->size()) {
+            memory::destroy(begin() + size, end());
+        } else {
+            reserve(size);
+            for (Size i = 0; i < size - this->size(); ++i) {
+                mAllocator.construct(mData + mSize + i, ValueType());
+            }
+        }
+        mSize = size;
     }
 
     template <typename... TArgs>
@@ -143,9 +147,7 @@ public:
 
     void push(ConstReference value) { emplaceBack(value); }
 
-    void push(RValuetReference value = Type()) {
-        emplaceBack(std::move(value));
-    }
+    void push(RValuetReference value = ValueType()) { emplaceBack(std::move(value)); }
 
     void pop() {
         mAllocator.destroy(back());
@@ -224,12 +226,11 @@ private:
         mData = newData;
     }
 
-
 private:
     Pointer mData = nullptr;
     Size mSize = 0;
     Size mCapacity = 0;
-    SecureAllocator<Type> mAllocator;
+    TAllocator mAllocator;
 };
 
 using ByteBuffer = DynamicBuffer<Byte>;

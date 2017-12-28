@@ -12,7 +12,7 @@ namespace crypto {
 TEST(Aes128EncryptTest, encrypt1) {
     Aes aes(AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("6bc1bee22e409f96e93d7e117393172a");
 
     aes.encryptBlock(buffer);
@@ -22,7 +22,7 @@ TEST(Aes128EncryptTest, encrypt1) {
 TEST(Aes128EncryptTest, encrypt2) {
     Aes aes(AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("ae2d8a571e03ac9c9eb76fac45af8e51");
 
     aes.encryptBlock(buffer);
@@ -32,7 +32,7 @@ TEST(Aes128EncryptTest, encrypt2) {
 TEST(Aes128EncryptTest, encrypt3) {
     Aes aes(AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("30c81c46a35ce411e5fbc1191a0a52ef");
 
     aes.encryptBlock(buffer);
@@ -42,7 +42,7 @@ TEST(Aes128EncryptTest, encrypt3) {
 TEST(Aes128EncryptTest, encrypt4) {
     Aes aes(AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("f69f2445df4f9b17ad2b417be66c3710");
 
     aes.encryptBlock(buffer);
@@ -52,7 +52,7 @@ TEST(Aes128EncryptTest, encrypt4) {
 TEST(Aes192EncryptTest, encrypt1) {
     Aes aes(AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("6bc1bee22e409f96e93d7e117393172a");
 
     aes.encryptBlock(buffer);
@@ -62,7 +62,7 @@ TEST(Aes192EncryptTest, encrypt1) {
 TEST(Aes192EncryptTest, encrypt2) {
     Aes aes(AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("ae2d8a571e03ac9c9eb76fac45af8e51");
 
     aes.encryptBlock(buffer);
@@ -72,7 +72,7 @@ TEST(Aes192EncryptTest, encrypt2) {
 TEST(Aes192EncryptTest, encrypt3) {
     Aes aes(AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("30c81c46a35ce411e5fbc1191a0a52ef");
 
     aes.encryptBlock(buffer);
@@ -82,7 +82,7 @@ TEST(Aes192EncryptTest, encrypt3) {
 TEST(Aes192EncryptTest, encrypt4) {
     Aes aes(AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("f69f2445df4f9b17ad2b417be66c3710");
 
     aes.encryptBlock(buffer);
@@ -92,7 +92,7 @@ TEST(Aes192EncryptTest, encrypt4) {
 TEST(Aes256EncryptTest, encrypt1) {
     Aes aes(AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("6bc1bee22e409f96e93d7e117393172a");
 
     aes.encryptBlock(buffer);
@@ -102,7 +102,7 @@ TEST(Aes256EncryptTest, encrypt1) {
 TEST(Aes256EncryptTest, encrypt2) {
     Aes aes(AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("ae2d8a571e03ac9c9eb76fac45af8e51");
 
     aes.encryptBlock(buffer);
@@ -112,7 +112,7 @@ TEST(Aes256EncryptTest, encrypt2) {
 TEST(Aes256EncryptTest, encrypt3) {
     Aes aes(AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("30c81c46a35ce411e5fbc1191a0a52ef");
 
     aes.encryptBlock(buffer);
@@ -122,7 +122,7 @@ TEST(Aes256EncryptTest, encrypt3) {
 TEST(Aes256EncryptTest, encrypt4) {
     Aes aes(AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")));
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("f69f2445df4f9b17ad2b417be66c3710");
 
     aes.encryptBlock(buffer);

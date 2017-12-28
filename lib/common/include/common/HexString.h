@@ -8,7 +8,7 @@
 #define COMMON_HEX_STRING_H_
 
 #include "common/DynamicBuffer.h"
-#include "common/StaticByteBuffer.h"
+#include "common/StaticBuffer.h"
 #include "common/Hex.h"
 
 namespace crypto {
@@ -17,6 +17,7 @@ namespace crypto {
  * \brief class reprezenation of base16 string
  */
 class HexString {
+    using StaticByteBufferBase = StaticBufferBase<Byte>;
 public:
     /**
      * \brief HexString constructor

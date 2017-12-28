@@ -9,7 +9,7 @@
 namespace crypto {
 
 TEST(AesCoreTest, subBytes) {
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("000102030405060708090A0B0C0D0E0F");
     AesCore::subBytes(buffer);
     AesCore::subBytesInv(buffer);
@@ -31,7 +31,7 @@ TEST(AesCoreTest, shiftRows) {
       0F 03 07 0B
     */
 
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("000102030405060708090A0B0C0D0E0F");
     AesCore::shiftRows(buffer);
     EXPECT_EQ(HexString("00050A0F04090E03080D02070C01060B"), buffer);
@@ -40,7 +40,7 @@ TEST(AesCoreTest, shiftRows) {
 }
 
 TEST(AesCoreTest, mixColumns) {
-    StaticByteBuffer<16> buffer;
+    StaticBuffer<Byte, 16> buffer;
     buffer += HexString("000102030405060708090A0B0C0D0E0F");
     AesCore::mixColumns(buffer);
     EXPECT_EQ(HexString("02070005060304010a0f080d0e0b0c09"), buffer);

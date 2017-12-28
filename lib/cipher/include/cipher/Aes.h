@@ -15,6 +15,7 @@
 namespace crypto {
 
 class Aes : public BlockCipherSized<16> {
+    using StaticByteBufferBase = StaticBufferBase<Byte>;
 public:
     static constexpr Size Aes128 = 16;
     static constexpr Size Aes192 = 24;
@@ -122,7 +123,7 @@ private:
 
         Byte rconIteration = 0;
         while (m_roundKeys.size() < getExpandedKeySize()) {
-            StaticByteBuffer<4> word32;
+            StaticBuffer<Byte, 4> word32;
             for (Byte i = 0; i < 4; ++i) {
                 word32.push(m_roundKeys[i + m_roundKeys.size() - 4]);
             }

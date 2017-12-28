@@ -11,17 +11,18 @@
 
 namespace crypto {
 
-class StaticByteBufferBase {
+template <typename T>
+class StaticBufferBase {
 public:
-    using Type = Byte;
-    using Reference = Type&;
-    using ConstReference = const Type&;
-    using Pointer = Type*;
-    using ConstPointer = const Type*;
-    using Iterator = LinearIterator<Type>;
-    using ConstIterator = LinearIterator<const Type>;
+    using ValueType = T;
+    using Reference = ValueType&;
+    using ConstReference = const ValueType&;
+    using Pointer = ValueType*;
+    using ConstPointer = const ValueType*;
+    using Iterator = LinearIterator<ValueType>;
+    using ConstIterator = LinearIterator<const ValueType>;
 
-    using value_type = Type;
+    using value_type = ValueType;
     using size_type = Size;
     using reference = Reference;
     using const_reference = ConstReference;
@@ -30,8 +31,8 @@ public:
     using iterator = Iterator;
     using const_iterator = ConstIterator;
 
-    StaticByteBufferBase() = default;
-    virtual ~StaticByteBufferBase() {}
+    StaticBufferBase() = default;
+    virtual ~StaticBufferBase() {}
 
     virtual ConstReference get(const Size index) const = 0;
 
@@ -75,38 +76,50 @@ public:
 
     virtual void push(ConstReference value) = 0;
 
-    virtual void insert(Pointer first, Pointer last) = 0;
-
-    virtual void insert(const Type* first, const Type* last) = 0;
+    virtual void insert(ConstPointer first, ConstPointer last) = 0;
 
     virtual void pop() = 0;
 
     virtual void resize(const Size newSize) = 0;
 
-    virtual StaticByteBufferBase& operator+=(const StaticByteBufferBase& b) = 0;
+    virtual StaticBufferBase& operator+=(const StaticBufferBase& b) = 0;
 
-    virtual StaticByteBufferBase& operator+=(const Byte b) = 0;
+    virtual StaticBufferBase& operator+=(const Byte b) = 0;
 };
 
-template <Size TCapacity>
-class StaticByteBuffer : public StaticByteBufferBase {
-protected:
-    Type mData[TCapacity];
-    Size mStored;
-
+template <typename T, Size TCapacity>
+class StaticBuffer : public StaticBufferBase<T> {
 public:
-    StaticByteBuffer() : mStored(0) {}
+    using Base = StaticBufferBase<T>;
+    using ValueType = T;
+    using Reference = ValueType&;
+    using ConstReference = const ValueType&;
+    using Pointer = ValueType*;
+    using ConstPointer = const ValueType*;
+    using Iterator = LinearIterator<ValueType>;
+    using ConstIterator = LinearIterator<const ValueType>;
 
-    explicit StaticByteBuffer(const Size count) : StaticByteBuffer() {
+    using value_type = ValueType;
+    using size_type = Size;
+    using reference = Reference;
+    using const_reference = ConstReference;
+    using pointer = Pointer;
+    using const_pointer = ConstPointer;
+    using iterator = Iterator;
+    using const_iterator = ConstIterator;
+
+    StaticBuffer() : mStored(0) {}
+
+    explicit StaticBuffer(const Size count) : StaticBuffer() {
         ASSERT(count <= TCapacity);
         for (Size i = 0; i < count; ++i) {
-            mData[i] = Type();
+            mData[i] = ValueType();
         }
 
         mStored = count;
     }
 
-    explicit StaticByteBuffer(const Size count, ConstReference value) : StaticByteBuffer() {
+    explicit StaticBuffer(const Size count, ConstReference value) : StaticBuffer() {
         ASSERT(count <= TCapacity);
         for (Size i = 0; i < count; ++i) {
             mData[i] = value;
@@ -116,29 +129,29 @@ public:
     }
 
     template <typename TIterator>
-    StaticByteBuffer(TIterator first, TIterator last) : StaticByteBuffer() {
+    StaticBuffer(TIterator first, TIterator last) : StaticBuffer() {
         ASSERT(Size(std::distance(first, last)) <= TCapacity);
         for (auto it = first; it != last; ++it) {
             push(*it);
         }
     }
 
-    StaticByteBuffer(StaticByteBuffer&& other) : StaticByteBuffer() {
+    StaticBuffer(StaticBuffer&& other) : StaticBuffer() {
         for (auto& it : other) {
             push(std::move(it));
         }
     }
 
-    StaticByteBuffer& operator=(StaticByteBuffer&& other) {
+    StaticBuffer& operator=(StaticBuffer&& other) {
         for (auto& it : other) {
             push(std::move(it));
         }
         return *this;
     }
 
-    StaticByteBuffer(std::initializer_list<Type> list) : StaticByteBuffer(list.begin(), list.end()) {}
+    StaticBuffer(std::initializer_list<ValueType> list) : StaticBuffer(list.begin(), list.end()) {}
 
-    ~StaticByteBuffer() { clear(); }
+    ~StaticBuffer() { clear(); }
 
     ConstReference get(const Size index) const override { return mData[index]; }
 
@@ -156,17 +169,17 @@ public:
 
     Pointer data() override { return mData; }
 
-    Iterator begin() override { return Iterator(this, 0); }
+    Iterator begin() override { return Iterator(data()); }
 
-    Iterator end() override { return Iterator(this, size()); }
+    Iterator end() override { return Iterator(data(), size()); }
 
     ConstIterator begin() const override { return cbegin(); }
 
     ConstIterator end() const override { return cend(); }
 
-    ConstIterator cbegin() const override { return ConstIterator(this, 0); }
+    ConstIterator cbegin() const override { return ConstIterator(data()); }
 
-    ConstIterator cend() const override { return ConstIterator(this, size()); }
+    ConstIterator cend() const override { return ConstIterator(data(), size()); }
 
     bool empty() const override { return mStored == 0; }
 
@@ -204,14 +217,7 @@ public:
         ++mStored;
     }
 
-    void insert(Pointer first, Pointer last) override {
-        ASSERT(Size(std::distance(first, last)) <= TCapacity);
-        for (auto it = first; it != last; ++it) {
-            push(*it);
-        }
-    }
-
-    void insert(const Type* first, const Type* last) override {
+    void insert(ConstPointer first, ConstPointer last) override {
         ASSERT(Size(std::distance(first, last)) <= TCapacity);
         for (auto it = first; it != last; ++it) {
             push(*it);
@@ -229,40 +235,44 @@ public:
             memory::destroy(begin() + newSize, end());
         } else {
             for (Size i = mStored; i < newSize; ++i) {
-                mData[i] = Type();
+                mData[i] = ValueType();
             }
         }
         mStored = newSize;
     }
 
-    StaticByteBufferBase& operator+=(const StaticByteBufferBase& b) override {
+    Base& operator+=(const Base& b) override {
         insert(b.begin(), b.end());
         return *this;
     }
 
-    StaticByteBufferBase& operator+=(const Byte b) override {
+    Base& operator+=(const Byte b) override {
         push(b);
         return *this;
     }
 
-    const StaticByteBuffer operator+(const StaticByteBufferBase& rhs) const {
-        StaticByteBuffer sbb;
+    const StaticBuffer operator+(const Base& rhs) const {
+        StaticBuffer sbb;
         sbb += *this;
         sbb += rhs;
         return sbb;
     }
 
-    const StaticByteBuffer operator+(const Byte rhs) const {
-        StaticByteBuffer sbb;
+    const StaticBuffer operator+(const Byte rhs) const {
+        StaticBuffer sbb;
         sbb += *this;
         sbb += rhs;
         return sbb;
     }
+
+private:
+    ValueType mData[TCapacity];
+    Size mStored;
 };
 
-template <Size TCapacity>
-const StaticByteBuffer<TCapacity> operator+(const Byte lhs, const StaticByteBufferBase& rhs) {
-    StaticByteBuffer<TCapacity> sbb;
+template <typename T, Size TCapacity>
+const StaticBuffer<T, TCapacity> operator+(const Byte lhs, const StaticBufferBase<T>& rhs) {
+    StaticBuffer<T, TCapacity> sbb;
     sbb += lhs;
     sbb += rhs;
     return sbb;

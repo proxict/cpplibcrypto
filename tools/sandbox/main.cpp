@@ -13,7 +13,7 @@
 #include "cipher/CbcMode.h"
 #include "common/Exception.h"
 #include "common/HexString.h"
-#include "common/StaticByteBuffer.h"
+#include "common/StaticBuffer.h"
 #include "filemanip/BinaryFile.h"
 #include "filemanip/utils.h"
 #include "padding/Pkcs7.h"
@@ -22,8 +22,8 @@ template <typename Encryptor>
 void encFile(Encryptor& encryptor, const std::string& inputFileName, const std::string& outputFileName) {
     crypto::BinaryFile input(inputFileName, crypto::BinaryFile::Mode::Read);
     crypto::BinaryFile output(outputFileName, crypto::BinaryFile::Mode::Write);
-    crypto::StaticByteBuffer<32> plainBuffer;
-    crypto::StaticByteBuffer<32> cipherBuffer;
+    crypto::StaticBuffer<crypto::Byte, 32> plainBuffer;
+    crypto::StaticBuffer<crypto::Byte, 32> cipherBuffer;
 
     // Read max of plainBuffer.capacity()
     while (input.read(plainBuffer)) {
@@ -47,8 +47,8 @@ template <typename Decryptor>
 void decFile(Decryptor& decryptor, const std::string& inputFileName, const std::string& outputFileName) {
     crypto::BinaryFile input(inputFileName, crypto::BinaryFile::Mode::Read);
     crypto::BinaryFile output(outputFileName, crypto::BinaryFile::Mode::Write);
-    crypto::StaticByteBuffer<4096> cipherBuffer;
-    crypto::StaticByteBuffer<4096> plainBuffer;
+    crypto::StaticBuffer<crypto::Byte, 4096> cipherBuffer;
+    crypto::StaticBuffer<crypto::Byte, 4096> plainBuffer;
 
     while (input.read(cipherBuffer)) {
         crypto::Size decrypted = decryptor.update(cipherBuffer, plainBuffer);

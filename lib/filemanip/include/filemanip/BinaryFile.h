@@ -5,12 +5,13 @@
 #include <string>
 
 #include "common/Exception.h"
-#include "common/StaticByteBuffer.h"
+#include "common/StaticBuffer.h"
 #include "common/DynamicBuffer.h"
 
 namespace crypto {
 
 class BinaryFile {
+    using StaticByteBufferBase = StaticBufferBase<Byte>;
 public:
     enum class Mode { Read = 1, Write };
     BinaryFile(const std::string& filename, const Mode mode) :

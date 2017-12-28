@@ -25,7 +25,7 @@ public:
         const Size numberOfBlocks = in.size() / m_blockCipher.getBlockSize() - 1;
 
         for (Size block = 0; block < numberOfBlocks; ++block) {
-            StaticByteBuffer<16> buffer;
+            StaticBuffer<Byte, 16> buffer;
             for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 buffer.push(in[block * m_blockCipher.getBlockSize() + i]);
             }
@@ -43,7 +43,7 @@ public:
 
     void doFinal(const ByteBufferView& in, StaticByteBufferBase& out, const Padding& padder) override {
         ASSERT(in.size() == m_blockCipher.getBlockSize());
-        StaticByteBuffer<16> buffer;
+        StaticBuffer<Byte, 16> buffer;
         for (const Byte b : in) {
             buffer.push(b);
         }

@@ -21,14 +21,16 @@ public:
         }
     }
 
-    bool read(StaticByteBufferBase& buffer) {
+    Size read(StaticByteBufferBase& output) {
         ASSERT(m_mode == Mode::Read);
-        ByteBuffer temp(buffer.capacity() - buffer.size());
+        ByteBuffer temp(output.capacity() - output.size());
         m_stream.read(reinterpret_cast<char*>(temp.data()), temp.size());
-        for (std::streamsize i = 0; i < m_stream.gcount(); ++i) {
-            buffer.push(temp[i]);
-        }
-        return m_stream.gcount() > 0;
+        const Size bytesRead = static_cast<Size>(m_stream.gcount());
+
+        output.reserve(bytesRead);
+        output.insert(output.end(), temp.begin(), temp.begin() + bytesRead);
+
+        return bytesRead;
     }
 
     bool write(const StaticByteBufferBase& buffer) {

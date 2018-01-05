@@ -250,7 +250,7 @@ public:
         }
 
         buffer.clear();
-        buffer.insert(tmp.begin(), tmp.end());
+        buffer.insert(buffer.end(), tmp.begin(), tmp.end());
     }
 
     static void mixColumnsInv(StaticByteBufferBase& buffer) {
@@ -264,7 +264,7 @@ public:
         }
 
         buffer.clear();
-        buffer.insert(tmp.begin(), tmp.end());
+        buffer.insert(buffer.end(), tmp.begin(), tmp.end());
     }
 
     static void addRoundKey(StaticByteBufferBase& buffer, const ByteBuffer& roundKeys, const Byte keyIndex) {

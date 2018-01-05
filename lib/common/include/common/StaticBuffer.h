@@ -34,9 +34,9 @@ public:
     StaticBufferBase() = default;
     virtual ~StaticBufferBase() {}
 
-    virtual ConstReference get(const Size index) const = 0;
+    virtual ConstReference at(const Size index) const = 0;
 
-    virtual Reference get(const Size index) = 0;
+    virtual Reference at(const Size index) = 0;
 
     virtual ConstReference operator[](const Size index) const = 0;
 
@@ -74,13 +74,19 @@ public:
 
     virtual void erase(const Size index) = 0;
 
+    virtual void erase(const Iterator first, const Iterator last) = 0;
+
+    virtual void erase(const Size from, const Size count) = 0;
+
     virtual void push(ConstReference value) = 0;
 
-    virtual void insert(ConstPointer first, ConstPointer last) = 0;
+    virtual iterator insert(const Iterator position, ConstPointer first, ConstPointer last) = 0;
 
     virtual void pop() = 0;
 
     virtual void resize(const Size newSize) = 0;
+
+    virtual void reserve(const Size newCapacity) = 0;
 
     virtual StaticBufferBase& operator+=(const StaticBufferBase& b) = 0;
 
@@ -153,17 +159,17 @@ public:
 
     ~StaticBuffer() { clear(); }
 
-    ConstReference get(const Size index) const override { return mData[index]; }
+    ConstReference at(const Size index) const override { return mData[index]; }
 
-    Reference get(const Size index) override { return mData[index]; }
+    Reference at(const Size index) override { return mData[index]; }
 
-    ConstReference operator[](const Size index) const override { return get(index); }
+    ConstReference operator[](const Size index) const override { return at(index); }
 
-    Reference operator[](const Size index) override { return get(index); }
+    Reference operator[](const Size index) override { return at(index); }
 
-    ConstReference back() const override { return get(size() - 1); }
+    ConstReference back() const override { return at(size() - 1); }
 
-    Reference back() override { return get(size() - 1); }
+    Reference back() override { return at(size() - 1); }
 
     ConstPointer data() const override { return mData; }
 
@@ -201,27 +207,44 @@ public:
         pop();
     }
 
-    // Maybe it's all wrong..
-    void erase(const Size from, const Size count) {
-        ASSERT(from + count <= mStored);
-        for (Size i = 0; i < count; ++i) {
-            memory::destroy(mData[from + i]);
-            mData[from + i] = std::move(mData[from + i + count]);
-        }
-        mStored -= count;
+    // TODO(ProXicT): return iterator pointing to the next element
+    void erase(const Iterator first, const Iterator last) override {
+        ASSERT(first >= begin() && last <= end());
+        memory::destroy(first, last);
+        std::move(last, end(), first);
+        mStored -= std::distance(first, last);
     }
+
+    void erase(const Size from, const Size count) override { erase(begin() + from, begin() + from + count); }
 
     void push(ConstReference value) override {
         ASSERT(!full());
-        mData[size()] = value;
+        at(size()) = value;
         ++mStored;
     }
 
-    void insert(ConstPointer first, ConstPointer last) override {
-        ASSERT(Size(std::distance(first, last)) <= TCapacity);
-        for (auto it = first; it != last; ++it) {
-            push(*it);
+    iterator insert(const Iterator position, ConstPointer first, ConstPointer last) {
+        const Size length = std::distance(first, last);
+        ASSERT(size() + length <= TCapacity);
+        if (length < 1U) {
+            return position;
         }
+
+        Size offset = position - begin();
+        std::move_backward(position, end(), end() + length);
+        for (ConstPointer it = first; it != last; ++it) {
+            memory::construct<ValueType>(begin() + offset, *it);
+            ++offset;
+        }
+        mStored += length;
+        return position;
+    }
+
+    void insert(const Size position, ConstReference value) {
+        reserve(size() + 1);
+        std::move_backward(begin() + position, end(), end() + 1);
+        at(position) = value;
+        ++mStored;
     }
 
     void pop() override {
@@ -241,8 +264,12 @@ public:
         mStored = newSize;
     }
 
+    void reserve(const Size newCapacity) override {
+        ASSERT(capacity() >= newCapacity);
+    }
+
     Base& operator+=(const Base& b) override {
-        insert(b.begin(), b.end());
+        insert(end(), b.begin(), b.end());
         return *this;
     }
 
@@ -276,6 +303,20 @@ const StaticBuffer<T, TCapacity> operator+(const Byte lhs, const StaticBufferBas
     sbb += lhs;
     sbb += rhs;
     return sbb;
+}
+
+template <typename T>
+bool operator==(const StaticBufferBase<T>& lhs, const StaticBufferBase<T>& rhs) {
+    if (lhs.size() != rhs.size()) {
+        return false;
+    }
+    for (Size i = 0; i < lhs.size(); ++i) {
+        if (lhs[i] != rhs[i]) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 } // namespace crypto

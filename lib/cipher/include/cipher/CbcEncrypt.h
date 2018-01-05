@@ -35,7 +35,7 @@ public:
             }
             m_blockCipher.encryptBlock(buffer);
 
-            out.insert(buffer.begin(), buffer.end());
+            out.insert(out.end(), buffer.begin(), buffer.end());
 
             for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
                 m_IV[i] = buffer[i];
@@ -47,7 +47,7 @@ public:
     void doFinal(const ByteBufferView& in, StaticByteBufferBase& out, const Padding& padder) override {
         ASSERT(in.size() < m_blockCipher.getBlockSize());
         StaticBuffer<Byte, 16> buffer;
-        buffer.insert(in.begin(), in.end());
+        buffer.insert(buffer.end(), in.begin(), in.end());
         padder.pad(buffer, m_blockCipher.getBlockSize());
         ASSERT(buffer.size() == m_blockCipher.getBlockSize());
         for (Byte i = 0; i < buffer.size(); ++i) {
@@ -55,7 +55,7 @@ public:
         }
 
         m_blockCipher.encryptBlock(buffer);
-        out.insert(buffer.begin(), buffer.end());
+        out.insert(out.end(), buffer.begin(), buffer.end());
     }
 
     void resetChain() { m_IV.reset(); }

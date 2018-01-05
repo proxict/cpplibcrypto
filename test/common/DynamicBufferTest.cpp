@@ -125,6 +125,25 @@ TEST(DynamicBufferTest, insertElement) {
     EXPECT_EQ(ByteBuffer({0x06, 0x01, 0x07, 0x00, 0x02, 0x08, 0x03}), bb);
 }
 
+TEST(DynamicBufferTest, insertElements) {
+    ByteBuffer bb{0x02, 0x03};
+    Byte arr[] = {0x00, 0x01};
+    bb.insert(bb.begin(), arr, arr + 2);
+    EXPECT_EQ(ByteBuffer({0x00, 0x01, 0x02, 0x03}), bb);
+
+    Byte arr2[] = {0x04, 0x05};
+    bb.insert(bb.end(), arr2, arr2 + 2);
+    EXPECT_EQ(ByteBuffer({0x00, 0x01, 0x02, 0x03, 0x04, 0x05}), bb);
+
+    Byte arr3[] = {0x06, 0x07, 0x08};
+    bb.insert(bb.begin() + 3, arr3, arr3 + 3);
+    EXPECT_EQ(ByteBuffer({0x00, 0x01, 0x02, 0x06, 0x07, 0x08, 0x03, 0x04, 0x05}), bb);
+
+    Byte arr4[] = {0x0a, 0x0b};
+    bb.insert(bb.begin() + 1, arr4, arr4 + 2);
+    EXPECT_EQ(ByteBuffer({0x00, 0x0a, 0x0b, 0x01, 0x02, 0x06, 0x07, 0x08, 0x03, 0x04, 0x05}), bb);
+}
+
 TEST(DynamicBufferTest, storeReference) {
     DynamicBuffer<Byte> first = { 1, 2, 3 };
     DynamicBuffer<Byte&> second;

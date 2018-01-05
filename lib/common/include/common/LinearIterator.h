@@ -11,22 +11,23 @@ namespace crypto {
 
 template <class T>
 class LinearIterator {
-    using Type = T;
-    using Pointer = Type*;
+    using ValueType = T;
+    using Pointer = ValueType*;
 
 protected:
     Pointer mPtr;
 
 public:
+    // TODO(ProXicT): Size index() const; // return an offset from the beginning
     LinearIterator(Pointer ptr, const Size offset) : mPtr(ptr + offset) {}
 
     explicit LinearIterator(Pointer ptr) : mPtr(ptr) {}
 
     LinearIterator() = default;
 
-    template <typename T2 = Type>
-    operator DisableIf<IsConst<T2>::value, LinearIterator<const Type>>() const {
-        return *(LinearIterator<const Type>*)this;
+    template <typename T2 = ValueType>
+    operator DisableIf<IsConst<T2>::value, LinearIterator<const ValueType>>() const {
+        return *(LinearIterator<const ValueType>*)this;
     }
 
     bool operator==(const LinearIterator& other) const { return mPtr == other.mPtr; }
@@ -43,25 +44,25 @@ public:
 
     ptrdiff_t operator-(const LinearIterator& other) const { return mPtr - other.mPtr; }
 
-    Type& data() { return *mPtr; }
+    ValueType& data() { return *mPtr; }
 
-    Type& operator*() { return data(); }
+    ValueType& operator*() { return data(); }
 
-    const Type& data() const { return *mPtr; }
+    const ValueType& data() const { return *mPtr; }
 
-    const Type& operator*() const { return data(); }
+    const ValueType& operator*() const { return data(); }
 
-    Type& operator[](const int offset) { return mPtr[offset]; }
+    ValueType& operator[](const int offset) { return mPtr[offset]; }
 
-    const Type& operator[](const int offset) const { return mPtr[offset]; }
+    const ValueType& operator[](const int offset) const { return mPtr[offset]; }
 
-    Type& operator[](const Size offset) { return mPtr[offset]; }
+    ValueType& operator[](const Size offset) { return mPtr[offset]; }
 
-    const Type& operator[](const Size offset) const { return mPtr[offset]; }
+    const ValueType& operator[](const Size offset) const { return mPtr[offset]; }
 
-    Type* operator->() { return (&**this); }
+    ValueType* operator->() { return (&**this); }
 
-    const Type* operator->() const { return (&**this); }
+    const ValueType* operator->() const { return (&**this); }
 
     LinearIterator& operator++() {
         ++mPtr;
@@ -116,7 +117,7 @@ public:
     }
 
     using iterator_category = std::random_access_iterator_tag;
-    using value_type = Type;
+    using value_type = ValueType;
     using difference_type = ptrdiff_t;
     using pointer = value_type*;
     using reference = value_type&;

@@ -4,6 +4,8 @@
 #include "common/Exception.h"
 #include "common/LinearIterator.h"
 #include "common/SecureAllocator.h"
+#include <iostream>
+#include <algorithm>
 
 namespace crypto {
 
@@ -38,7 +40,8 @@ public:
     }
 
     DynamicBuffer(std::initializer_list<ValueType> list, const bool sensitive = true) : mAllocator(sensitive) {
-        insert(begin(), list.begin(), list.end());
+        reserve(list.size());
+        insert(end(), list.begin(), list.end());
     }
 
     DynamicBuffer& operator=(DynamicBuffer&& other) noexcept {
@@ -101,13 +104,14 @@ public:
     }
 
     void erase(const Size index) {
-        ASSERT(index <= mSize);
+        ASSERT(index <= size());
         auto erased = begin() + index;
         std::move(erased + 1, end(), erased);
         pop();
     }
 
-    void erase(Iterator first, Iterator last) {
+    // TODO(ProXicT): return iterator pointing to the next element
+    void erase(const Iterator first, const Iterator last) {
         ASSERT(first >= begin() && last <= end());
         memory::destroy(first, last);
         std::move(last, end(), first);
@@ -116,32 +120,33 @@ public:
 
     void erase(const Size from, const Size count) { erase(begin() + from, begin() + from + count); }
 
-    void reserve(const Size size) {
-        if (capacity() < size) {
-            mCapacity = std::max(size, capacity() + capacity() / 2);
-            allocateMemory(mCapacity);
+    void reserve(const Size newCapacity) {
+        if (capacity() >= newCapacity) {
+            return;
         }
-        ASSERT(capacity() >= size);
+        mCapacity = std::max(newCapacity, capacity() + capacity() / 2);
+        allocateMemory(mCapacity);
+        ASSERT(capacity() >= newCapacity);
     }
 
-    void resize(const Size size) {
-        if (size == this->size()) {
+    void resize(const Size newSize) {
+        if (newSize == size()) {
             return;
-        } else if (size < this->size()) {
-            memory::destroy(begin() + size, end());
+        } else if (newSize < size()) {
+            memory::destroy(begin() + newSize, end());
         } else {
-            reserve(size);
-            for (Size i = 0; i < size - this->size(); ++i) {
-                mAllocator.construct(mData + mSize + i, ValueType());
+            reserve(newSize);
+            for (Size i = 0; i < newSize - size(); ++i) {
+                mAllocator.construct(mData + size() + i, ValueType());
             }
         }
-        mSize = size;
+        mSize = newSize;
     }
 
     template <typename... TArgs>
     void emplaceBack(TArgs&&... args) {
         reserve(size() + 1);
-        mAllocator.construct(mData + mSize, std::forward<TArgs>(args)...);
+        mAllocator.construct(mData + size(), std::forward<TArgs>(args)...);
         ++mSize;
     }
 
@@ -155,6 +160,7 @@ public:
     }
 
     DynamicBuffer& operator+=(const DynamicBuffer& b) {
+        reserve(size() + b.size());
         insert(end(), b.begin(), b.end());
         return *this;
     }
@@ -200,13 +206,23 @@ public:
     bool operator!=(const DynamicBuffer& rhs) const { return !(*this == rhs); }
 
     template <typename TInputIterator, typename = std::_RequireInputIter<TInputIterator>>
-    iterator insert(ConstIterator position, TInputIterator first, TInputIterator last) {
+    Iterator insert(Iterator position, TInputIterator first, TInputIterator last) {
+        ASSERT(position >= begin() && position <= end());
         const Size length = std::distance(first, last);
-        reserve(size() + length);
-        for (TInputIterator it = first; it != last; ++it) {
-            push(*it);
+        if (first == last) {
+            return position;
         }
-        return end();
+
+        const Size offset = position - begin();
+        reserve(size() + length);
+        std::move_backward(begin() + offset, end(), end() + length);
+        Size index = 0;
+        for (TInputIterator it = first; it != last; ++it) {
+            mAllocator.construct(begin() + offset + index, *it);
+            ++index;
+        }
+        mSize += length;
+        return position;
     }
 
     void insert(const Size position, ConstReference value) {

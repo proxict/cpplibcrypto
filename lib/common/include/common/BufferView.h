@@ -36,6 +36,12 @@ public:
       mSize(container.size()),
       mCapacity(container.capacity()) {}
 
+    BufferView(ConstPointer first, ConstPointer last)
+    : mFirst(first),
+      mLast(last),
+      mSize(std::distance(first, last)),
+      mCapacity(mSize) {}
+
     ConstReference at(const Size index) const { return *(mFirst + index); }
 
     Reference at(const Size index) { return *(mFirst + index); }

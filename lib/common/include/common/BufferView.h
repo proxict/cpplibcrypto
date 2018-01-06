@@ -30,13 +30,19 @@ public:
     using const_iterator = ConstIterator;
 
     template <typename TContainer>
-    BufferView(const TContainer& container)
+    BufferView(TContainer& container)
     : mFirst(container.data()),
       mLast(container.data() + container.size()),
       mSize(container.size()),
       mCapacity(container.capacity()) {}
 
     BufferView(ConstPointer first, ConstPointer last)
+    : mFirst(first),
+      mLast(last),
+      mSize(std::distance(first, last)),
+      mCapacity(mSize) {}
+
+    BufferView(Pointer first, Pointer last)
     : mFirst(first),
       mLast(last),
       mSize(std::distance(first, last)),
@@ -77,8 +83,8 @@ public:
     Size capacity() const { return mCapacity; }
 
 private:
-    const T* mFirst;
-    const T* mLast;
+    T* mFirst;
+    T* mLast;
     Size mSize;
     Size mCapacity;
 };

@@ -5,6 +5,7 @@
 
 #include "common/DynamicBuffer.h"
 #include "common/StaticBuffer.h"
+#include "common/BufferView.h"
 #include "common/common.h"
 
 namespace crypto {
@@ -181,21 +182,21 @@ static constexpr Byte rcon[256] = {
 };
 
 class AesCore {
-    using StaticByteBufferBase = StaticBufferBase<Byte>;
+    using ByteBufferView = BufferView<Byte>;
 public:
-    static void subBytes(StaticByteBufferBase& buffer) {
+    static void subBytes(ByteBufferView& buffer) {
         for (Byte i = 0; i < buffer.size(); ++i) {
             buffer[i] = sbox[buffer[i]];
         }
     }
 
-    static void subBytesInv(StaticByteBufferBase& buffer) {
+    static void subBytesInv(ByteBufferView& buffer) {
         for (Byte i = 0; i < buffer.size(); ++i) {
             buffer[i] = sboxinv[buffer[i]];
         }
     }
 
-    static void shiftRows(StaticByteBufferBase& buffer) {
+    static void shiftRows(ByteBufferView& buffer) {
         ASSERT(buffer.size() == 16);
         Byte i = buffer[1];
         buffer[1] = buffer[5];
@@ -217,7 +218,7 @@ public:
         buffer[6]  = j;
     }
 
-    static void shiftRowsInv(StaticByteBufferBase& buffer) {
+    static void shiftRowsInv(ByteBufferView& buffer) {
         ASSERT(buffer.size() == 16);
         Byte i = buffer[1];
         buffer[1] = buffer[13];
@@ -239,7 +240,7 @@ public:
         buffer[14] = j;
     }
 
-    static void mixColumns(StaticByteBufferBase& buffer) {
+    static void mixColumns(ByteBufferView& buffer) {
         ASSERT(buffer.size() == 16);
         StaticBuffer<Byte, 16> tmp;
         for (Byte i = 0; i < 4; ++i) {
@@ -249,11 +250,13 @@ public:
             tmp += static_cast<Byte>(mul3[buffer[4 * i]] ^ buffer[4 * i + 1] ^ buffer[4 * i + 2] ^ mul2[buffer[4 * i + 3]]);
         }
 
-        buffer.clear();
-        buffer.insert(buffer.end(), tmp.begin(), tmp.end());
+        // TODO(ProXicT): buffer.replace(buffer.begin(), buffer.end(), tmp.begin());
+        for (Size i = 0; i < buffer.size(); ++i) {
+            buffer[i] = tmp[i];
+        }
     }
 
-    static void mixColumnsInv(StaticByteBufferBase& buffer) {
+    static void mixColumnsInv(ByteBufferView& buffer) {
         ASSERT(buffer.size() == 16);
         StaticBuffer<Byte, 16> tmp;
         for (Byte i = 0; i < 4; ++i) {
@@ -263,18 +266,20 @@ public:
             tmp += static_cast<Byte>(mul11[buffer[4 * i]] ^ mul13[buffer[4 * i + 1]] ^ mul9[buffer[4 * i + 2]] ^ mul14[buffer[4 * i + 3]]);
         }
 
-        buffer.clear();
-        buffer.insert(buffer.end(), tmp.begin(), tmp.end());
+        // TODO(ProXicT): buffer.replace(buffer.begin(), buffer.end(), tmp.begin());
+        for (Size i = 0; i < buffer.size(); ++i) {
+            buffer[i] = tmp[i];
+        }
     }
 
-    static void addRoundKey(StaticByteBufferBase& buffer, const ByteBuffer& roundKeys, const Byte keyIndex) {
+    static void addRoundKey(ByteBufferView& buffer, const ByteBuffer& roundKeys, const Byte keyIndex) {
         ASSERT(buffer.size() == 16);
         for (Size i = 0; i < buffer.size(); ++i) {
             buffer[i] ^= roundKeys[i + buffer.size() * keyIndex];
         }
     }
 
-    static void rotateLeft(StaticByteBufferBase& buffer) {
+    static void rotateLeft(ByteBufferView& buffer) {
         const Byte b = buffer[0];
         for (Size i = 0; i < buffer.size() - 1; ++i) {
             buffer[i] = buffer[i + 1];
@@ -282,7 +287,8 @@ public:
         buffer[buffer.size() - 1] = b;
     }
 
-    static void keyScheduleCore(StaticBuffer<Byte, 4>& buffer, const Byte i) {
+    static void keyScheduleCore(ByteBufferView& buffer, const Byte i) {
+        ASSERT(buffer.size() == 4);
         rotateLeft(buffer);
         subBytes(buffer);
         buffer[0] ^= rcon[i]; // rcon

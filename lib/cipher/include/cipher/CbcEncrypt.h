@@ -33,7 +33,9 @@ public:
             for (Byte i = 0; i < blockSize; ++i) {
                 buffer.push(in[block * blockSize + i] ^ mIv[i]);
             }
-            mCipher.encryptBlock(buffer);
+
+            ByteBufferView view(buffer);
+            mCipher.encryptBlock(view);
 
             out.insert(out.end(), buffer.begin(), buffer.end());
 
@@ -59,7 +61,8 @@ public:
             buffer[i] ^= mIv[i];
         }
 
-        mCipher.encryptBlock(buffer);
+        ByteBufferView view(buffer);
+        mCipher.encryptBlock(view);
         out.insert(out.end(), buffer.begin(), buffer.end());
     }
 

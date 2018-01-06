@@ -41,6 +41,7 @@ public:
     virtual ~Aes() = default;
 
     void encryptBlock(StaticByteBufferBase& buffer) override {
+        ASSERT(buffer.size() == getBlockSize());
         processFirstRound(buffer);
         for (Byte i = 0; i < getNumberOfRounds() - 1; ++i) {
             processRound(buffer, i);
@@ -49,6 +50,7 @@ public:
     }
 
     void decryptBlock(StaticByteBufferBase& buffer) override {
+        ASSERT(buffer.size() == getBlockSize());
         processFirstRoundInv(buffer);
         for(Byte i = getNumberOfRounds() - 1; i >= 1; --i) {
             processRoundInv(buffer, i);

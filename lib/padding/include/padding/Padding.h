@@ -9,14 +9,16 @@ class Padding {
 public:
     using StaticByteBufferBase = StaticBufferBase<Byte>;
 
-    virtual void pad(StaticByteBufferBase&, const Size) const = 0;
+    virtual bool pad(StaticByteBufferBase&, const Size) const = 0;
 
     virtual void unpad(StaticByteBufferBase&) const = 0;
 };
 
 class PaddingNone : public Padding {
 public:
-    virtual void pad(StaticByteBufferBase&, const Size) const override {}
+    virtual bool pad(StaticByteBufferBase& buf, const Size blockSize) const override {
+        return buf.size() % blockSize == 0;
+    }
 
     virtual void unpad(StaticByteBufferBase&) const override {}
 };

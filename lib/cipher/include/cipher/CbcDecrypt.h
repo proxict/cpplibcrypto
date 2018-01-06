@@ -13,51 +13,53 @@ namespace crypto {
 
 class CbcDecrypt : public ModeOfOperation {
 public:
-    CbcDecrypt(BlockCipher& cipher, const Key& key, InitializationVector& IV) : ModeOfOperation(cipher, key), m_IV(IV) {
-        if (IV.size() != cipher.getBlockSize()) {
+    CbcDecrypt(BlockCipher& cipher, const Key& key, InitializationVector& iv) : ModeOfOperation(cipher, key), mCipher(cipher), mIv(iv) {
+        if (mIv.size() != mCipher.getBlockSize()) {
             throw Exception("The Initialization Vector size does not match the cipher block size");
         }
     }
 
     Size update(const ByteBufferView& in, StaticByteBufferBase& out) override {
-        ASSERT(in.size() % m_blockCipher.getBlockSize() == 0);
+        const Size blockSize = mCipher.getBlockSize();
+        ASSERT(in.size() % blockSize == 0);
         ASSERT(out.capacity() >= in.size());
-        const Size numberOfBlocks = in.size() / m_blockCipher.getBlockSize() - 1;
+        const Size numberOfBlocks = in.size() / blockSize - 1;
 
         for (Size block = 0; block < numberOfBlocks; ++block) {
             StaticBuffer<Byte, 16> buffer;
-            for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
-                buffer.push(in[block * m_blockCipher.getBlockSize() + i]);
-            }
-            m_blockCipher.decryptBlock(buffer);
-            for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
-                out.push(buffer[i] ^ m_IV[i]);
+            const Size currentBlockStart = block * blockSize;
+            const Size currentBlockEnd = currentBlockStart + blockSize;
+            buffer.insert(buffer.end(), in.begin() + currentBlockStart, in.begin() + currentBlockEnd);
+
+            mCipher.decryptBlock(buffer);
+            for (Byte i = 0; i < blockSize; ++i) {
+                out.push(buffer[i] ^ mIv[i]);
             }
 
-            for (Byte i = 0; i < m_blockCipher.getBlockSize(); ++i) {
-                m_IV[i] = in[block * m_blockCipher.getBlockSize() + i];
+            for (Byte i = 0; i < blockSize; ++i) {
+                mIv[i] = in[block * blockSize + i];
             }
         }
         return out.size();
     }
 
     void doFinal(const ByteBufferView& in, StaticByteBufferBase& out, const Padding& padder) override {
-        ASSERT(in.size() == m_blockCipher.getBlockSize());
+        ASSERT(in.size() == mCipher.getBlockSize());
         StaticBuffer<Byte, 16> buffer;
-        for (const Byte b : in) {
-            buffer.push(b);
-        }
-        m_blockCipher.decryptBlock(buffer);
+        buffer.insert(buffer.end(), in.begin(), in.end());
+
+        mCipher.decryptBlock(buffer);
         for (Byte i = 0; i < buffer.size(); ++i) {
-            out.push(buffer[i] ^ m_IV[i]);
+            out.push(buffer[i] ^ mIv[i]);
         }
         padder.unpad(out);
     }
 
-    void resetChain() { m_IV.reset(); }
+    void resetChain() { mIv.reset(); }
 
 private:
-    InitializationVector& m_IV;
+    BlockCipher& mCipher;
+    InitializationVector& mIv;
 };
 
 } // namespace crypto

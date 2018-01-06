@@ -14,11 +14,12 @@ class Pkcs7 : public Padding {
 public:
     Pkcs7() = default;
 
-    void pad(StaticByteBufferBase& buf, const Size blockSize) const override {
+    bool pad(StaticByteBufferBase& buf, const Size blockSize) const override {
         const Byte numOfBytesToPad = getPkcs7Size(buf.size(), blockSize);
         for (Byte i = 0; i < numOfBytesToPad; ++i) {
             buf.push(numOfBytesToPad);
         }
+        return buf.size() % blockSize == 0;
     }
 
     void unpad(StaticByteBufferBase& buf) const override {

@@ -5,6 +5,7 @@
 
 #include "common/LinearIterator.h"
 #include "common/common.h"
+#include "common/Memory.h"
 
 namespace crypto {
 
@@ -60,6 +61,10 @@ public:
 
     Reference back() { return at(size() - 1); }
 
+    ConstReference front() const { return at(0); }
+
+    Reference front() { return at(0); }
+
     ConstPointer data() const { return mFirst; }
 
     Pointer data() { return mFirst; }
@@ -81,6 +86,11 @@ public:
     Size size() const { return mSize; }
 
     Size capacity() const { return mCapacity; }
+
+    void replace(Iterator first, Iterator last, Iterator with) {
+        memory::destroy(first, last);
+        memory::constructRange<ValueType>(first, last, with);
+    }
 
 private:
     T* mFirst;

@@ -154,6 +154,38 @@ public:
 
     void push(RValuetReference value = ValueType()) { emplaceBack(std::move(value)); }
 
+    template <typename TInputIterator, typename = std::_RequireInputIter<TInputIterator>>
+    Iterator insert(Iterator position, TInputIterator first, TInputIterator last) {
+        ASSERT(position >= begin() && position <= end());
+        const Size length = std::distance(first, last);
+        if (first == last) {
+            return position;
+        }
+
+        const Size offset = position - begin();
+        reserve(size() + length);
+        std::move_backward(begin() + offset, end(), end() + length);
+        Size index = 0;
+        for (TInputIterator it = first; it != last; ++it) {
+            mAllocator.construct(begin() + offset + index, *it);
+            ++index;
+        }
+        mSize += length;
+        return position;
+    }
+
+    void insert(const Size position, ConstReference value) {
+        reserve(size() + 1);
+        std::move_backward(begin() + position, end(), end() + 1);
+        mAllocator.construct(begin() + position, value);
+        ++mSize;
+    }
+
+    void replace(const Iterator first, const Iterator last, const ConstIterator source) {
+        memory::destroy(first, last);
+        mAllocator.constructRange(first, last, source);
+    }
+
     void pop() {
         mAllocator.destroy(back());
         --mSize;
@@ -204,33 +236,6 @@ public:
     }
 
     bool operator!=(const DynamicBuffer& rhs) const { return !(*this == rhs); }
-
-    template <typename TInputIterator, typename = std::_RequireInputIter<TInputIterator>>
-    Iterator insert(Iterator position, TInputIterator first, TInputIterator last) {
-        ASSERT(position >= begin() && position <= end());
-        const Size length = std::distance(first, last);
-        if (first == last) {
-            return position;
-        }
-
-        const Size offset = position - begin();
-        reserve(size() + length);
-        std::move_backward(begin() + offset, end(), end() + length);
-        Size index = 0;
-        for (TInputIterator it = first; it != last; ++it) {
-            mAllocator.construct(begin() + offset + index, *it);
-            ++index;
-        }
-        mSize += length;
-        return position;
-    }
-
-    void insert(const Size position, ConstReference value) {
-        reserve(size() + 1);
-        std::move_backward(begin() + position, end(), end() + 1);
-        mAllocator.construct(begin() + position, value);
-        ++mSize;
-    }
 
 private:
     void allocateMemory(const Size size) {

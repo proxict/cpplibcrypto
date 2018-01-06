@@ -69,6 +69,10 @@ public:
         memory::construct<ValueType>(ptr, std::forward<TArgs>(value)...);
     }
 
+    void constructRange(Pointer first, Pointer last, ConstPointer with) {
+        memory::constructRange<ValueType>(first, last, with);
+    }
+
     void destroy(Pointer ptr) {
         if (mWipe) {
             wipe(ptr);

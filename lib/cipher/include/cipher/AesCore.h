@@ -250,10 +250,7 @@ public:
             tmp += static_cast<Byte>(mul3[buffer[4 * i]] ^ buffer[4 * i + 1] ^ buffer[4 * i + 2] ^ mul2[buffer[4 * i + 3]]);
         }
 
-        // TODO(ProXicT): buffer.replace(buffer.begin(), buffer.end(), tmp.begin());
-        for (Size i = 0; i < buffer.size(); ++i) {
-            buffer[i] = tmp[i];
-        }
+        buffer.replace(buffer.begin(), buffer.end(), tmp.begin());
     }
 
     static void mixColumnsInv(ByteBufferView& buffer) {
@@ -266,10 +263,7 @@ public:
             tmp += static_cast<Byte>(mul11[buffer[4 * i]] ^ mul13[buffer[4 * i + 1]] ^ mul9[buffer[4 * i + 2]] ^ mul14[buffer[4 * i + 3]]);
         }
 
-        // TODO(ProXicT): buffer.replace(buffer.begin(), buffer.end(), tmp.begin());
-        for (Size i = 0; i < buffer.size(); ++i) {
-            buffer[i] = tmp[i];
-        }
+        buffer.replace(buffer.begin(), buffer.end(), tmp.begin());
     }
 
     static void addRoundKey(ByteBufferView& buffer, const ByteBuffer& roundKeys, const Byte keyIndex) {
@@ -280,11 +274,11 @@ public:
     }
 
     static void rotateLeft(ByteBufferView& buffer) {
-        const Byte b = buffer[0];
+        const Byte b = buffer.front();
         for (Size i = 0; i < buffer.size() - 1; ++i) {
             buffer[i] = buffer[i + 1];
         }
-        buffer[buffer.size() - 1] = b;
+        buffer.back() = b;
     }
 
     static void keyScheduleCore(ByteBufferView& buffer, const Byte i) {

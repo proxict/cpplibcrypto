@@ -22,6 +22,14 @@ namespace memory {
     }
 
     template <typename T>
+    inline void constructRange(T* first, T* last, const T* source) {
+        const T* srcIt = source;
+        for (T* it = first; it != last; ++it) {
+            construct<T>(it, *(srcIt++));
+        }
+    }
+
+    template <typename T>
     inline void destroy(T& object) {
         object.~T();
     }

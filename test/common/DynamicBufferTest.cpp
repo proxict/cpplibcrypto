@@ -144,6 +144,14 @@ TEST(DynamicBufferTest, insertElements) {
     EXPECT_EQ(ByteBuffer({0x00, 0x0a, 0x0b, 0x01, 0x02, 0x06, 0x07, 0x08, 0x03, 0x04, 0x05}), bb);
 }
 
+TEST(DynamicBufferTest, replaceElements) {
+    DynamicBuffer<Byte> db{ 0x00, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 };
+    StaticBuffer<Byte, 6> sb{ 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
+    db.replace(db.begin() + 1, db.begin() + 4, sb.begin() + 2);
+
+    EXPECT_EQ(DynamicBuffer<Byte>({0x00, 0x0c, 0x0d, 0x0e, 0x05, 0x06, 0x07}), db);
+}
+
 TEST(DynamicBufferTest, storeReference) {
     DynamicBuffer<Byte> first = { 1, 2, 3 };
     DynamicBuffer<Byte&> second;

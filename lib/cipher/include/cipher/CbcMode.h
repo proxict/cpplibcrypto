@@ -24,11 +24,13 @@ public:
 
         Encryption(const Key& key, InitializationVector& IV) : m_encryptor(m_cipher, key, IV) {}
 
-        Size update(const ByteBufferView& input, StaticByteBufferBase& output) {
+        template <typename TContainer>
+        Size update(const ByteBufferView& input, TContainer& output) {
             return m_encryptor.update(input, output);
         }
 
-        void doFinal(const ByteBufferView& input, StaticByteBufferBase& output, const Padding& padder) {
+        template <typename TContainer>
+        void doFinal(const ByteBufferView& input, TContainer& output, const Padding& padder) {
              m_encryptor.doFinal(input, output, padder);
         }
 
@@ -46,11 +48,13 @@ public:
 
         Decryption(const Key& key, InitializationVector& IV) : m_decryptor(m_cipher, key, IV) {}
 
-        Size update(const ByteBufferView& input, StaticByteBufferBase& output) {
+        template <typename TContainer>
+        Size update(const ByteBufferView& input, TContainer& output) {
             return m_decryptor.update(input, output);
         }
 
-        void doFinal(const ByteBufferView& input, StaticByteBufferBase& output, const Padding& padder) {
+        template <typename TContainer>
+        void doFinal(const ByteBufferView& input, TContainer& output, const Padding& padder) {
              m_decryptor.doFinal(input, output, padder);
         }
 

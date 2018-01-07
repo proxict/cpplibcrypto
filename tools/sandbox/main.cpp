@@ -22,11 +22,13 @@ template <typename Encryptor>
 void encFile(Encryptor& encryptor, const std::string& inputFileName, const std::string& outputFileName) {
     crypto::BinaryFile input(inputFileName, crypto::BinaryFile::Mode::Read);
     crypto::BinaryFile output(outputFileName, crypto::BinaryFile::Mode::Write);
-    crypto::StaticBuffer<crypto::Byte, 32> plainBuffer;
-    crypto::StaticBuffer<crypto::Byte, 32> cipherBuffer;
+    //crypto::StaticBuffer<crypto::Byte, 32> plainBuffer;
+    //crypto::StaticBuffer<crypto::Byte, 32> cipherBuffer;
+    crypto::DynamicBuffer<crypto::Byte> plainBuffer;
+    crypto::DynamicBuffer<crypto::Byte> cipherBuffer;
 
     // Read max of plainBuffer.capacity()
-    while (input.read(plainBuffer)) {
+    while (input.read(plainBuffer, 8)) {
         // Encrypt max of plainBuffer.size(), save the encrypted bytes to cipherBuffer and remove the plain data, which
         // got encrypted, from the plainBuffer.
         const crypto::Size encrypted = encryptor.update(plainBuffer, cipherBuffer); // BufferView in the lower level???
@@ -50,7 +52,7 @@ void decFile(Decryptor& decryptor, const std::string& inputFileName, const std::
     crypto::StaticBuffer<crypto::Byte, 4096> cipherBuffer;
     crypto::StaticBuffer<crypto::Byte, 4096> plainBuffer;
 
-    while (input.read(cipherBuffer)) {
+    while (input.read(cipherBuffer, cipherBuffer.capacity() - cipherBuffer.size())) {
         const crypto::Size decrypted = decryptor.update(cipherBuffer, plainBuffer);
         cipherBuffer.erase(0U, decrypted);
         output.write(plainBuffer);

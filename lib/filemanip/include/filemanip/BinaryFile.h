@@ -21,9 +21,10 @@ public:
         }
     }
 
-    Size read(StaticByteBufferBase& output) {
+    template <typename TContainer>
+    Size read(TContainer& output, const Size readMax) {
         ASSERT(m_mode == Mode::Read);
-        ByteBuffer temp(output.capacity() - output.size());
+        ByteBuffer temp(readMax);
         m_stream.read(reinterpret_cast<char*>(temp.data()), temp.size());
         const Size bytesRead = static_cast<Size>(m_stream.gcount());
 
@@ -33,7 +34,8 @@ public:
         return bytesRead;
     }
 
-    bool write(const StaticByteBufferBase& buffer) {
+    template <typename TContainer>
+    bool write(const TContainer& buffer) {
         ASSERT(m_mode == Mode::Write);
         return bool(m_stream.write(reinterpret_cast<const char*>(buffer.data()), buffer.size()));
     }

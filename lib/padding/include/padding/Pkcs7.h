@@ -14,7 +14,16 @@ class Pkcs7 : public Padding {
 public:
     Pkcs7() = default;
 
+    bool pad(DynamicBuffer<Byte>& buf, const Size blockSize) const override {
+        return pad<DynamicBuffer<Byte>>(buf, blockSize);
+    }
+    
     bool pad(StaticByteBufferBase& buf, const Size blockSize) const override {
+        return pad<StaticBufferBase<Byte>>(buf, blockSize);
+    }
+
+    template <typename TContainer>
+    bool pad(TContainer& buf, const Size blockSize) const {
         const Byte numOfBytesToPad = getPkcs7Size(buf.size(), blockSize);
         for (Byte i = 0; i < numOfBytesToPad; ++i) {
             buf.push(numOfBytesToPad);
@@ -22,7 +31,16 @@ public:
         return buf.size() % blockSize == 0;
     }
 
+    void unpad(DynamicBuffer<Byte>& buf) const override {
+        unpad<DynamicBuffer<Byte>>(buf);
+    }
+    
     void unpad(StaticByteBufferBase& buf) const override {
+        unpad<StaticBufferBase<Byte>>(buf);
+    }
+
+    template <typename TContainer>
+    void unpad(TContainer& buf) const {
         Byte bytesPadded = buf.back();
         while (bytesPadded-- > 0) {
             buf.pop();

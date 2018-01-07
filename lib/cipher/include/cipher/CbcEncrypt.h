@@ -19,10 +19,17 @@ public:
         }
     }
 
-    Size update(const ByteBufferView& in, StaticByteBufferBase& out) override {
+    Size update(const ByteBufferView& in, DynamicBuffer<Byte>& out) override {
+        return update<DynamicBuffer<Byte>>(in, out);
+    }
+
+    Size update(const ByteBufferView& in, StaticBufferBase<Byte>& out) override {
+        return update<StaticBufferBase<Byte>>(in, out);
+    }
+
+    template <typename TContainer>
+    Size update(const ByteBufferView& in, TContainer& out) {
         const Size blockSize = mCipher.getBlockSize();
-        ASSERT(out.capacity() >= in.size());
-        ASSERT(out.capacity() >= blockSize);
         if (in.size() < blockSize && in.size() % blockSize != 0) {
             return 0;
         }
@@ -46,7 +53,16 @@ public:
         return out.size(); // return how many bytes were encrypted
     }
 
-    void doFinal(const ByteBufferView& in, StaticByteBufferBase& out, const Padding& padder) override {
+    void doFinal(const ByteBufferView& in, DynamicBuffer<Byte>& out, const Padding& padder) override {
+        doFinal<DynamicBuffer<Byte>>(in, out, padder);
+    }
+
+    void doFinal(const ByteBufferView& in, StaticBufferBase<Byte>& out, const Padding& padder) override {
+        doFinal<StaticBufferBase<Byte>>(in, out, padder);
+    }
+
+    template <typename TContainer>
+    void doFinal(const ByteBufferView& in, TContainer& out, const Padding& padder) {
         ASSERT(in.size() < mCipher.getBlockSize());
         StaticBuffer<Byte, 16> buffer;
         buffer.insert(buffer.end(), in.begin(), in.end());

@@ -74,17 +74,17 @@ public:
     }
 
     void destroy(Pointer ptr) {
+        memory::destroy(*ptr);
         if (mWipe) {
             wipe(ptr);
         }
-        memory::destroy(*ptr);
     }
 
     void destroy(Reference ref) {
+        memory::destroy(ref);
         if (mWipe) {
             wipe(&ref);
         }
-        memory::destroy(ref);
     }
 
     void wipe(Pointer ptr) {

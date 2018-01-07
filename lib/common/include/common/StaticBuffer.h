@@ -247,6 +247,11 @@ public:
         ++mStored;
     }
 
+    void replace(const Iterator first, const Iterator last, const ConstIterator source) {
+        memory::destroy(first, last);
+        memory::constructRange<ValueType>(first, last, source);
+    }
+
     void pop() override {
         memory::destroy(back());
         --mStored;

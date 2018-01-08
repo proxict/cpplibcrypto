@@ -8,6 +8,7 @@
 #include "common/InitializationVector.h"
 #include "common/Key.h"
 #include "common/common.h"
+#include "common/bufferUtils.h"
 
 namespace crypto {
 
@@ -41,13 +42,9 @@ public:
 
             ByteBufferView view(buffer);
             mCipher.decryptBlock(view);
-            for (Byte i = 0; i < blockSize; ++i) {
-                out.push(buffer[i] ^ mIv[i]);
-            }
+            bufferUtils::pushXored(out, buffer.cbegin(), buffer.cend(), mIv.begin());
 
-            for (Byte i = 0; i < blockSize; ++i) {
-                mIv[i] = in[block * blockSize + i];
-            }
+            mIv.setNew(in.begin() + currentBlockStart);
         }
         return out.size();
     }
@@ -68,9 +65,7 @@ public:
 
         ByteBufferView view(buffer);
         mCipher.decryptBlock(view);
-        for (Byte i = 0; i < buffer.size(); ++i) {
-            out.push(buffer[i] ^ mIv[i]);
-        }
+        bufferUtils::pushXored(out, buffer.cbegin(), buffer.cend(), mIv.cbegin());
         padder.unpad(out);
     }
 

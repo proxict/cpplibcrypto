@@ -16,42 +16,48 @@ class AesIV : public InitializationVectorSized<16> {
 public:
     AesIV() : InitializationVectorSized() {}
 
-    AesIV(ByteBuffer&& IV) {
-        if (!isValid(IV.size())) {
+    AesIV(ByteBuffer&& iv) {
+        if (!isValid(iv.size())) {
             throw Exception("Invalid Initialization Vector size passed");
         }
-        m_IV = std::move(IV);
-        m_InitialIV += m_IV;
+        mIv = std::move(iv);
+        mInitialIv += mIv;
     }
 
-    AesIV(const HexString& IV) {
-        if (!isValid(IV.size())) {
+    AesIV(const HexString& iv) {
+        if (!isValid(iv.size())) {
             throw Exception("Invalid Initialization Vector size passed");
         }
-        m_IV += IV;
-        m_InitialIV += IV;
+        mIv += iv;
+        mInitialIv += iv;
     }
 
     Size size() const override {
-        return m_IV.size();
+        return mIv.size();
     }
 
     void reset() override {
-        for (Size i = 0; i < m_IV.size(); ++i) {
-            m_IV[i] = m_InitialIV[i];
-        }
+        mIv.replace(mIv.begin(), mIv.end(), mInitialIv.begin());
     }
 
-    Byte operator[](const Size index) const override {
-        return m_IV[index];
+    void setNew(const ConstIterator begin) override {
+        mIv.replace(mIv.begin(), mIv.end(), begin);
     }
 
-    Byte& operator[](const Size index) override {
-        return m_IV[index];
+    ConstReference at(const Size index) const override {
+        return mIv.at(index);
     }
 
-    ByteBuffer m_IV;
-    ByteBuffer m_InitialIV; // if we wanted to reset the IV
+    ConstReference operator[](const Size index) const override {
+        return mIv[index];
+    }
+
+    ConstPointer data() const override {
+        return mIv.data();
+    }
+
+    ByteBuffer mIv;
+    ByteBuffer mInitialIv; // if we wanted to reset the IV
 };
 
 } // namespace crypto

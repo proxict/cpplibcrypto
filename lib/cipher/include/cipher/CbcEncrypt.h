@@ -8,6 +8,7 @@
 #include "common/InitializationVector.h"
 #include "common/Key.h"
 #include "common/common.h"
+#include "common/bufferUtils.h"
 
 namespace crypto {
 
@@ -37,18 +38,15 @@ public:
         const Size numberOfBlocks = in.size() / blockSize;
         for (Size block = 0; block < numberOfBlocks; ++block) {
             StaticBuffer<Byte, 16> buffer;
-            for (Byte i = 0; i < blockSize; ++i) {
-                buffer.push(in[block * blockSize + i] ^ mIv[i]);
-            }
+            const Size currentBlockStart = block * blockSize;
+            const Size currentBlockEnd = currentBlockStart + blockSize;
+            bufferUtils::pushXored(buffer, in.begin() + currentBlockStart, in.begin() + currentBlockEnd, mIv.begin());
 
             ByteBufferView view(buffer);
             mCipher.encryptBlock(view);
 
             out.insert(out.end(), buffer.begin(), buffer.end());
-
-            for (Byte i = 0; i < blockSize; ++i) {
-                mIv[i] = buffer[i];
-            }
+            mIv.setNew(buffer.begin());
         }
         return out.size(); // return how many bytes were encrypted
     }
@@ -73,9 +71,7 @@ public:
             return;
         }
 
-        for (Byte i = 0; i < buffer.size(); ++i) {
-            buffer[i] ^= mIv[i];
-        }
+        bufferUtils::xorBuffer(buffer, mIv);
 
         ByteBufferView view(buffer);
         mCipher.encryptBlock(view);

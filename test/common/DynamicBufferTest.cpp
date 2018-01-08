@@ -67,50 +67,59 @@ TEST(DynamicBufferTest, chainingBuffers) {
 
 TEST(DynamicBufferTest, eraseElement) {
     ByteBuffer bb{0x01, 0x02, 0x03, 0x04, 0x05};
-    bb.erase(2);
 
+    const auto next = bb.erase(2);
     EXPECT_EQ(4U, bb.size());
     EXPECT_EQ(ByteBuffer({0x01, 0x02, 0x04, 0x05}), bb);
+    EXPECT_EQ(4U, *next);
 }
 
 TEST(DynamicBufferTest, eraseElementsCount) {
     ByteBuffer bb{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
     EXPECT_EQ(8U, bb.size());
 
-    bb.erase(1, 3);
+    auto next = bb.erase(1, 3);
     EXPECT_EQ(5U, bb.size());
     EXPECT_EQ(ByteBuffer({0x01, 0x05, 0x06, 0x07, 0x08}), bb);
+    EXPECT_EQ(5U, *next);
 
-    bb.erase(0, 1);
+    next = bb.erase(0, 1);
     EXPECT_EQ(4U, bb.size());
     EXPECT_EQ(ByteBuffer({0x05, 0x06, 0x07, 0x08}), bb);
+    EXPECT_EQ(5U, *next);
 
-    bb.erase(2, 2);
+    next = bb.erase(2, 2);
     EXPECT_EQ(2U, bb.size());
     EXPECT_EQ(ByteBuffer({0x05, 0x06}), bb);
+    EXPECT_TRUE(next == bb.end());
     
-    bb.erase(0, 2);
+    next = bb.erase(0, 2);
     EXPECT_EQ(0U, bb.size());
+    EXPECT_TRUE(next == bb.end());
 }
 
 TEST(DynamicBufferTest, eraseElementRange) {
     ByteBuffer bb{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
     EXPECT_EQ(8U, bb.size());
 
-    bb.erase(bb.begin() + 1, bb.begin() + 4);
+    auto next = bb.erase(bb.begin() + 1, bb.begin() + 4);
     EXPECT_EQ(5U, bb.size());
     EXPECT_EQ(ByteBuffer({0x01, 0x05, 0x06, 0x07, 0x08}), bb);
+    EXPECT_EQ(5U, *next);
 
-    bb.erase(bb.begin(), bb.begin() + 1);
+    next = bb.erase(bb.begin(), bb.begin() + 1);
     EXPECT_EQ(4U, bb.size());
     EXPECT_EQ(ByteBuffer({0x05, 0x06, 0x07, 0x08}), bb);
+    EXPECT_EQ(5U, *next);
 
-    bb.erase(bb.end() - 1, bb.end());
+    next = bb.erase(bb.end() - 1, bb.end());
     EXPECT_EQ(3U, bb.size());
     EXPECT_EQ(ByteBuffer({0x05, 0x06, 0x07}), bb);
+    EXPECT_TRUE(next == bb.end());
 
-    bb.erase(bb.begin(), bb.end());
+    next = bb.erase(bb.begin(), bb.end());
     EXPECT_EQ(0U, bb.size());
+    EXPECT_TRUE(next == bb.end());
 }
 
 TEST(DynamicBufferTest, insertElement) {

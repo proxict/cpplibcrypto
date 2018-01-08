@@ -10,7 +10,7 @@
 namespace crypto {
 
 template <typename T, typename TAllocator = SecureAllocator<ReferenceStorage<T>>>
-class DynamicBuffer {
+class DynamicBuffer final {
 public:
     using ValueType = ReferenceStorage<T>;
     using Reference = ValueType&;
@@ -30,7 +30,7 @@ public:
     using iterator = Iterator;
     using const_iterator = ConstIterator;
 
-    DynamicBuffer(const bool sensitive = true) : mAllocator(sensitive) {}
+    explicit DynamicBuffer(const bool sensitive = true) : mAllocator(sensitive) {}
 
     explicit DynamicBuffer(const Size size, const bool sensitive = true) : mAllocator(sensitive) {
         reserve(size);
@@ -56,7 +56,7 @@ public:
 
     ~DynamicBuffer() {
         clear();
-        memory::deallocate(mData);
+        mAllocator.deallocate(mData, 0);
         mCapacity = 0;
     }
 
@@ -71,6 +71,10 @@ public:
     ConstReference operator[](const Size index) const { return at(index); }
 
     Reference operator[](const Size index) { return at(index); }
+
+    ConstReference front() const { return at(0); }
+
+    Reference front() { return at(0); }
 
     ConstReference back() const { return at(size() - 1); }
 
@@ -99,41 +103,35 @@ public:
     Size capacity() const { return mCapacity; }
 
     void clear() {
-        memory::destroy(begin(), end());
+        mAllocator.destroy(begin(), end());
         mSize = 0;
     }
 
-    void erase(const Size index) {
-        ASSERT(index <= size());
-        auto erased = begin() + index;
-        std::move(erased + 1, end(), erased);
-        pop();
-    }
-
-    // TODO(ProXicT): return iterator pointing to the next element
-    void erase(const Iterator first, const Iterator last) {
+    Iterator erase(const Iterator first, const Iterator last) {
         ASSERT(first >= begin() && last <= end());
-        memory::destroy(first, last);
+        mAllocator.destroy(first, last);
         std::move(last, end(), first);
         mSize -= std::distance(first, last);
+        return first;
     }
 
-    void erase(const Size from, const Size count) { erase(begin() + from, begin() + from + count); }
+    Iterator erase(const Size from, const Size count = 1) { return erase(begin() + from, begin() + from + count); }
 
-    void reserve(const Size newCapacity) {
+    Size reserve(const Size newCapacity) {
         if (capacity() >= newCapacity) {
-            return;
+            return capacity();
         }
         mCapacity = std::max(newCapacity, capacity() + capacity() / 2);
         allocateMemory(mCapacity);
         ASSERT(capacity() >= newCapacity);
+        return capacity();
     }
 
     void resize(const Size newSize) {
         if (newSize == size()) {
             return;
         } else if (newSize < size()) {
-            memory::destroy(begin() + newSize, end());
+            mAllocator.destroy(begin() + newSize, end());
         } else {
             reserve(newSize);
             for (Size i = 0; i < newSize - size(); ++i) {
@@ -174,15 +172,17 @@ public:
         return position;
     }
 
-    void insert(const Size position, ConstReference value) {
+    Iterator insert(const Size position, ConstReference value) {
         reserve(size() + 1);
-        std::move_backward(begin() + position, end(), end() + 1);
-        mAllocator.construct(begin() + position, value);
+        const Iterator pos = begin() + position;
+        std::move_backward(pos, end(), end() + 1);
+        mAllocator.construct(pos, value);
         ++mSize;
+        return pos;
     }
 
     void replace(const Iterator first, const Iterator last, const ConstIterator source) {
-        memory::destroy(first, last);
+        mAllocator.destroy(first, last);
         mAllocator.constructRange(first, last, source);
     }
 

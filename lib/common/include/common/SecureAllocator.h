@@ -80,6 +80,12 @@ public:
         }
     }
 
+    void destroy(Pointer first, Pointer last) {
+        for (Pointer it = first; it != last; ++it) {
+            destroy(it);
+        }
+    }
+
     void destroy(Reference ref) {
         memory::destroy(ref);
         if (mWipe) {

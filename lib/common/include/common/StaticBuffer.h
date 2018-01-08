@@ -42,6 +42,10 @@ public:
 
     virtual Reference operator[](const Size index) = 0;
 
+    virtual ConstReference front() const = 0;
+
+    virtual Reference front() = 0;
+
     virtual ConstReference back() const = 0;
 
     virtual Reference back() = 0;
@@ -72,15 +76,17 @@ public:
 
     virtual void clear() = 0;
 
-    virtual void erase(const Size index) = 0;
+    virtual Iterator erase(const Size index) = 0;
 
-    virtual void erase(const Iterator first, const Iterator last) = 0;
+    virtual Iterator erase(const Iterator first, const Iterator last) = 0;
 
-    virtual void erase(const Size from, const Size count) = 0;
+    virtual Iterator erase(const Size from, const Size count) = 0;
 
     virtual void push(ConstReference value) = 0;
 
-    virtual iterator insert(const Iterator position, ConstPointer first, ConstPointer last) = 0;
+    virtual Iterator insert(const Iterator position, ConstPointer first, ConstPointer last) = 0;
+
+    virtual Iterator insert(const Size position, ConstReference value) = 0;
 
     virtual void pop() = 0;
 
@@ -167,6 +173,10 @@ public:
 
     Reference operator[](const Size index) override { return at(index); }
 
+    ConstReference front() const override { return at(0); }
+
+    Reference front() override { return at(0); }
+
     ConstReference back() const override { return at(size() - 1); }
 
     Reference back() override { return at(size() - 1); }
@@ -200,22 +210,23 @@ public:
         mStored = 0;
     }
 
-    void erase(const Size index) override {
+    Iterator erase(const Size index) override {
         ASSERT(index <= mStored);
         auto erased = begin() + index;
         std::move(erased + 1, end(), erased);
         pop();
+        return erased;
     }
 
-    // TODO(ProXicT): return iterator pointing to the next element
-    void erase(const Iterator first, const Iterator last) override {
+    Iterator erase(const Iterator first, const Iterator last) override {
         ASSERT(first >= begin() && last <= end());
         memory::destroy(first, last);
         std::move(last, end(), first);
         mStored -= std::distance(first, last);
+        return first;
     }
 
-    void erase(const Size from, const Size count) override { erase(begin() + from, begin() + from + count); }
+    Iterator erase(const Size from, const Size count) override { return erase(begin() + from, begin() + from + count); }
 
     void push(ConstReference value) override {
         ASSERT(!full());
@@ -223,7 +234,7 @@ public:
         ++mStored;
     }
 
-    iterator insert(const Iterator position, ConstPointer first, ConstPointer last) {
+    Iterator insert(const Iterator position, ConstPointer first, ConstPointer last) override {
         const Size length = std::distance(first, last);
         ASSERT(size() + length <= TCapacity);
         if (length < 1U) {
@@ -240,11 +251,12 @@ public:
         return position;
     }
 
-    void insert(const Size position, ConstReference value) {
+    Iterator insert(const Size position, ConstReference value) override {
         reserve(size() + 1);
         std::move_backward(begin() + position, end(), end() + 1);
         at(position) = value;
         ++mStored;
+        return begin() + position;
     }
 
     void replace(const Iterator first, const Iterator last, const ConstIterator source) {

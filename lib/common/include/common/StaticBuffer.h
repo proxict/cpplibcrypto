@@ -92,7 +92,7 @@ public:
 
     virtual void resize(const Size newSize) = 0;
 
-    virtual void reserve(const Size newCapacity) = 0;
+    virtual Size reserve(const Size newCapacity) = 0;
 
     virtual StaticBufferBase& operator+=(const StaticBufferBase& b) = 0;
 
@@ -281,8 +281,9 @@ public:
         mStored = newSize;
     }
 
-    void reserve(const Size newCapacity) override {
+    Size reserve(const Size newCapacity) override {
         ASSERT(capacity() >= newCapacity);
+        return capacity();
     }
 
     Base& operator+=(const Base& b) override {

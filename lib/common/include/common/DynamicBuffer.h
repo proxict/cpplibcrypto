@@ -181,9 +181,10 @@ public:
         return pos;
     }
 
-    void replace(const Iterator first, const Iterator last, const ConstIterator source) {
+    Iterator replace(const Iterator first, const Iterator last, const ConstIterator source) {
         mAllocator.destroy(first, last);
         mAllocator.constructRange(first, last, source);
+        return first;
     }
 
     void pop() {

@@ -137,9 +137,10 @@ TEST(StaticBufferTest, eraseElementRange) {
 TEST(StaticBufferTest, replaceElements) {
     StaticByteBuffer<7> db{ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
     StaticByteBuffer<6> sb{ 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
-    db.replace(db.begin() + 1, db.begin() + 4, sb.begin() + 2);
+    const auto replaced = db.replace(db.begin() + 1, db.begin() + 4, sb.begin() + 2);
 
     EXPECT_EQ(StaticByteBuffer<7>({0x00, 0x0c, 0x0d, 0x0e, 0x04, 0x05, 0x06}), db);
+    EXPECT_EQ(0x0c, *replaced);
 }
 
 } // namespace crypto

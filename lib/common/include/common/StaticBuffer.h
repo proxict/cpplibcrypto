@@ -259,9 +259,10 @@ public:
         return begin() + position;
     }
 
-    void replace(const Iterator first, const Iterator last, const ConstIterator source) {
+    Iterator replace(const Iterator first, const Iterator last, const ConstIterator source) {
         memory::destroy(first, last);
         memory::constructRange<ValueType>(first, last, source);
+        return first;
     }
 
     void pop() override {

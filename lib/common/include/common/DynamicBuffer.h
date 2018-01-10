@@ -32,9 +32,7 @@ public:
 
     explicit DynamicBuffer(const Size size, const bool sensitive = true) : mAllocator(sensitive) {
         reserve(size);
-        for (Size i = 0; i < size; ++i) {
-            push(ValueType());
-        }
+        insert(end(), ValueType(), size);
     }
 
     DynamicBuffer(std::initializer_list<ValueType> list, const bool sensitive = true) : mAllocator(sensitive) {

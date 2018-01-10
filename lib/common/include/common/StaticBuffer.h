@@ -144,21 +144,17 @@ public:
     template <typename TIterator>
     StaticBuffer(TIterator first, TIterator last) : StaticBuffer() {
         ASSERT(Size(std::distance(first, last)) <= TCapacity);
-        for (auto it = first; it != last; ++it) {
-            push(*it);
-        }
+        insert(end(), first, last);
     }
 
     StaticBuffer(StaticBuffer&& other) : StaticBuffer() {
-        for (auto& it : other) {
-            push(std::move(it));
-        }
+        *this = std::move(other);
     }
 
     StaticBuffer& operator=(StaticBuffer&& other) {
-        for (auto& it : other) {
-            push(std::move(it));
-        }
+        mData = std::move(other.mData);
+        mStored = std::move(other.mStored);
+
         return *this;
     }
 

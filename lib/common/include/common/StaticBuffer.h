@@ -1,7 +1,6 @@
 #ifndef COMMON_STATICBYTEBUFFER_H_
 #define COMMON_STATICBYTEBUFFER_H_
 
-#include <iostream>
 #include <utility>
 
 #include "common/Exception.h"

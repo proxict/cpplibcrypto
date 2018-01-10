@@ -4,8 +4,6 @@
 #include "common/Exception.h"
 #include "common/LinearIterator.h"
 #include "common/SecureAllocator.h"
-#include <iostream>
-#include <algorithm>
 
 namespace crypto {
 

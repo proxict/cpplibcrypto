@@ -196,7 +196,6 @@ TEST(CbcAes128EncryptTest, cbcEncryptMultipleBlocks) {
     buffer.erase(0, processed);
     cipher.doFinal(buffer, out, PaddingNone());
 
-    std::cout << Hex::encode(out) << std::endl;
     ByteBuffer expected;
     expected += HexString("3f81c441d47f750c13ce8438cf7bcb12");
     expected += HexString("1f48175c755f420ef85d6af6b21507a9");

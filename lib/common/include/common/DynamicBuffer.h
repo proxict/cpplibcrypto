@@ -172,13 +172,19 @@ public:
         return position;
     }
 
-    Iterator insert(const Size position, ConstReference value) {
-        reserve(size() + 1);
-        const Iterator pos = begin() + position;
-        std::move_backward(pos, end(), end() + 1);
-        mAllocator.construct(pos, value);
-        ++mSize;
+    Iterator insert(const Iterator position, ConstReference value, const Size count = 1U) {
+        const Size offset = position - begin();
+        reserve(size() + count);
+        const Iterator pos = begin() + offset;
+        std::move_backward(pos, end(), end() + count);
+        mAllocator.constructRange(pos, pos + count, &value);
+        mSize += count;
         return pos;
+
+    }
+
+    Iterator insert(const Size position, ConstReference value, const Size count = 1U) {
+        return insert(begin() + position, value, count);
     }
 
     Iterator replace(const Iterator first, const Iterator last, const ConstIterator source) {

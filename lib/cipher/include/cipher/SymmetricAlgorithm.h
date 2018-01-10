@@ -3,11 +3,13 @@
 
 #include "common/DynamicBuffer.h"
 #include "common/Key.h"
+#include "common/BufferView.h"
 
 namespace crypto {
 
 class SymmetricAlgorithm {
 public:
+    using ConstByteBufferView = BufferView<const Byte>;
     SymmetricAlgorithm() : m_keySize(0) {}
 
     void setKey(const Key& key) {
@@ -20,7 +22,7 @@ public:
     }
 
 private:
-    virtual void keySchedule(const ByteBuffer& key) = 0;
+    virtual void keySchedule(const ConstByteBufferView& key) = 0;
 
     Size m_keySize;
 };

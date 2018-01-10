@@ -42,8 +42,7 @@ public:
             const Size currentBlockEnd = currentBlockStart + blockSize;
             bufferUtils::pushXored(buffer, in.begin() + currentBlockStart, in.begin() + currentBlockEnd, mIv.begin());
 
-            ByteBufferView view(buffer);
-            mCipher.encryptBlock(view);
+            mCipher.encryptBlock(buffer);
 
             out.insert(out.end(), buffer.begin(), buffer.end());
             mIv.setNew(buffer.begin());
@@ -73,8 +72,7 @@ public:
 
         bufferUtils::xorBuffer(buffer, mIv);
 
-        ByteBufferView view(buffer);
-        mCipher.encryptBlock(view);
+        mCipher.encryptBlock(buffer);
         out.insert(out.end(), buffer.begin(), buffer.end());
     }
 

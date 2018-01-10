@@ -25,9 +25,7 @@ public:
     template <typename TContainer>
     bool pad(TContainer& buf, const Size blockSize) const {
         const Byte numOfBytesToPad = getPkcs7Size(buf.size(), blockSize);
-        for (Byte i = 0; i < numOfBytesToPad; ++i) {
-            buf.push(numOfBytesToPad);
-        }
+        buf.insert(buf.end(), numOfBytesToPad, Size(numOfBytesToPad));
         return buf.size() % blockSize == 0;
     }
 

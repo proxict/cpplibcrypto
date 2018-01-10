@@ -37,12 +37,6 @@ public:
       mSize(container.size()),
       mCapacity(container.capacity()) {}
 
-    BufferView(ConstPointer first, ConstPointer last)
-    : mFirst(first),
-      mLast(last),
-      mSize(std::distance(first, last)),
-      mCapacity(mSize) {}
-
     BufferView(Pointer first, Pointer last)
     : mFirst(first),
       mLast(last),

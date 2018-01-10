@@ -40,7 +40,7 @@ public:
 
     virtual ~Aes() = default;
 
-    void encryptBlock(ByteBufferView& buffer) override {
+    void encryptBlock(ByteBufferView buffer) override {
         ASSERT(buffer.size() == getBlockSize());
         processFirstRound(buffer);
         for (Byte i = 0; i < getNumberOfRounds() - 1; ++i) {
@@ -49,7 +49,7 @@ public:
         processLastRound(buffer);
     }
 
-    void decryptBlock(ByteBufferView& buffer) override {
+    void decryptBlock(ByteBufferView buffer) override {
         ASSERT(buffer.size() == getBlockSize());
         processFirstRoundInv(buffer);
         for(Byte i = getNumberOfRounds() - 1; i >= 1; --i) {
@@ -77,37 +77,37 @@ public:
     }
 
 protected:
-    void processFirstRound(ByteBufferView& buffer) const {
+    void processFirstRound(ByteBufferView buffer) const {
         AesCore::addRoundKey(buffer, m_roundKeys, 0);
     }
 
-    void processRound(ByteBufferView& buffer, const Byte round) const {
+    void processRound(ByteBufferView buffer, const Byte round) const {
         AesCore::subBytes(buffer);
         AesCore::shiftRows(buffer);
         AesCore::mixColumns(buffer);
         AesCore::addRoundKey(buffer, m_roundKeys, round + 1);
     }
 
-    void processLastRound(ByteBufferView& buffer) const {
+    void processLastRound(ByteBufferView buffer) const {
         AesCore::subBytes(buffer);
         AesCore::shiftRows(buffer);
         AesCore::addRoundKey(buffer, m_roundKeys, getNumberOfRounds());
     }
 
-    void processFirstRoundInv(ByteBufferView& buffer) const {
+    void processFirstRoundInv(ByteBufferView buffer) const {
         AesCore::addRoundKey(buffer, m_roundKeys, getNumberOfRounds());
         AesCore::shiftRowsInv(buffer);
         AesCore::subBytesInv(buffer);
     }
 
-    void processRoundInv(ByteBufferView& buffer, const Byte round) const {
+    void processRoundInv(ByteBufferView buffer, const Byte round) const {
         AesCore::addRoundKey(buffer, m_roundKeys, round);
         AesCore::mixColumnsInv(buffer);
         AesCore::shiftRowsInv(buffer);
         AesCore::subBytesInv(buffer);
     }
 
-    void processLastRoundInv(ByteBufferView& buffer) const {
+    void processLastRoundInv(ByteBufferView buffer) const {
         AesCore::addRoundKey(buffer, m_roundKeys, 0);
     }
 
@@ -118,26 +118,19 @@ private:
     Aes& operator=(const Aes&) = delete;
     Aes(const Aes&) = delete;
 
-    void keySchedule(const ByteBuffer& key) override {
-        for (Byte i = 0; i < getKeySize(); ++i) {
-            m_roundKeys += key[i];
-        }
-
+    void keySchedule(const ConstByteBufferView& key) override {
+        m_roundKeys.insert(m_roundKeys.end(), key.begin(), key.end());
         Byte rconIteration = 0;
         while (m_roundKeys.size() < getExpandedKeySize()) {
             StaticBuffer<Byte, 4> word32;
-            for (Byte i = 0; i < 4; ++i) {
-                word32.push(m_roundKeys[i + m_roundKeys.size() - 4]);
-            }
+            word32.insert(word32.end(), m_roundKeys.end() - 4, m_roundKeys.end());
 
             if (m_roundKeys.size() % getKeySize() == 0) {
-                ByteBufferView view(word32);
-                AesCore::keyScheduleCore(view, ++rconIteration);
+                AesCore::keyScheduleCore(word32, ++rconIteration);
             }
 
             if (getKeySize() == Aes256 && m_roundKeys.size() % getKeySize() == 16) {
-                ByteBufferView view(word32);
-                AesCore::subBytes(view);
+                AesCore::subBytes(word32);
             }
 
             for (Byte i = 0; i < 4; ++i) {

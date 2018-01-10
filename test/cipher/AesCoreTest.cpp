@@ -13,9 +13,8 @@ using ByteBufferView = BufferView<Byte>;
 TEST(AesCoreTest, subBytes) {
     StaticBuffer<Byte, 16> buffer;
     buffer += HexString("000102030405060708090A0B0C0D0E0F");
-    ByteBufferView view(buffer);
-    AesCore::subBytes(view);
-    AesCore::subBytesInv(view);
+    AesCore::subBytes(buffer);
+    AesCore::subBytesInv(buffer);
     EXPECT_EQ(HexString("000102030405060708090A0B0C0D0E0F"), buffer);
 }
 
@@ -36,20 +35,18 @@ TEST(AesCoreTest, shiftRows) {
 
     StaticBuffer<Byte, 16> buffer;
     buffer += HexString("000102030405060708090A0B0C0D0E0F");
-    ByteBufferView view(buffer);
-    AesCore::shiftRows(view);
+    AesCore::shiftRows(buffer);
     EXPECT_EQ(HexString("00050A0F04090E03080D02070C01060B"), buffer);
-    AesCore::shiftRowsInv(view);
+    AesCore::shiftRowsInv(buffer);
     EXPECT_EQ(HexString("000102030405060708090A0B0C0D0E0F"), buffer);
 }
 
 TEST(AesCoreTest, mixColumns) {
     StaticBuffer<Byte, 16> buffer;
     buffer += HexString("000102030405060708090A0B0C0D0E0F");
-    ByteBufferView view(buffer);
-    AesCore::mixColumns(view);
+    AesCore::mixColumns(buffer);
     EXPECT_EQ(HexString("02070005060304010a0f080d0e0b0c09"), buffer);
-    AesCore::mixColumnsInv(view);
+    AesCore::mixColumnsInv(buffer);
     EXPECT_EQ(HexString("000102030405060708090A0B0C0D0E0F"), buffer);
 }
 

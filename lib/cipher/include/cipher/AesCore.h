@@ -184,19 +184,19 @@ static constexpr Byte rcon[256] = {
 class AesCore {
     using ByteBufferView = BufferView<Byte>;
 public:
-    static void subBytes(ByteBufferView& buffer) {
+    static void subBytes(ByteBufferView buffer) {
         for (Byte i = 0; i < buffer.size(); ++i) {
             buffer[i] = sbox[buffer[i]];
         }
     }
 
-    static void subBytesInv(ByteBufferView& buffer) {
+    static void subBytesInv(ByteBufferView buffer) {
         for (Byte i = 0; i < buffer.size(); ++i) {
             buffer[i] = sboxinv[buffer[i]];
         }
     }
 
-    static void shiftRows(ByteBufferView& buffer) {
+    static void shiftRows(ByteBufferView buffer) {
         ASSERT(buffer.size() == 16);
         Byte i = buffer[1];
         buffer[1] = buffer[5];
@@ -218,7 +218,7 @@ public:
         buffer[6]  = j;
     }
 
-    static void shiftRowsInv(ByteBufferView& buffer) {
+    static void shiftRowsInv(ByteBufferView buffer) {
         ASSERT(buffer.size() == 16);
         Byte i = buffer[1];
         buffer[1] = buffer[13];
@@ -240,7 +240,7 @@ public:
         buffer[14] = j;
     }
 
-    static void mixColumns(ByteBufferView& buffer) {
+    static void mixColumns(ByteBufferView buffer) {
         ASSERT(buffer.size() == 16);
         StaticBuffer<Byte, 16> tmp;
         for (Byte i = 0; i < 4; ++i) {
@@ -253,7 +253,7 @@ public:
         buffer.replace(buffer.begin(), buffer.end(), tmp.begin());
     }
 
-    static void mixColumnsInv(ByteBufferView& buffer) {
+    static void mixColumnsInv(ByteBufferView buffer) {
         ASSERT(buffer.size() == 16);
         StaticBuffer<Byte, 16> tmp;
         for (Byte i = 0; i < 4; ++i) {
@@ -266,14 +266,14 @@ public:
         buffer.replace(buffer.begin(), buffer.end(), tmp.begin());
     }
 
-    static void addRoundKey(ByteBufferView& buffer, const ByteBuffer& roundKeys, const Byte keyIndex) {
+    static void addRoundKey(ByteBufferView buffer, const ByteBuffer& roundKeys, const Byte keyIndex) {
         ASSERT(buffer.size() == 16);
         for (Size i = 0; i < buffer.size(); ++i) {
             buffer[i] ^= roundKeys[i + buffer.size() * keyIndex];
         }
     }
 
-    static void rotateLeft(ByteBufferView& buffer) {
+    static void rotateLeft(ByteBufferView buffer) {
         const Byte b = buffer.front();
         for (Size i = 0; i < buffer.size() - 1; ++i) {
             buffer[i] = buffer[i + 1];
@@ -281,7 +281,7 @@ public:
         buffer.back() = b;
     }
 
-    static void keyScheduleCore(ByteBufferView& buffer, const Byte i) {
+    static void keyScheduleCore(ByteBufferView buffer, const Byte i) {
         ASSERT(buffer.size() == 4);
         rotateLeft(buffer);
         subBytes(buffer);

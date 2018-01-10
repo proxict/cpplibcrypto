@@ -16,9 +16,9 @@ public:
 
     virtual Size getBlockSize() const = 0;
 
-    virtual void encryptBlock(ByteBufferView&) = 0;
+    virtual void encryptBlock(ByteBufferView) = 0;
 
-    virtual void decryptBlock(ByteBufferView&) = 0;
+    virtual void decryptBlock(ByteBufferView) = 0;
 };
 
 } // namespace crypto

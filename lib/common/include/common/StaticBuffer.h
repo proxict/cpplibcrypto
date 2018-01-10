@@ -86,7 +86,9 @@ public:
 
     virtual Iterator insert(const Iterator position, ConstPointer first, ConstPointer last) = 0;
 
-    virtual Iterator insert(const Size position, ConstReference value) = 0;
+    virtual Iterator insert(const Iterator position, ConstReference value, const Size count = 1U) = 0;
+
+    virtual Iterator insert(const Size position, ConstReference value, const Size count = 1U) = 0;
 
     virtual void pop() = 0;
 
@@ -251,12 +253,21 @@ public:
         return position;
     }
 
-    Iterator insert(const Size position, ConstReference value) override {
-        reserve(size() + 1);
-        std::move_backward(begin() + position, end(), end() + 1);
-        at(position) = value;
-        ++mStored;
-        return begin() + position;
+    Iterator insert(const Iterator position, ConstReference value, const Size count = 1U) override {
+        const Size offset = position - begin();
+        reserve(size() + count);
+        Iterator pos = begin() + offset;
+        std::move_backward(pos, end(), end() + count);
+        for (Size i = 0; i < count; ++i) {
+            memory::construct<ValueType>(pos++, value);
+        }
+        mStored += count;
+        return pos;
+
+    }
+
+    Iterator insert(const Size position, ConstReference value, const Size count = 1U) override {
+        return insert(begin() + position, value, count);
     }
 
     Iterator replace(const Iterator first, const Iterator last, const ConstIterator source) {

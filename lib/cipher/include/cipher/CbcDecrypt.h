@@ -40,8 +40,7 @@ public:
             const Size currentBlockEnd = currentBlockStart + blockSize;
             buffer.insert(buffer.end(), in.begin() + currentBlockStart, in.begin() + currentBlockEnd);
 
-            ByteBufferView view(buffer);
-            mCipher.decryptBlock(view);
+            mCipher.decryptBlock(buffer);
             bufferUtils::pushXored(out, buffer.cbegin(), buffer.cend(), mIv.begin());
 
             mIv.setNew(in.begin() + currentBlockStart);
@@ -63,8 +62,7 @@ public:
         StaticBuffer<Byte, 16> buffer;
         buffer.insert(buffer.end(), in.begin(), in.end());
 
-        ByteBufferView view(buffer);
-        mCipher.decryptBlock(view);
+        mCipher.decryptBlock(buffer);
         bufferUtils::pushXored(out, buffer.cbegin(), buffer.cend(), mIv.cbegin());
         padder.unpad(out);
     }

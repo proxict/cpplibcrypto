@@ -125,20 +125,12 @@ public:
 
     explicit StaticBuffer(const Size count) : StaticBuffer() {
         ASSERT(count <= TCapacity);
-        for (Size i = 0; i < count; ++i) {
-            mData[i] = ValueType();
-        }
-
-        mStored = count;
+        resize(count);
     }
 
     explicit StaticBuffer(const Size count, ConstReference value) : StaticBuffer() {
         ASSERT(count <= TCapacity);
-        for (Size i = 0; i < count; ++i) {
-            mData[i] = value;
-        }
-
-        mStored = count;
+        insert(end(), value, count);
     }
 
     template <typename TIterator>
@@ -152,9 +144,8 @@ public:
     }
 
     StaticBuffer& operator=(StaticBuffer&& other) {
-        mData = std::move(other.mData);
-        mStored = std::move(other.mStored);
-
+        std::swap(mData, other.mData);
+        std::swap(mStored, other.mStored);
         return *this;
     }
 
@@ -258,7 +249,6 @@ public:
         }
         mStored += count;
         return pos;
-
     }
 
     Iterator insert(const Size position, ConstReference value, const Size count = 1U) override {
@@ -279,13 +269,10 @@ public:
     void resize(const Size newSize) override {
         ASSERT(newSize <= TCapacity);
         if (newSize < mStored) {
-            memory::destroy(begin() + newSize, end());
-        } else {
-            for (Size i = mStored; i < newSize; ++i) {
-                mData[i] = ValueType();
-            }
+            erase(begin() + newSize, end());
+        } else if (newSize > mStored) {
+            insert(end(), ValueType(), newSize - mStored);
         }
-        mStored = newSize;
     }
 
     Size reserve(const Size newCapacity) override {

@@ -274,11 +274,11 @@ public:
     }
 
     static void rotateLeft(ByteBufferView buffer) {
-        const Byte b = buffer.front();
+        const ByteBufferView::ValueType b = std::move(buffer.front());
         for (Size i = 0; i < buffer.size() - 1; ++i) {
-            buffer[i] = buffer[i + 1];
+            buffer[i] = std::move(buffer[i + 1]);
         }
-        buffer.back() = b;
+        buffer.back() = std::move(b);
     }
 
     static void keyScheduleCore(ByteBufferView buffer, const Byte i) {

@@ -143,5 +143,21 @@ TEST(StaticBufferTest, replaceElements) {
     EXPECT_EQ(0x0c, *replaced);
 }
 
+TEST(StaticBufferTest, resize) {
+    StaticByteBuffer<15> bb(10);
+    EXPECT_EQ(10U, bb.size());
+    EXPECT_EQ(0U, bb[9]);
+
+    bb[0] = 3;
+    bb.resize(1);
+    EXPECT_EQ(1U, bb.size());
+    EXPECT_EQ(3U, bb[0]);
+
+    bb.resize(15);
+    EXPECT_EQ(15U, bb.size());
+    EXPECT_EQ(3U, bb[0]);
+    EXPECT_EQ(0U, bb[10]);
+}
+
 } // namespace crypto
 

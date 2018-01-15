@@ -30,13 +30,9 @@ public:
 
     explicit DynamicBuffer(const bool sensitive = true) : mAllocator(sensitive) {}
 
-    explicit DynamicBuffer(const Size size, const bool sensitive = true) : mAllocator(sensitive) {
-        reserve(size);
-        insert(end(), ValueType(), size);
-    }
+    explicit DynamicBuffer(const Size size, const bool sensitive = true) : mAllocator(sensitive) { resize(size); }
 
     DynamicBuffer(std::initializer_list<ValueType> list, const bool sensitive = true) : mAllocator(sensitive) {
-        reserve(list.size());
         insert(end(), list.begin(), list.end());
     }
 
@@ -124,17 +120,11 @@ public:
     }
 
     void resize(const Size newSize) {
-        if (newSize == size()) {
-            return;
-        } else if (newSize < size()) {
-            mAllocator.destroy(begin() + newSize, end());
-        } else {
-            reserve(newSize);
-            for (Size i = 0; i < newSize - size(); ++i) {
-                mAllocator.construct(mData + size() + i, ValueType());
-            }
+        if (newSize < size()) {
+            erase(begin() + newSize, end());
+        } else if (newSize > size()) {
+            insert(end(), ValueType(), newSize - size());
         }
-        mSize = newSize;
     }
 
     template <typename... TArgs>
@@ -173,10 +163,11 @@ public:
         reserve(size() + count);
         const Iterator pos = begin() + offset;
         std::move_backward(pos, end(), end() + count);
-        mAllocator.constructRange(pos, pos + count, &value);
+        for (Size i = 0; i < count; ++i) {
+            mAllocator.construct(pos + i, value);
+        }
         mSize += count;
         return pos;
-
     }
 
     Iterator insert(const Size position, ConstReference value, const Size count = 1U) {

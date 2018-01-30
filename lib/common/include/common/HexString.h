@@ -94,6 +94,10 @@ public:
         return lhs == rhs.m_decoded;
     }
 
+    friend bool operator!=(const ByteBuffer& lhs, const HexString& rhs) {
+        return lhs != rhs.m_decoded;
+    }
+
     /**
      * \brief operator == compares if HexString and ByteBuffe are equal
      * \param lhs HexStringr object
@@ -102,6 +106,10 @@ public:
      */
     friend bool operator==(const HexString& lhs, const ByteBuffer& rhs) {
         return lhs.m_decoded == rhs;
+    }
+
+    friend bool operator!=(const HexString& lhs, const ByteBuffer& rhs) {
+        return lhs.m_decoded != rhs;
     }
 
     /**
@@ -122,6 +130,10 @@ public:
         return true;
     }
 
+    friend bool operator!=(const StaticByteBufferBase& lhs, const HexString& rhs) {
+        return !(lhs == rhs);
+    }
+
     /**
      * \brief operator == compares if HexString and StaticByteBuffer are equal
      * \param lhs HexString object
@@ -140,7 +152,9 @@ public:
         return true;
     }
 
-    // TODO(ProXicT): operator!=
+    friend bool operator!=(const HexString& lhs, const StaticByteBufferBase& rhs) {
+        return !(lhs == rhs);
+    }
 
     /**
      * \brief operator+ adding two HexStrings

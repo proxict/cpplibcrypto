@@ -8,7 +8,7 @@ namespace bufferUtils {
 
 template <typename TContainer, typename TContainerXor>
 inline void xorBuffer(TContainer& buffer, const TContainerXor& xorSource) {
-    Size index = 0; // TODO(ProXicT): Get rid of this when implementing Iterator().index()
+    Size index = 0;
     for (typename TContainer::Reference b : buffer) {
         b ^= xorSource[index++];
     }

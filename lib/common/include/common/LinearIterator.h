@@ -70,59 +70,47 @@ public:
 
     ConstPointer operator->() const { return (&**this); }
 
-    Size index() const {
-        return mIndex;
-    }
-
     LinearIterator& operator++() {
         ++mPtr;
-        ++mIndex;
         return *this;
     }
 
     LinearIterator operator++(int) {
         LinearIterator temp = *this;
         ++mPtr;
-        ++mIndex;
         return temp;
     }
 
     LinearIterator& operator--() {
         --mPtr;
-        --mIndex;
         return *this;
     }
 
     LinearIterator operator--(int) {
         LinearIterator temp = *this;
         --mPtr;
-        --mIndex;
         return temp;
     }
 
     LinearIterator& operator+=(const Size x) {
         mPtr += x;
-        mIndex += x;
         return *this;
     }
 
     LinearIterator& operator-=(const Size x) {
         mPtr -= x;
-        mIndex -= x;
         return *this;
     }
 
     LinearIterator operator+(const Size x) const {
         LinearIterator res(*this);
         res.mPtr += x;
-        res.mIndex += x;
         return res;
     }
 
     LinearIterator operator-(const Size x) const {
         LinearIterator res(*this);
         res.mPtr -= x;
-        res.mIndex -= x;
         return res;
     }
 
@@ -136,7 +124,6 @@ public:
 
 protected:
     Pointer mPtr;
-    Size mIndex = 0;
 };
 
 } // namespace crypto

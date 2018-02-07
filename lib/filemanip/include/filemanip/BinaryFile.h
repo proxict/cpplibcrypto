@@ -10,10 +10,15 @@
 
 namespace crypto {
 
+/// Represents a binary file which can be read/written from/to a file system
 class BinaryFile {
     using StaticByteBufferBase = StaticBufferBase<Byte>;
 public:
     enum class Mode { Read = 1, Write };
+
+    /// Opens the specified file in the specified mode
+    /// \param filename The file to be opened
+    /// \param mode The mode to open the file in
     BinaryFile(const std::string& filename, const Mode mode) :
         m_stream(filename, (mode == Mode::Read ? std::ios::in : std::ios::out) | std::ios::binary), m_mode(mode) {
         if (!m_stream.good()) {
@@ -21,6 +26,10 @@ public:
         }
     }
 
+    /// Reads the specified maximum number of bytes
+    /// \param output Buffer to save the data to
+    /// \param readMax The maximum number of bytes to read
+    /// \returns The actual number of bytes read
     template <typename TContainer>
     Size read(TContainer& output, const Size readMax) {
         ASSERT(m_mode == Mode::Read);
@@ -34,6 +43,9 @@ public:
         return bytesRead;
     }
 
+    /// Writes the buffer data
+    /// \param buffer The buffer to be written
+    /// \returns true if the data have been written successfully, false otherwise
     template <typename TContainer>
     bool write(const TContainer& buffer) {
         ASSERT(m_mode == Mode::Write);

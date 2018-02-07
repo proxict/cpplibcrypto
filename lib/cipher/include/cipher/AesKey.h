@@ -11,6 +11,9 @@
 
 namespace crypto {
 
+/// AES key representation
+///
+/// Requires the key to be at least 16 and at most 32 bytes in size and to be dividable by 8
 class AesKey : public KeySized<16, 32, 8> {
 public:
     AesKey() : KeySized() {}
@@ -29,13 +32,11 @@ public:
         m_key += key;
     }
 
-    Size size() const override {
-        return m_key.size();
-    }
+    /// Returns the key size in bytes
+    Size size() const override { return m_key.size(); }
 
-    const ByteBuffer& getBytes() const override {
-        return m_key;
-    }
+    /// Returns the byte representation of the key
+    const ByteBuffer& getBytes() const override { return m_key; }
 
 private:
     AesKey& operator=(const AesKey&) = delete;

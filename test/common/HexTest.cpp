@@ -58,10 +58,10 @@ TEST(HexTest, decodeData) {
 }
 
 TEST(HexTest, exception) {
-    EXPECT_THROW(Hex::decode("1"), std::invalid_argument);
-    EXPECT_THROW(Hex::decode("123"), std::invalid_argument);
-    EXPECT_THROW(Hex::decode("pp"), std::invalid_argument);
-    EXPECT_THROW(Hex::decode("0q"), std::invalid_argument);
+    EXPECT_THROW(Hex::decode("1"), Exception);
+    EXPECT_THROW(Hex::decode("123"), Exception);
+    EXPECT_THROW(Hex::decode("pp"), Exception);
+    EXPECT_THROW(Hex::decode("0q"), Exception);
 }
 
 } // namespace crypto

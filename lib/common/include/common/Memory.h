@@ -9,37 +9,58 @@
 namespace crypto {
 namespace memory {
 
-    template <typename T>
-    inline T* allocate(const Size count) {
-        return static_cast<T*>(::operator new(count * sizeof(T)));
-    }
+/// Allocates memory for the given number of elements
+///
+/// Does not construct the elements
+/// \returns Pointer to the allocated memory
+template <typename T>
+inline T* allocate(const Size count) {
+    return static_cast<T*>(::operator new(count * sizeof(T)));
+}
 
-    inline void deallocate(void* ptr) { ::operator delete(ptr); }
+/// Frees the given memory
+///
+/// Does not call any destructor
+inline void deallocate(void* ptr) {
+    ::operator delete(ptr);
+}
 
-    template <typename T, typename... TArgs>
-    inline void construct(void* ptr, TArgs&&... value) {
-        new (ptr) T(std::forward<TArgs>(value)...);
-    }
+/// Constructs an element in-place the given memory
+///
+/// Does not allocate any memory
+template <typename T, typename... TArgs>
+inline void construct(void* ptr, TArgs&&... value) {
+    new (ptr) T(std::forward<TArgs>(value)...);
+}
 
-    template <typename T>
-    inline void constructRange(T* first, T* last, const T* source) {
-        const T* srcIt = source;
-        for (T* it = first; it != last; ++it) {
-            construct<T>(it, *(srcIt++));
-        }
+/// Constructs an element range in-place the given memory
+///
+/// Does not allocate any memory. Calls copy constructor of the type specified.
+template <typename T>
+inline void constructRange(T* first, T* last, const T* source) {
+    const T* srcIt = source;
+    for (T* it = first; it != last; ++it) {
+        construct<T>(it, *(srcIt++));
     }
+}
 
-    template <typename T>
-    inline void destroy(T& object) {
-        object.~T();
-    }
+/// Destructs the given object
+///
+/// Does not free any memory, only calls destructor
+template <typename T>
+inline void destroy(T& object) {
+    object.~T();
+}
 
-    template <typename TIterator>
-    inline void destroy(TIterator first, TIterator last) {
-        for (auto it = first; it != last; ++it) {
-            destroy(*it);
-        }
+/// Destructs an element range
+///
+/// Does not free any memory, only calls destroctor
+template <typename TIterator>
+inline void destroy(TIterator first, TIterator last) {
+    for (auto it = first; it != last; ++it) {
+        destroy(*it);
     }
+}
 
 } // namespace memory
 } // namespace crypto

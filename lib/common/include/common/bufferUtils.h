@@ -6,6 +6,10 @@
 namespace crypto {
 namespace bufferUtils {
 
+/// Applies an XOR operation on the given container with the given source
+///
+/// \param buffer Buffer which will get XORed
+/// \param xorSource Data with which the given buffer will be XORed
 template <typename TContainer, typename TContainerXor>
 inline void xorBuffer(TContainer& buffer, const TContainerXor& xorSource) {
     Size index = 0;
@@ -14,6 +18,11 @@ inline void xorBuffer(TContainer& buffer, const TContainerXor& xorSource) {
     }
 }
 
+/// Applies an XOR operation on the given iterator range with the given source
+///
+/// \param first The beginning of the data to be XORed
+/// \param last The end of the data to be XORed
+/// \param xorSourceFirst The beginning of the data with which the given range will be XORed
 template <typename TIterator, typename TConstIterator>
 inline void xorBuffer(TIterator first, TIterator last, const TConstIterator xorSourceFirst) {
     TIterator srcIt = xorSourceFirst;
@@ -22,6 +31,12 @@ inline void xorBuffer(TIterator first, TIterator last, const TConstIterator xorS
     }
 }
 
+/// Pushes an XORed data to the given container
+///
+/// \param container The container to push to
+/// \param first The beginning of the data to be XORed and pushed
+/// \param lasat The end of the data to be XORed and pushed
+/// \param xorSource The beginning of the data with which the given range will be XORed and pushed
 template <typename TContainer, typename TIterator = typename TContainer::ConstIterator>
 inline void pushXored(TContainer& container, const TIterator first, const TIterator last, const TIterator xorSource) {
     TIterator xorIt = xorSource;
@@ -30,8 +45,20 @@ inline void pushXored(TContainer& container, const TIterator first, const TItera
     }
 }
 
-} // namespace utils
+template <typename TContainer1, typename TContainer2>
+inline bool equal(const TContainer1& c1, const TContainer2& c2) {
+    if (c1.size() != c2.size()) {
+        return false;
+    }
+    for (Size i = 0; i < c1.size(); ++i) {
+        if (c1[i] != c2[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+} // namespace bufferUtils
 } // namespace crypto
 
 #endif
-

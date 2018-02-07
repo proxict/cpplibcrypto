@@ -7,14 +7,21 @@
 #include "common/Exception.h"
 #include "common/InitializationVector.h"
 #include "common/Key.h"
-#include "common/common.h"
 #include "common/bufferUtils.h"
+#include "common/common.h"
 
 namespace crypto {
 
+/// Block cipher CBC decryptor
 class CbcDecrypt : public ModeOfOperation {
 public:
-    CbcDecrypt(BlockCipher& cipher, const Key& key, InitializationVector& iv) : ModeOfOperation(cipher, key), mCipher(cipher), mIv(iv) {
+    /// Constructs decryptor using the provided cipher algorithm, key and IV
+    /// \param cipher Block cipher instance
+    /// \param key The key for the cipher
+    /// \param IV IV for the CB chain. The size has to match the cipher block size
+    /// \throws Exception in case the IV size does not match the cipher block size
+    CbcDecrypt(BlockCipher& cipher, const Key& key, InitializationVector& iv)
+    : ModeOfOperation(cipher, key), mCipher(cipher), mIv(iv) {
         if (mIv.size() != mCipher.getBlockSize()) {
             throw Exception("The Initialization Vector size does not match the cipher block size");
         }
@@ -28,6 +35,10 @@ public:
         return update<StaticBufferBase<Byte>>(in, out);
     }
 
+    /// Decrypts the given input
+    /// \param in The data to be decrypted
+    /// \param out A buffer to which the decrypted data will be pushed. The buffer is expected to have push() and size()
+    /// methods.
     template <typename TContainer>
     Size update(const ByteBufferView& in, TContainer& out) {
         const Size blockSize = mCipher.getBlockSize();
@@ -56,6 +67,7 @@ public:
         doFinal<StaticBufferBase<Byte>>(in, out, padder);
     }
 
+    /// Applies padding using the provided scheme
     template <typename TContainer>
     void doFinal(const ByteBufferView& in, TContainer& out, const Padding& padder) {
         ASSERT(in.size() == mCipher.getBlockSize());
@@ -67,6 +79,7 @@ public:
         padder.unpad(out);
     }
 
+    /// Resets the CB chain
     void resetChain() { mIv.reset(); }
 
 private:

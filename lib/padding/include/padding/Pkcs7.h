@@ -10,6 +10,7 @@
 
 namespace crypto {
 
+/// RFC 2315 compliant PKCS#7 padding implementation
 class Pkcs7 : public Padding {
 public:
     Pkcs7() = default;
@@ -22,6 +23,9 @@ public:
         return pad<StaticBufferBase<Byte>>(buf, blockSize);
     }
 
+    /// Pads the buffer to the multiple of the given block size
+    /// \param buf The buffer to be padded
+    /// \param blockSize The block size to which the given buffer will be padded
     template <typename TContainer>
     bool pad(TContainer& buf, const Size blockSize) const {
         const Byte numOfBytesToPad = getPkcs7Size(buf.size(), blockSize);
@@ -37,6 +41,8 @@ public:
         unpad<StaticBufferBase<Byte>>(buf);
     }
 
+    /// Unpads the given buffer
+    /// \param buf The buffer to be unpadded
     template <typename TContainer>
     void unpad(TContainer& buf) const {
         Byte bytesPadded = buf.back();

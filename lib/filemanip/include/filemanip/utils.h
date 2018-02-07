@@ -8,21 +8,13 @@
 
 namespace crypto {
 
-/**
- * \brief fileExists check for file existence
- * \param filename filename to be checked
- * \return true if file exists, false otherwise
- */
+/// Returns whether or not the file specified exists
 inline bool fileExists(const std::string& filename) {
     std::ifstream stream(filename);
     return stream.good();
 }
 
-/**
- * \brief getFileSize returns file size in bytes
- * \param filename input filename
- * \return file size in bytes
- */
+/// Returns the size of the file specified
 inline Size getFileSize(const std::string& filename) {
     std::ifstream stream(filename, std::ios::binary | std::ios::ate);
     if (!stream.is_open()) throw crypto::Exception("Could not open the file specified (" + filename + ')');

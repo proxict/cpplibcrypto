@@ -34,7 +34,10 @@ public:
         using other = SecureAllocator<TargetT>;
     };
 
-    SecureAllocator(const bool sensitive = false) : mWipe(sensitive) {}
+    /// Constructs the allocator with the given wipe flag
+    ///
+    /// For more information about the wipe flag, see \ref setWipe()
+    SecureAllocator(const bool wipe = false) : mWipe(wipe) {}
 
     SecureAllocator& operator=(SecureAllocator&& other) {
         mWipe = std::move(other.mWipe);
@@ -45,8 +48,13 @@ public:
 
     ~SecureAllocator() = default;
 
+    /// Sets the wipe flag to the allocator
+    ///
+    /// Wipe flag means that on destruction and reallocation the data will not only be destroyed but also memset with a
+    /// random bytes.
     void setWipe(const bool wipe) { mWipe = wipe; }
 
+    /// Tells whether or not tht wipe flag is set
     bool isWipe() const { return mWipe; }
 
     template <class T2>
@@ -69,6 +77,9 @@ public:
         memory::construct<ValueType>(ptr, std::forward<TArgs>(value)...);
     }
 
+    /// Constructs an element range in-place the given memory
+    ///
+    /// Does not allocate any memory. Calls copy constructor of the type specified.
     void constructRange(Pointer first, Pointer last, ConstPointer with) {
         memory::constructRange<ValueType>(first, last, with);
     }
@@ -80,6 +91,9 @@ public:
         }
     }
 
+    /// Destructs range of elements
+    ///
+    /// Does not free any memory, only calls destructor
     void destroy(Pointer first, Pointer last) {
         for (Pointer it = first; it != last; ++it) {
             destroy(it);
@@ -93,6 +107,9 @@ public:
         }
     }
 
+    /// Wipes the value at the given pointer
+    ///
+    /// The memory can be set to a random byte sequence
     void wipe(Pointer ptr) {
         Byte* bytePtr = reinterpret_cast<Byte*>(ptr);
         for (Size i = 0; i < sizeof(ValueType); ++i) {

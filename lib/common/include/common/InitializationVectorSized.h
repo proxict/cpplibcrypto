@@ -3,8 +3,6 @@
 
 #include "common/InitializationVector.h"
 
-#include <cstddef>
-
 namespace crypto {
 
 template<Size TSize>

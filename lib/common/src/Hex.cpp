@@ -5,14 +5,13 @@
 ///
 //------------------------------------------------------------------------------
 #include "common/Hex.h"
-
-#include <stdexcept>
+#include "common/Exception.h"
 
 namespace crypto {
 
 ByteBuffer Hex::decode(const std::string& hexStr) {
     if (hexStr.size() & 1) {
-        throw std::invalid_argument("Odd HEX data length passed");
+        throw Exception("Odd HEX data length passed");
     }
 
     ByteBuffer output(hexStr.size() / 2);
@@ -30,7 +29,7 @@ constexpr Byte Hex::hex2Byte(const char c) {
     } else if ('A' <= c && c <= 'F') {
         return c - 'A' + 10;
     } else {
-        throw std::invalid_argument("Invalid HEX char passed");
+        throw Exception("Invalid HEX char passed");
     }
 }
 

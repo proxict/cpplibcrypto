@@ -10,6 +10,7 @@ namespace crypto {
 
 using ByteBufferView = BufferView<Byte>;
 
+/// Base class for encryption/decryption operation modes
 class ModeOfOperation {
 public:
     using StaticByteBufferBase = StaticBufferBase<Byte>;

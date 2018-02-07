@@ -63,10 +63,8 @@ void decFile(Decryptor& decryptor, const std::string& inputFileName, const std::
     output.write(plainBuffer);
 }
 
-/**
- * \brief The entry point of the application.
- * \return process exit code, \c 0 meaning success
- */
+/// The entry point of the sandbox application
+/// \returns Process exit code whete \c 0 means success
 int main() {
     try {
         crypto::Aes::Key key(crypto::HexString("2b7e151628aed2a6abf7158809cf4f3c"));
@@ -82,4 +80,5 @@ int main() {
         std::cout << e.what() << '\n';
         return 1;
     }
+    return 0;
 }

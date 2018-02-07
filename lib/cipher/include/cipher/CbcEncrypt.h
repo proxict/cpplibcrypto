@@ -12,8 +12,14 @@
 
 namespace crypto {
 
+/// Block cipher CBC encryptor
 class CbcEncrypt : public ModeOfOperation {
 public:
+    /// Constructs encryptor using the provided cipher algorithm, key and IV
+    /// \param cipher Block cipher instance
+    /// \param key The key for the cipher
+    /// \param IV IV for the CB chain. The size has to match the cipher block size
+    /// \throws Exception in case the IV size does not match the cipher block size
     CbcEncrypt(BlockCipher& cipher, const Key& key, InitializationVector& iv) : ModeOfOperation(cipher, key), mCipher(cipher), mIv(iv) {
         if (mIv.size() != mCipher.getBlockSize()) {
             throw Exception("The Initialization Vector size does not match the cipher block size");
@@ -28,6 +34,10 @@ public:
         return update<StaticBufferBase<Byte>>(in, out);
     }
 
+    /// Encrypts the given input
+    /// \param in The data to be encrypted
+    /// \param out A buffer to which the encrypted data will be pushed. The buffer is expected to have push() and size()
+    /// methods.
     template <typename TContainer>
     Size update(const ByteBufferView& in, TContainer& out) {
         const Size blockSize = mCipher.getBlockSize();
@@ -58,6 +68,7 @@ public:
         doFinal<StaticBufferBase<Byte>>(in, out, padder);
     }
 
+    /// Applies padding using the provided scheme
     template <typename TContainer>
     void doFinal(const ByteBufferView& in, TContainer& out, const Padding& padder) {
         ASSERT(in.size() < mCipher.getBlockSize());
@@ -76,6 +87,7 @@ public:
         out.insert(out.end(), buffer.begin(), buffer.end());
     }
 
+    /// Resets the CB chain
     void resetChain() { mIv.reset(); }
 
 private:

@@ -1,180 +1,84 @@
-//------------------------------------------------------------------------------
-///
-/// \file
-/// \brief Defines a class reprezenation of base16 string
-///
-//------------------------------------------------------------------------------
 #ifndef COMMON_HEX_STRING_H_
 #define COMMON_HEX_STRING_H_
 
 #include "common/DynamicBuffer.h"
 #include "common/StaticBuffer.h"
+#include "common/bufferUtils.h"
 #include "common/Hex.h"
 
 namespace crypto {
 
-/**
- * \brief class reprezenation of base16 string
- */
+/// Represents a base-16 string
 class HexString {
     using StaticByteBufferBase = StaticBufferBase<Byte>;
 public:
-    /**
-     * \brief HexString constructor
-     * \param hexStr hexadecimal string
-     * \throws std::invalid_argument if hexStr contains invalid hexadecimal character
-     */
+    /// \param hexStr Hexadecimal data in string representation
+    /// \throws Exception if hexStr contains an invalid base-16 character
     HexString(const std::string& hexStr) : m_decoded(Hex::decode(hexStr)) {}
 
-    /**
-     * \brief operator= move assignment operator
-     * \param other HexString instance
-     * \return HexString object
-     */
     HexString& operator=(HexString&& other) noexcept {
         m_decoded = std::move(other.m_decoded);
         return *this;
     }
 
-    /**
-     * \brief HexString move constructor
-     * \param other HexString instance
-     */
     HexString(HexString&& other) noexcept {
         *this = std::move(other);
     }
 
-    /**
-     * \brief size getter
-     * \return number of bytes of the decoded buffer
-     */
+    /// Returns the number of bytes of the decoded data
     Size size() const {
         return m_decoded.size();
     }
 
-    /**
-     * \brief operator+= append operator
-     * \param rhs HexString object
-     * \return HexString object
-     */
-    HexString& operator+=(const HexString& rhs) {
-        m_decoded += rhs.m_decoded;
-        return *this;
-    }
-
-    /**
-     * \brief operator+= append HexString to ByteBuffer
-     * \param lhs ByteBuffer instance
-     * \param rhs HexString instance
-     * \return ByteBuffer object
-     */
-    friend ByteBuffer& operator+=(ByteBuffer& lhs, const HexString& rhs) {
-        lhs += rhs.m_decoded;
-        return lhs;
-    }
-
-    /**
-     * \brief operator+= append HexString to StaticByteBuffer
-     * \param lhs StaticByteBuffer instance
-     * \param rhs HexString instance
-     * \return StaticByteBuffer object
-     */
-    friend StaticByteBufferBase& operator+=(StaticByteBufferBase& lhs, const HexString& rhs) {
-        lhs.insert(lhs.end(), rhs.m_decoded.begin(), rhs.m_decoded.end());
-        return lhs;
-    }
-
-    /**
-     * \brief operator == compares if ByteBuffer and HexString are equal
-     * \param lhs ByteBuffer object
-     * \param rhs HexString object
-     * \return true if lhs is equal to rhs, false otherwise
-     */
-    friend bool operator==(const ByteBuffer& lhs, const HexString& rhs) {
-        return lhs == rhs.m_decoded;
-    }
-
-    friend bool operator!=(const ByteBuffer& lhs, const HexString& rhs) {
-        return lhs != rhs.m_decoded;
-    }
-
-    /**
-     * \brief operator == compares if HexString and ByteBuffe are equal
-     * \param lhs HexStringr object
-     * \param rhs ByteBuffe object
-     * \return true if lhs is equal to rhs, false otherwise
-     */
-    friend bool operator==(const HexString& lhs, const ByteBuffer& rhs) {
-        return lhs.m_decoded == rhs;
-    }
-
-    friend bool operator!=(const HexString& lhs, const ByteBuffer& rhs) {
-        return lhs.m_decoded != rhs;
-    }
-
-    /**
-     * \brief operator == compares if StaticByteBuffer and HexString are equal
-     * \param lhs StaticByteBuffer object
-     * \param rhs HexString object
-     * \return true if lhs is equal to rhs, false otherwise
-     */
-    friend bool operator==(const StaticByteBufferBase& lhs, const HexString& rhs) {
-        if (lhs.size() != rhs.size()) {
-            return false;
-        }
-        for (Size i = 0; i < lhs.size(); ++i) {
-            if (lhs[i] != rhs.m_decoded[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    friend bool operator!=(const StaticByteBufferBase& lhs, const HexString& rhs) {
-        return !(lhs == rhs);
-    }
-
-    /**
-     * \brief operator == compares if HexString and StaticByteBuffer are equal
-     * \param lhs HexString object
-     * \param rhs StaticByteBuffer object
-     * \return true if lhs is equal to rhs, false otherwise
-     */
-    friend bool operator==(const HexString& lhs, const StaticByteBufferBase& rhs) {
-        if (lhs.size() != rhs.size()) {
-            return false;
-        }
-        for (Size i = 0; i < lhs.size(); ++i) {
-            if (lhs.m_decoded[i] != rhs[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    friend bool operator!=(const HexString& lhs, const StaticByteBufferBase& rhs) {
-        return !(lhs == rhs);
-    }
-
-    /**
-     * \brief operator+ adding two HexStrings
-     * \param rhs HexString instance
-     * \return HexString object
-     */
-    const HexString operator+(const HexString& rhs) const {
+    /// Returns a copy of this HexString with another HexString appended
+    HexString operator+(const HexString& rhs) const {
         HexString hexString("");
         hexString += *this;
         hexString += rhs;
         return hexString;
     }
 
-    /**
-     * \brief operator== compares if two HexStrings are equal
-     * \param rhs HexString object
-     * \return true if HexStrings are equal, false otherwise
-     */
+    /// Appends data from the given HexString to this HexString
+    /// \returns Reference to this object
+    HexString& operator+=(const HexString& rhs) {
+        m_decoded += rhs.m_decoded;
+        return *this;
+    }
+
+    /// Appends data from this HexString to the given buffer
+    template <typename TContainer>
+    friend TContainer& operator+=(TContainer& lhs, const HexString& rhs) {
+        lhs.insert(lhs.end(), rhs.m_decoded.begin(), rhs.m_decoded.end());
+        return lhs;
+    }
+
+    /// Returns whether or not the two HexStrings are equal
     bool operator==(const HexString& rhs) const {
         return m_decoded == rhs.m_decoded;
+    }
+
+    /// Returns whether or not the given buffer is equal to the data from this HexString
+    template <typename TContainer>
+    friend bool operator==(const TContainer& lhs, const HexString& rhs) {
+        return bufferUtils::equal(lhs, rhs.m_decoded);
+    }
+
+    /// \copydoc operator==()
+    template <typename TContainer>
+    friend bool operator!=(const TContainer& lhs, const HexString& rhs) {
+        return !bufferUtils::equal(lhs, rhs.m_decoded);
+    }
+
+    /// \copydoc operator==()
+    template <typename TContainer>
+    friend bool operator==(const HexString& lhs, const TContainer& rhs) {
+        return bufferUtils::equal(lhs.m_decoded, rhs);
+    }
+
+    /// \copydoc operator==()
+    template <typename TContainer>
+    friend bool operator!=(const HexString& lhs, const TContainer& rhs) {
+        return !bufferUtils::equal(lhs.m_decoded, rhs);
     }
 
 private:

@@ -6,16 +6,18 @@
 #include <memory>
 
 #include "cipher/AesCore.h"
-#include "cipher/AesKey.h"
 #include "cipher/AesIV.h"
+#include "cipher/AesKey.h"
 #include "common/DynamicBuffer.h"
-#include "common/common.h"
 #include "common/Exception.h"
+#include "common/common.h"
 
 namespace crypto {
 
+/// AES algorithm implementation in all common key sizes (128, 192, 256 bits)
 class Aes : public BlockCipherSized<16> {
     using StaticByteBufferBase = StaticBufferBase<Byte>;
+
 public:
     static constexpr Size Aes128 = 16;
     static constexpr Size Aes192 = 24;
@@ -25,21 +27,22 @@ public:
 
     Aes() = default;
 
-    explicit Aes(const AesKey& key) {
-        setKey(key);
-    }
+    explicit Aes(const AesKey& key) { setKey(key); }
 
     Aes& operator=(Aes&& other) {
         m_roundKeys = std::move(other.m_roundKeys);
         return *this;
     }
 
-    Aes(Aes&& other) {
-        *this = std::move(other);
-    }
+    Aes(Aes&& other) { *this = std::move(other); }
 
     virtual ~Aes() = default;
 
+    /// Encrypts one block
+    ///
+    /// Asserts the buffer size to be 16 bytes
+    /// \param buffer The buffer which will get encrypted. Note that the buffer will be overwritten with the encrypted
+    /// data.
     void encryptBlock(ByteBufferView buffer) override {
         ASSERT(buffer.size() == getBlockSize());
         processFirstRound(buffer);
@@ -49,37 +52,22 @@ public:
         processLastRound(buffer);
     }
 
+    /// Encrypts one block
+    ///
+    /// Asserts the buffer size to be 16 bytes
+    /// \param buffer The buffer which will get decrypted. Note that the buffer will be overwritten with the decrypted
+    /// data.
     void decryptBlock(ByteBufferView buffer) override {
         ASSERT(buffer.size() == getBlockSize());
         processFirstRoundInv(buffer);
-        for(Byte i = getNumberOfRounds() - 1; i >= 1; --i) {
+        for (Byte i = getNumberOfRounds() - 1; i >= 1; --i) {
             processRoundInv(buffer, i);
         }
         processLastRoundInv(buffer);
     }
 
-    Byte getExpandedKeySize() const {
-        switch (getKeySize()) {
-            case Aes128: return 176;
-            case Aes192: return 208;
-            case Aes256: return 240;
-        }
-        throw Exception("Key not set");
-    }
-
-    Byte getNumberOfRounds() const {
-        switch (getKeySize()) {
-            case Aes128: return 10;
-            case Aes192: return 12;
-            case Aes256: return 14;
-        }
-        throw Exception("Key not set");
-    }
-
 protected:
-    void processFirstRound(ByteBufferView buffer) const {
-        AesCore::addRoundKey(buffer, m_roundKeys, 0);
-    }
+    void processFirstRound(ByteBufferView buffer) const { AesCore::addRoundKey(buffer, m_roundKeys, 0); }
 
     void processRound(ByteBufferView buffer, const Byte round) const {
         AesCore::subBytes(buffer);
@@ -107,16 +95,37 @@ protected:
         AesCore::subBytesInv(buffer);
     }
 
-    void processLastRoundInv(ByteBufferView buffer) const {
-        AesCore::addRoundKey(buffer, m_roundKeys, 0);
-    }
+    void processLastRoundInv(ByteBufferView buffer) const { AesCore::addRoundKey(buffer, m_roundKeys, 0); }
 
-protected:
     ByteBuffer m_roundKeys;
 
 private:
     Aes& operator=(const Aes&) = delete;
     Aes(const Aes&) = delete;
+
+    Byte getExpandedKeySize() const {
+        switch (getKeySize()) {
+        case Aes128:
+            return 176;
+        case Aes192:
+            return 208;
+        case Aes256:
+            return 240;
+        }
+        throw Exception("Key not set");
+    }
+
+    Byte getNumberOfRounds() const {
+        switch (getKeySize()) {
+        case Aes128:
+            return 10;
+        case Aes192:
+            return 12;
+        case Aes256:
+            return 14;
+        }
+        throw Exception("Key not set");
+    }
 
     void keySchedule(const ConstByteBufferView& key) override {
         m_roundKeys.insert(m_roundKeys.end(), key.begin(), key.end());

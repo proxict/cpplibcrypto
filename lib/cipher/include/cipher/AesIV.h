@@ -6,12 +6,13 @@
 #include <memory>
 
 #include "common/DynamicBuffer.h"
-#include "common/common.h"
 #include "common/Exception.h"
 #include "common/HexString.h"
+#include "common/common.h"
 
 namespace crypto {
 
+/// Represents an initialization vector for AES
 class AesIV : public InitializationVectorSized<16> {
 public:
     AesIV() : InitializationVectorSized() {}
@@ -32,32 +33,29 @@ public:
         mInitialIv += iv;
     }
 
-    Size size() const override {
-        return mIv.size();
-    }
+    /// Returns the size of the key in bytes
+    Size size() const override { return mIv.size(); }
 
-    void reset() override {
-        mIv.replace(mIv.begin(), mIv.end(), mInitialIv.begin());
-    }
+    /// Sets the IV to the initial state
+    void reset() override { mIv.replace(mIv.begin(), mIv.end(), mInitialIv.begin()); }
 
-    void setNew(const ConstIterator begin) override {
-        mIv.replace(mIv.begin(), mIv.end(), begin);
-    }
+    /// Sets new IV
+    void setNew(const ConstIterator begin) override { mIv.replace(mIv.begin(), mIv.end(), begin); }
 
-    ConstReference at(const Size index) const override {
-        return mIv.at(index);
-    }
+    /// Returns a byte at the specified index
+    ConstReference at(const Size index) const override { return mIv.at(index); }
 
-    ConstReference operator[](const Size index) const override {
-        return mIv[index];
-    }
+    /// \copydoc at()
+    ConstReference operator[](const Size index) const override { return mIv[index]; }
 
-    ConstPointer data() const override {
-        return mIv.data();
-    }
+    /// Returns a pointer to the beginning of the IV byte sequence
+    ConstPointer data() const override { return mIv.data(); }
 
+private:
     ByteBuffer mIv;
-    ByteBuffer mInitialIv; // if we wanted to reset the IV
+
+    /// This will always store the initial IV so we are able to reset the IV in the future
+    ByteBuffer mInitialIv;
 };
 
 } // namespace crypto

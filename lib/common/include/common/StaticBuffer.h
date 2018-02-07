@@ -10,6 +10,7 @@
 
 namespace crypto {
 
+// TODO(ProXicT): Sensitive flag, move ctor, initialization list ctor
 template <typename T>
 class StaticBufferBase {
 public:
@@ -33,71 +34,144 @@ public:
     StaticBufferBase() = default;
     virtual ~StaticBufferBase() {}
 
+    /// Returns a const reference to the data at the given index
     virtual ConstReference at(const Size index) const = 0;
 
+    /// Returns a reference to the data at the given index
     virtual Reference at(const Size index) = 0;
 
+    /// Returns a const reference to the data at the given index
     virtual ConstReference operator[](const Size index) const = 0;
 
+    /// Returns a reference to the data at the given index
     virtual Reference operator[](const Size index) = 0;
 
+    /// Returns a const reference to the first element in the buffer
+    ///
+    /// The behaviour is undefined in case the buffer is empty.
     virtual ConstReference front() const = 0;
 
+    /// Returns a reference to the first element in the buffer
+    ///
+    /// The behaviour is undefined in case the buffer is empty.
     virtual Reference front() = 0;
 
+    /// Returns a const reference to the last element in the buffer
+    ///
+    /// The behaviour is undefined in case the buffer is empty.
     virtual ConstReference back() const = 0;
 
+    /// Returns a reference to the last element in the buffer
+    ///
+    /// The behaviour is undefined in case the buffer is empty.
     virtual Reference back() = 0;
 
+    /// Returns a const pointer to the beginning
     virtual ConstPointer data() const = 0;
 
+    /// Returns a pointer to the beginning
     virtual Pointer data() = 0;
 
+    /// Returns an iterator to the beginning
     virtual Iterator begin() = 0;
 
+    /// Returns an iterator to the end
     virtual Iterator end() = 0;
 
+    /// Returns a const iterator to the beginning
     virtual ConstIterator begin() const = 0;
 
+    /// Returns a const iterator to the end
     virtual ConstIterator end() const = 0;
 
+    /// Returns a const iterator to the beginning
     virtual ConstIterator cbegin() const = 0;
 
+    /// Returns a const iterator to the end
     virtual ConstIterator cend() const = 0;
 
+    /// Returns whether or not the buffer is empty
     virtual bool empty() const = 0;
 
+    /// Tells whether or not the buffer is full
+    ///
+    /// This means the size reached the buffer capacity
     virtual bool full() const = 0;
 
+    /// Returns the actual size of the buffer
     virtual Size size() const = 0;
 
+    /// Returns the buffer capacity
     virtual Size capacity() const = 0;
 
+    /// Destroys all the elements in the buffer
     virtual void clear() = 0;
 
-    virtual Iterator erase(const Size index) = 0;
-
+    /// Erases elements within the specified range
+    ///
+    /// \param first Iterator to the first element to be removed
+    /// \param last Iterator pointing right after the last element to be removed. This means the last element within the
+    /// range will not be erased.
+    /// \returns Iterator to the next element after the last removed
     virtual Iterator erase(const Iterator first, const Iterator last) = 0;
 
-    virtual Iterator erase(const Size from, const Size count) = 0;
+    /// Erases the specified number of elements from the specified position
+    ///
+    /// \param from The first element to be removed
+    /// \param count The number of elements to remove
+    virtual Iterator erase(const Size from, const Size count = 1) = 0;
 
+    /// Appends new element to the end of the buffer
+    ///
+    /// The element will be copy constructed from value
+    /// \param value The value to append
     virtual void push(ConstReference value) = 0;
 
+    /// Inserts the elements specified by the iterator range to the given position
+    /// \param position The position where to insert the elements
+    /// \param first Iterator to the first element to be inserted
+    /// \param last Iterator pointing right after the last element to be inserted. This means the last element within
+    /// the range will not be inserted. \returns Iterator pointing to the first inserted element
     virtual Iterator insert(const Iterator position, ConstPointer first, ConstPointer last) = 0;
 
+    /// Inserts elements at the specified position
+    /// \param position The position where to insert the elements
+    /// \param value The value to be inserted
+    /// \param count Tells how many times the value should be inserted
+    /// \returns Iterator pointing to the first inserted element
     virtual Iterator insert(const Iterator position, ConstReference value, const Size count = 1U) = 0;
 
+    /// \copydoc insert(const Iterator position, ConstReference value, const Size count = 1U)
     virtual Iterator insert(const Size position, ConstReference value, const Size count = 1U) = 0;
 
+    /// Removes the last element
+    ///
+    /// Calling this function on an empty buffer is undefined
     virtual void pop() = 0;
 
+    /// Resizes the buffer to the specified size
+    ///
+    /// If the requested size is less than the current size, the last elements will be erased to fulfil the size
+    /// requirement. If the requested size is more than the current size, default constructed elements will be inserted.
+    /// Asserts newSize to be less or equal to the buffer capacity. 
+    /// \param newSize The requested new size
     virtual void resize(const Size newSize) = 0;
 
+    /// This is only an interface-compatibility function
+    ///
+    /// Asserts the requested capacity to be less or equal to the initial buffer capacity
+    /// \returns Actual buffer capacity
     virtual Size reserve(const Size newCapacity) = 0;
 
+    /// Inserts the elements from the given buffer at the end of this buffer
+    /// \param b The buffer to be inserted
+    /// \returns Reference to this object
     virtual StaticBufferBase& operator+=(const StaticBufferBase& b) = 0;
 
-    virtual StaticBufferBase& operator+=(const Byte b) = 0;
+    /// Appends new element to the end of the buffer
+    /// \param e The element to be inserted
+    /// \returns Reference to this object
+    virtual StaticBufferBase& operator+=(ConstReference e) = 0;
 };
 
 template <typename T, Size TCapacity>
@@ -139,9 +213,7 @@ public:
         insert(end(), first, last);
     }
 
-    StaticBuffer(StaticBuffer&& other) : StaticBuffer() {
-        *this = std::move(other);
-    }
+    StaticBuffer(StaticBuffer&& other) : StaticBuffer() { *this = std::move(other); }
 
     StaticBuffer& operator=(StaticBuffer&& other) {
         std::swap(mData, other.mData);
@@ -198,14 +270,6 @@ public:
         mStored = 0;
     }
 
-    Iterator erase(const Size index) override {
-        ASSERT(index <= mStored);
-        auto erased = begin() + index;
-        std::move(erased + 1, end(), erased);
-        pop();
-        return erased;
-    }
-
     Iterator erase(const Iterator first, const Iterator last) override {
         ASSERT(first >= begin() && last <= end());
         memory::destroy(first, last);
@@ -214,7 +278,7 @@ public:
         return first;
     }
 
-    Iterator erase(const Size from, const Size count) override { return erase(begin() + from, begin() + from + count); }
+    Iterator erase(const Size from, const Size count = 1) override { return erase(begin() + from, begin() + from + count); }
 
     void push(ConstReference value) override {
         ASSERT(!full());
@@ -285,8 +349,8 @@ public:
         return *this;
     }
 
-    Base& operator+=(const Byte b) override {
-        push(b);
+    Base& operator+=(ConstReference e) override {
+        push(e);
         return *this;
     }
 
@@ -297,7 +361,7 @@ public:
         return sbb;
     }
 
-    const StaticBuffer operator+(const Byte rhs) const {
+    const StaticBuffer operator+(ConstReference rhs) const {
         StaticBuffer sbb;
         sbb += *this;
         sbb += rhs;
@@ -310,7 +374,7 @@ private:
 };
 
 template <typename T, Size TCapacity>
-const StaticBuffer<T, TCapacity> operator+(const Byte lhs, const StaticBufferBase<T>& rhs) {
+const StaticBuffer<T, TCapacity> operator+(const T& lhs, const StaticBufferBase<T>& rhs) {
     StaticBuffer<T, TCapacity> sbb;
     sbb += lhs;
     sbb += rhs;

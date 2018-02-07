@@ -31,8 +31,8 @@ public:
     }
 
     /// Returns whether or not the buffer size is a multiple of the given block size
-    template <typename TContainer>
-    bool pad(TContainer& buf, const Size blockSize) const {
+    template <typename TBuffer>
+    bool pad(TBuffer& buf, const Size blockSize) const {
         return buf.size() % blockSize == 0;
     }
 
@@ -41,8 +41,8 @@ public:
     void unpad(StaticByteBufferBase& buf) const override { unpad<StaticBufferBase<Byte>>(buf); }
 
     /// In this implementation this function is no-op
-    template <typename TContainer>
-    void unpad(TContainer&) const {}
+    template <typename TBuffer>
+    void unpad(TBuffer&) const {}
 };
 
 } // namespace crypto

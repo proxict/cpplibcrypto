@@ -5,12 +5,10 @@
 
 namespace crypto {
 
-template<Size TSize>
+template <Size TSize>
 class InitializationVectorSized : public InitializationVector {
 public:
-    bool isValid(const Size size) const override {
-        return (size == TSize);
-    }
+    bool isValid(const Size size) const override { return (size == TSize); }
 
 protected:
     InitializationVectorSized() = default;

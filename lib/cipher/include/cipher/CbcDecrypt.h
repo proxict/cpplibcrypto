@@ -39,8 +39,8 @@ public:
     /// \param in The data to be decrypted
     /// \param out A buffer to which the decrypted data will be pushed. The buffer is expected to have push() and size()
     /// methods.
-    template <typename TContainer>
-    Size update(const ByteBufferView& in, TContainer& out) {
+    template <typename TBuffer>
+    Size update(const ByteBufferView& in, TBuffer& out) {
         const Size blockSize = mCipher.getBlockSize();
         ASSERT(in.size() % blockSize == 0);
         const Size numberOfBlocks = in.size() / blockSize - 1;
@@ -68,8 +68,8 @@ public:
     }
 
     /// Applies padding using the provided scheme
-    template <typename TContainer>
-    void doFinal(const ByteBufferView& in, TContainer& out, const Padding& padder) {
+    template <typename TBuffer>
+    void doFinal(const ByteBufferView& in, TBuffer& out, const Padding& padder) {
         ASSERT(in.size() == mCipher.getBlockSize());
         StaticBuffer<Byte, 16> buffer;
         buffer.insert(buffer.end(), in.begin(), in.end());

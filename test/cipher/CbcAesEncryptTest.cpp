@@ -3,7 +3,7 @@
 #include "gtest/gtest.h"
 
 #include "cipher/Aes.h"
-#include "cipher/AesIV.h"
+#include "cipher/AesIv.h"
 #include "cipher/CbcMode.h"
 #include "common/DynamicBuffer.h"
 #include "common/Hex.h"
@@ -13,7 +13,7 @@
 namespace crypto {
 
 TEST(CbcAes128EncryptTest, cbcEncryptBlock1) {
-    AesIV iv(HexString("000102030405060708090A0B0C0D0E0F"));
+    AesIv iv(HexString("000102030405060708090A0B0C0D0E0F"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")), iv);
@@ -27,7 +27,7 @@ TEST(CbcAes128EncryptTest, cbcEncryptBlock1) {
 }
 
 TEST(CbcAes128EncryptTest, cbcEncryptBlock2) {
-    AesIV iv(HexString("7649ABAC8119B246CEE98E9B12E9197D"));
+    AesIv iv(HexString("7649ABAC8119B246CEE98E9B12E9197D"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")), iv);
@@ -41,7 +41,7 @@ TEST(CbcAes128EncryptTest, cbcEncryptBlock2) {
 }
 
 TEST(CbcAes128EncryptTest, cbcEncryptBlock3) {
-    AesIV iv(HexString("5086CB9B507219EE95DB113A917678B2"));
+    AesIv iv(HexString("5086CB9B507219EE95DB113A917678B2"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")), iv);
@@ -55,7 +55,7 @@ TEST(CbcAes128EncryptTest, cbcEncryptBlock3) {
 }
 
 TEST(CbcAes128EncryptTest, cbcEncryptBlock4) {
-    AesIV iv(HexString("73BED6B8E3C1743B7116E69E22229516"));
+    AesIv iv(HexString("73BED6B8E3C1743B7116E69E22229516"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")), iv);
@@ -69,7 +69,7 @@ TEST(CbcAes128EncryptTest, cbcEncryptBlock4) {
 }
 
 TEST(CbcAes192EncryptTest, cbcEncryptBlock1) {
-    AesIV iv(HexString("000102030405060708090A0B0C0D0E0F"));
+    AesIv iv(HexString("000102030405060708090A0B0C0D0E0F"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")), iv);
@@ -83,7 +83,7 @@ TEST(CbcAes192EncryptTest, cbcEncryptBlock1) {
 }
 
 TEST(CbcAes192EncryptTest, cbcEncryptBlock2) {
-    AesIV iv(HexString("4F021DB243BC633D7178183A9FA071E8"));
+    AesIv iv(HexString("4F021DB243BC633D7178183A9FA071E8"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")), iv);
@@ -97,7 +97,7 @@ TEST(CbcAes192EncryptTest, cbcEncryptBlock2) {
 }
 
 TEST(CbcAes192EncryptTest, cbcEncryptBlock3) {
-    AesIV iv(HexString("B4D9ADA9AD7DEDF4E5E738763F69145A"));
+    AesIv iv(HexString("B4D9ADA9AD7DEDF4E5E738763F69145A"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")), iv);
@@ -111,7 +111,7 @@ TEST(CbcAes192EncryptTest, cbcEncryptBlock3) {
 }
 
 TEST(CbcAes192EncryptTest, cbcEncryptBlock4) {
-    AesIV iv(HexString("571B242012FB7AE07FA9BAAC3DF102E0"));
+    AesIv iv(HexString("571B242012FB7AE07FA9BAAC3DF102E0"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")), iv);
@@ -125,7 +125,7 @@ TEST(CbcAes192EncryptTest, cbcEncryptBlock4) {
 }
 
 TEST(CbcAes256EncryptTest, cbcEncryptBlock1) {
-    AesIV iv(HexString("000102030405060708090A0B0C0D0E0F"));
+    AesIv iv(HexString("000102030405060708090A0B0C0D0E0F"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
@@ -139,7 +139,7 @@ TEST(CbcAes256EncryptTest, cbcEncryptBlock1) {
 }
 
 TEST(CbcAes256EncryptTest, cbcEncryptBlock2) {
-    AesIV iv(HexString("F58C4C04D6E5F1BA779EABFB5F7BFBD6"));
+    AesIv iv(HexString("F58C4C04D6E5F1BA779EABFB5F7BFBD6"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
@@ -153,7 +153,7 @@ TEST(CbcAes256EncryptTest, cbcEncryptBlock2) {
 }
 
 TEST(CbcAes256EncryptTest, cbcEncryptBlock3) {
-    AesIV iv(HexString("9CFC4E967EDB808D679F777BC6702C7D"));
+    AesIv iv(HexString("9CFC4E967EDB808D679F777BC6702C7D"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
@@ -167,7 +167,7 @@ TEST(CbcAes256EncryptTest, cbcEncryptBlock3) {
 }
 
 TEST(CbcAes256EncryptTest, cbcEncryptBlock4) {
-    AesIV iv(HexString("39F23369A9D9BACFA530E26304231461"));
+    AesIv iv(HexString("39F23369A9D9BACFA530E26304231461"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
@@ -181,7 +181,7 @@ TEST(CbcAes256EncryptTest, cbcEncryptBlock4) {
 }
 
 TEST(CbcAes128EncryptTest, cbcEncryptMultipleBlocks) {
-    AesIV iv(HexString("39F23369A9D9BACFA530E26304231461"));
+    AesIv iv(HexString("39F23369A9D9BACFA530E26304231461"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
@@ -205,7 +205,7 @@ TEST(CbcAes128EncryptTest, cbcEncryptMultipleBlocks) {
 }
 
 TEST(CbcAes128EncryptTest, cbcEncryptMultipleBlocksPadding) {
-    AesIV iv(HexString("39F23369A9D9BACFA530E26304231461"));
+    AesIv iv(HexString("39F23369A9D9BACFA530E26304231461"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
@@ -230,7 +230,7 @@ TEST(CbcAes128EncryptTest, cbcEncryptMultipleBlocksPadding) {
 }
 
 TEST(CbcAes256EncryptTest, cbcEncryptResetChain) {
-    AesIV iv(HexString("39F23369A9D9BACFA530E26304231461"));
+    AesIv iv(HexString("39F23369A9D9BACFA530E26304231461"));
 
     Aes aes;
     CbcEncrypt cipher(aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);

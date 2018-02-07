@@ -2,15 +2,16 @@
 #define COMMON_HEX_STRING_H_
 
 #include "common/DynamicBuffer.h"
+#include "common/Hex.h"
 #include "common/StaticBuffer.h"
 #include "common/bufferUtils.h"
-#include "common/Hex.h"
 
 namespace crypto {
 
 /// Represents a base-16 string
 class HexString {
     using StaticByteBufferBase = StaticBufferBase<Byte>;
+
 public:
     /// \param hexStr Hexadecimal data in string representation
     /// \throws Exception if hexStr contains an invalid base-16 character
@@ -21,14 +22,10 @@ public:
         return *this;
     }
 
-    HexString(HexString&& other) noexcept {
-        *this = std::move(other);
-    }
+    HexString(HexString&& other) noexcept { *this = std::move(other); }
 
     /// Returns the number of bytes of the decoded data
-    Size size() const {
-        return mDecoded.size();
-    }
+    Size size() const { return mDecoded.size(); }
 
     /// Returns a copy of this HexString with another HexString appended
     HexString operator+(const HexString& rhs) const {
@@ -46,38 +43,36 @@ public:
     }
 
     /// Appends data from this HexString to the given buffer
-    template <typename TContainer>
-    friend TContainer& operator+=(TContainer& lhs, const HexString& rhs) {
+    template <typename TBuffer>
+    friend TBuffer& operator+=(TBuffer& lhs, const HexString& rhs) {
         lhs.insert(lhs.end(), rhs.mDecoded.begin(), rhs.mDecoded.end());
         return lhs;
     }
 
     /// Returns whether or not the two HexStrings are equal
-    bool operator==(const HexString& rhs) const {
-        return mDecoded == rhs.mDecoded;
-    }
+    bool operator==(const HexString& rhs) const { return mDecoded == rhs.mDecoded; }
 
     /// Returns whether or not the given buffer is equal to the data from this HexString
-    template <typename TContainer>
-    friend bool operator==(const TContainer& lhs, const HexString& rhs) {
+    template <typename TBuffer>
+    friend bool operator==(const TBuffer& lhs, const HexString& rhs) {
         return bufferUtils::equal(lhs, rhs.mDecoded);
     }
 
     /// \copydoc operator==()
-    template <typename TContainer>
-    friend bool operator!=(const TContainer& lhs, const HexString& rhs) {
+    template <typename TBuffer>
+    friend bool operator!=(const TBuffer& lhs, const HexString& rhs) {
         return !bufferUtils::equal(lhs, rhs.mDecoded);
     }
 
     /// \copydoc operator==()
-    template <typename TContainer>
-    friend bool operator==(const HexString& lhs, const TContainer& rhs) {
+    template <typename TBuffer>
+    friend bool operator==(const HexString& lhs, const TBuffer& rhs) {
         return bufferUtils::equal(lhs.mDecoded, rhs);
     }
 
     /// \copydoc operator==()
-    template <typename TContainer>
-    friend bool operator!=(const HexString& lhs, const TContainer& rhs) {
+    template <typename TBuffer>
+    friend bool operator!=(const HexString& lhs, const TBuffer& rhs) {
         return !bufferUtils::equal(lhs.mDecoded, rhs);
     }
 

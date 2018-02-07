@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "cipher/AesCore.h"
-#include "cipher/AesIV.h"
+#include "cipher/AesIv.h"
 #include "cipher/AesKey.h"
 #include "common/DynamicBuffer.h"
 #include "common/Exception.h"
@@ -23,7 +23,7 @@ public:
     static constexpr Size Aes192 = 24;
     static constexpr Size Aes256 = 32;
     using Key = AesKey;
-    using IV = AesIV;
+    using Iv = AesIv;
 
     Aes() = default;
 

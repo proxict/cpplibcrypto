@@ -7,8 +7,8 @@
 #include "common/Exception.h"
 #include "common/InitializationVector.h"
 #include "common/Key.h"
-#include "common/common.h"
 #include "common/bufferUtils.h"
+#include "common/common.h"
 
 namespace crypto {
 
@@ -20,7 +20,8 @@ public:
     /// \param key The key for the cipher
     /// \param IV IV for the CB chain. The size has to match the cipher block size
     /// \throws Exception in case the IV size does not match the cipher block size
-    CbcEncrypt(BlockCipher& cipher, const Key& key, InitializationVector& iv) : ModeOfOperation(cipher, key), mCipher(cipher), mIv(iv) {
+    CbcEncrypt(BlockCipher& cipher, const Key& key, InitializationVector& iv)
+    : ModeOfOperation(cipher, key), mCipher(cipher), mIv(iv) {
         if (mIv.size() != mCipher.getBlockSize()) {
             throw Exception("The Initialization Vector size does not match the cipher block size");
         }
@@ -38,8 +39,8 @@ public:
     /// \param in The data to be encrypted
     /// \param out A buffer to which the encrypted data will be pushed. The buffer is expected to have push() and size()
     /// methods.
-    template <typename TContainer>
-    Size update(const ByteBufferView& in, TContainer& out) {
+    template <typename TBuffer>
+    Size update(const ByteBufferView& in, TBuffer& out) {
         const Size blockSize = mCipher.getBlockSize();
         if (in.size() < blockSize && in.size() % blockSize != 0) {
             return 0;
@@ -69,8 +70,8 @@ public:
     }
 
     /// Applies padding using the provided scheme
-    template <typename TContainer>
-    void doFinal(const ByteBufferView& in, TContainer& out, const Padding& padder) {
+    template <typename TBuffer>
+    void doFinal(const ByteBufferView& in, TBuffer& out, const Padding& padder) {
         ASSERT(in.size() < mCipher.getBlockSize());
         StaticBuffer<Byte, 16> buffer;
         buffer.insert(buffer.end(), in.begin(), in.end());

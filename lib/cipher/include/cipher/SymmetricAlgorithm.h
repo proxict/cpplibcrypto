@@ -1,9 +1,9 @@
 #ifndef CIPHER_SYMMETRICALGORITHM_H_
 #define CIPHER_SYMMETRICALGORITHM_H_
 
+#include "common/BufferView.h"
 #include "common/DynamicBuffer.h"
 #include "common/Key.h"
-#include "common/BufferView.h"
 
 namespace crypto {
 
@@ -20,9 +20,7 @@ public:
     }
 
     /// Returns the key size
-    Size getKeySize() const {
-        return mKeySize;
-    }
+    Size getKeySize() const { return mKeySize; }
 
 protected:
     /// Performs key schedule using the key provided
@@ -35,4 +33,3 @@ protected:
 } // namespace crypto
 
 #endif
-

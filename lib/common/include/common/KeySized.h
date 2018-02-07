@@ -13,7 +13,7 @@ namespace crypto {
 /// \param TMinKeySize Specifies the minimal key size required
 /// \param TMaxKeySize Specifies the maximal key size allowed
 /// \param TMod Specifies the required divisor of the key size
-template<Size TMinKeySize, Size TMaxKeySize = 0, Size TMod = 1>
+template <Size TMinKeySize, Size TMaxKeySize = 0, Size TMod = 1>
 class KeySized : public Key {
 public:
     bool isValid(const Size keySize) const override {
@@ -21,19 +21,13 @@ public:
     }
 
     /// Returns the minimal required size of the key
-    static constexpr Size getMin() {
-        return TMinKeySize;
-    }
+    static constexpr Size getMin() { return TMinKeySize; }
 
     /// Returns the maximal allowed size of the key
-    static constexpr Size getMax() {
-        return TMaxKeySize > 0 ? TMaxKeySize : TMinKeySize;
-    }
+    static constexpr Size getMax() { return TMaxKeySize > 0 ? TMaxKeySize : TMinKeySize; }
 
     /// Returns the required key divisor
-    static constexpr Size getMod() {
-        return TMod;
-    }
+    static constexpr Size getMod() { return TMod; }
 
 protected:
     KeySized() = default;

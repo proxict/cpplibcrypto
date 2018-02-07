@@ -4,8 +4,8 @@
 #include <iterator>
 
 #include "common/LinearIterator.h"
-#include "common/common.h"
 #include "common/Memory.h"
+#include "common/common.h"
 
 namespace crypto {
 
@@ -37,8 +37,8 @@ public:
     ///
     /// The container must have these function present:
     /// data(), size(), capacity()
-    template <typename TContainer>
-    BufferView(TContainer& container)
+    template <typename TBuffer>
+    BufferView(TBuffer& container)
     : mFirst(container.data()),
       mLast(container.data() + container.size()),
       mSize(container.size()),
@@ -50,10 +50,7 @@ public:
     /// \param first The beginning of the data to view
     /// \param last The end of the data to view
     BufferView(Pointer first, Pointer last)
-    : mFirst(first),
-      mLast(last),
-      mSize(std::distance(first, last)),
-      mCapacity(mSize) {}
+    : mFirst(first), mLast(last), mSize(std::distance(first, last)), mCapacity(mSize) {}
 
     /// Returns a const reference to the element at the given index
     ConstReference at(const Size index) const { return *(mFirst + index); }
@@ -109,7 +106,8 @@ public:
     /// Returns the size of the view
     Size size() const { return mSize; }
 
-    /// In case the view was constructed from a container, returns the container capacity, in other cases returns the view size
+    /// In case the view was constructed from a container, returns the container capacity, in other cases returns the
+    /// view size
     Size capacity() const { return mCapacity; }
 
     /// Replaces the elements within the given iterator range

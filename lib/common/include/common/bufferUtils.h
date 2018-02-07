@@ -10,10 +10,10 @@ namespace bufferUtils {
 ///
 /// \param buffer Buffer which will get XORed
 /// \param xorSource Data with which the given buffer will be XORed
-template <typename TContainer, typename TContainerXor>
-inline void xorBuffer(TContainer& buffer, const TContainerXor& xorSource) {
+template <typename TBuffer, typename TBufferXor>
+inline void xorBuffer(TBuffer& buffer, const TBufferXor& xorSource) {
     Size index = 0;
-    for (typename TContainer::Reference b : buffer) {
+    for (typename TBuffer::Reference b : buffer) {
         b ^= xorSource[index++];
     }
 }
@@ -37,16 +37,16 @@ inline void xorBuffer(TIterator first, TIterator last, const TConstIterator xorS
 /// \param first The beginning of the data to be XORed and pushed
 /// \param lasat The end of the data to be XORed and pushed
 /// \param xorSource The beginning of the data with which the given range will be XORed and pushed
-template <typename TContainer, typename TIterator = typename TContainer::ConstIterator>
-inline void pushXored(TContainer& container, const TIterator first, const TIterator last, const TIterator xorSource) {
+template <typename TBuffer, typename TIterator = typename TBuffer::ConstIterator>
+inline void pushXored(TBuffer& container, const TIterator first, const TIterator last, const TIterator xorSource) {
     TIterator xorIt = xorSource;
     for (TIterator it = first; it != last; ++it) {
         container.push(*it ^ *xorIt++);
     }
 }
 
-template <typename TContainer1, typename TContainer2>
-inline bool equal(const TContainer1& c1, const TContainer2& c2) {
+template <typename TBuffer1, typename TBuffer2>
+inline bool equal(const TBuffer1& c1, const TBuffer2& c2) {
     if (c1.size() != c2.size()) {
         return false;
     }

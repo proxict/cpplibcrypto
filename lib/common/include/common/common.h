@@ -7,8 +7,8 @@
 #ifndef COMMON_COMMON_H_
 #define COMMON_COMMON_H_
 
-#include <cstdint>
 #include <cassert>
+#include <cstdint>
 
 namespace crypto {
 
@@ -20,4 +20,3 @@ using Size = std::size_t;
 } // namespace crypto
 
 #endif
-

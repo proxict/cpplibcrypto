@@ -9,7 +9,7 @@
 #include <string>
 
 #include "cipher/Aes.h"
-#include "cipher/AesIV.h"
+#include "cipher/AesIv.h"
 #include "cipher/CbcMode.h"
 #include "common/Exception.h"
 #include "common/HexString.h"
@@ -68,7 +68,7 @@ void decFile(Decryptor& decryptor, const std::string& inputFileName, const std::
 int main() {
     try {
         crypto::Aes::Key key(crypto::HexString("2b7e151628aed2a6abf7158809cf4f3c"));
-        crypto::Aes::IV iv(crypto::HexString("000102030405060708090A0B0C0D0E0F"));
+        crypto::Aes::Iv iv(crypto::HexString("000102030405060708090A0B0C0D0E0F"));
 
         crypto::CbcMode<crypto::Aes>::Encryption enc(key, iv);
         encFile(enc, "CMakeCache.txt", "cipher");

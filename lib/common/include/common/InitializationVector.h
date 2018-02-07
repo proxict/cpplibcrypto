@@ -3,8 +3,8 @@
 
 #include <cstddef>
 
-#include "common/common.h"
 #include "common/LinearIterator.h"
+#include "common/common.h"
 
 namespace crypto {
 

@@ -13,8 +13,8 @@ class Hex {
 public:
     /// Encodes the given buffer to base-16
     /// \returns string representation of the encoded data
-    template <typename TContainer>
-    static std::string encode(const TContainer& buf);
+    template <typename TBuffer>
+    static std::string encode(const TBuffer& buf);
 
     /// Decodes the given base-16 string
     /// \returns base-10 buffer of bytes
@@ -27,8 +27,8 @@ private:
     constexpr static Byte hex2Byte(const char c);
 };
 
-template <typename TContainer>
-std::string Hex::encode(const TContainer& buf) {
+template <typename TBuffer>
+std::string Hex::encode(const TBuffer& buf) {
     constexpr static const char* lookupTable = "0123456789abcdef";
     std::ostringstream bytes;
     for (const Byte b : buf) {

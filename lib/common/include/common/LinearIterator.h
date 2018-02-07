@@ -114,13 +114,9 @@ public:
         return res;
     }
 
-    operator const Pointer() const {
-        return mPtr;
-    }
+    operator const Pointer() const { return mPtr; }
 
-    operator Pointer() {
-        return mPtr;
-    }
+    operator Pointer() { return mPtr; }
 
 protected:
     Pointer mPtr;

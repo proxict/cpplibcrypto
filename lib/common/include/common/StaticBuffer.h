@@ -153,7 +153,7 @@ public:
     ///
     /// If the requested size is less than the current size, the last elements will be erased to fulfil the size
     /// requirement. If the requested size is more than the current size, default constructed elements will be inserted.
-    /// Asserts newSize to be less or equal to the buffer capacity. 
+    /// Asserts newSize to be less or equal to the buffer capacity.
     /// \param newSize The requested new size
     virtual void resize(const Size newSize) = 0;
 
@@ -278,7 +278,9 @@ public:
         return first;
     }
 
-    Iterator erase(const Size from, const Size count = 1) override { return erase(begin() + from, begin() + from + count); }
+    Iterator erase(const Size from, const Size count = 1) override {
+        return erase(begin() + from, begin() + from + count);
+    }
 
     void push(ConstReference value) override {
         ASSERT(!full());

@@ -13,11 +13,11 @@
 namespace crypto {
 
 /// Represents an initialization vector for AES
-class AesIV : public InitializationVectorSized<16> {
+class AesIv : public InitializationVectorSized<16> {
 public:
-    AesIV() : InitializationVectorSized() {}
+    AesIv() : InitializationVectorSized() {}
 
-    AesIV(ByteBuffer&& iv) {
+    AesIv(ByteBuffer&& iv) {
         if (!isValid(iv.size())) {
             throw Exception("Invalid Initialization Vector size passed");
         }
@@ -25,7 +25,7 @@ public:
         mInitialIv += mIv;
     }
 
-    AesIV(const HexString& iv) {
+    AesIv(const HexString& iv) {
         if (!isValid(iv.size())) {
             throw Exception("Invalid Initialization Vector size passed");
         }

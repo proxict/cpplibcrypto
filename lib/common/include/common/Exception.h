@@ -11,13 +11,13 @@ namespace crypto {
 /// suitable for throwing in situations where memory allocation is failing due its low state
 class Exception {
 public:
-    Exception(const std::string& str) : m_str(str) {}
+    Exception(const std::string& str) : mStr(str) {}
 
     /// Returns a reference to the message telling what went wrong
-    virtual const std::string& what() const throw() { return m_str; }
+    virtual const std::string& what() const throw() { return mStr; }
 
 private:
-    const std::string m_str;
+    const std::string mStr;
 };
 
 } // namespace crypto

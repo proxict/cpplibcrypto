@@ -14,10 +14,10 @@ class HexString {
 public:
     /// \param hexStr Hexadecimal data in string representation
     /// \throws Exception if hexStr contains an invalid base-16 character
-    HexString(const std::string& hexStr) : m_decoded(Hex::decode(hexStr)) {}
+    HexString(const std::string& hexStr) : mDecoded(Hex::decode(hexStr)) {}
 
     HexString& operator=(HexString&& other) noexcept {
-        m_decoded = std::move(other.m_decoded);
+        mDecoded = std::move(other.mDecoded);
         return *this;
     }
 
@@ -27,7 +27,7 @@ public:
 
     /// Returns the number of bytes of the decoded data
     Size size() const {
-        return m_decoded.size();
+        return mDecoded.size();
     }
 
     /// Returns a copy of this HexString with another HexString appended
@@ -41,44 +41,44 @@ public:
     /// Appends data from the given HexString to this HexString
     /// \returns Reference to this object
     HexString& operator+=(const HexString& rhs) {
-        m_decoded += rhs.m_decoded;
+        mDecoded += rhs.mDecoded;
         return *this;
     }
 
     /// Appends data from this HexString to the given buffer
     template <typename TContainer>
     friend TContainer& operator+=(TContainer& lhs, const HexString& rhs) {
-        lhs.insert(lhs.end(), rhs.m_decoded.begin(), rhs.m_decoded.end());
+        lhs.insert(lhs.end(), rhs.mDecoded.begin(), rhs.mDecoded.end());
         return lhs;
     }
 
     /// Returns whether or not the two HexStrings are equal
     bool operator==(const HexString& rhs) const {
-        return m_decoded == rhs.m_decoded;
+        return mDecoded == rhs.mDecoded;
     }
 
     /// Returns whether or not the given buffer is equal to the data from this HexString
     template <typename TContainer>
     friend bool operator==(const TContainer& lhs, const HexString& rhs) {
-        return bufferUtils::equal(lhs, rhs.m_decoded);
+        return bufferUtils::equal(lhs, rhs.mDecoded);
     }
 
     /// \copydoc operator==()
     template <typename TContainer>
     friend bool operator!=(const TContainer& lhs, const HexString& rhs) {
-        return !bufferUtils::equal(lhs, rhs.m_decoded);
+        return !bufferUtils::equal(lhs, rhs.mDecoded);
     }
 
     /// \copydoc operator==()
     template <typename TContainer>
     friend bool operator==(const HexString& lhs, const TContainer& rhs) {
-        return bufferUtils::equal(lhs.m_decoded, rhs);
+        return bufferUtils::equal(lhs.mDecoded, rhs);
     }
 
     /// \copydoc operator==()
     template <typename TContainer>
     friend bool operator!=(const HexString& lhs, const TContainer& rhs) {
-        return !bufferUtils::equal(lhs.m_decoded, rhs);
+        return !bufferUtils::equal(lhs.mDecoded, rhs);
     }
 
 private:
@@ -86,7 +86,7 @@ private:
     HexString(const HexString&) = delete;
     HexString& operator=(const HexString&) = delete;
 
-    ByteBuffer m_decoded;
+    ByteBuffer mDecoded;
 };
 
 } // namespace crypto

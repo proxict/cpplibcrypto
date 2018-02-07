@@ -16,7 +16,7 @@ public:
     ByteBuffer getNthRoundKey(const Size index) const {
         ByteBuffer roundKey;
         for (Size i = 0; i < getBlockSize(); ++i) {
-            roundKey += m_roundKeys[i + getBlockSize() * index];
+            roundKey += mRoundKeys[i + getBlockSize() * index];
         }
 
         return roundKey;

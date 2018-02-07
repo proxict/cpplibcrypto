@@ -20,8 +20,8 @@ public:
     /// \param filename The file to be opened
     /// \param mode The mode to open the file in
     BinaryFile(const std::string& filename, const Mode mode) :
-        m_stream(filename, (mode == Mode::Read ? std::ios::in : std::ios::out) | std::ios::binary), m_mode(mode) {
-        if (!m_stream.good()) {
+        mStream(filename, (mode == Mode::Read ? std::ios::in : std::ios::out) | std::ios::binary), mMode(mode) {
+        if (!mStream.good()) {
             throw Exception("Could not open the file specified");
         }
     }
@@ -32,10 +32,10 @@ public:
     /// \returns The actual number of bytes read
     template <typename TContainer>
     Size read(TContainer& output, const Size readMax) {
-        ASSERT(m_mode == Mode::Read);
+        ASSERT(mMode == Mode::Read);
         ByteBuffer temp(readMax);
-        m_stream.read(reinterpret_cast<char*>(temp.data()), temp.size());
-        const Size bytesRead = static_cast<Size>(m_stream.gcount());
+        mStream.read(reinterpret_cast<char*>(temp.data()), temp.size());
+        const Size bytesRead = static_cast<Size>(mStream.gcount());
 
         output.reserve(bytesRead);
         output.insert(output.end(), temp.begin(), temp.begin() + bytesRead);
@@ -48,13 +48,13 @@ public:
     /// \returns true if the data have been written successfully, false otherwise
     template <typename TContainer>
     bool write(const TContainer& buffer) {
-        ASSERT(m_mode == Mode::Write);
-        return bool(m_stream.write(reinterpret_cast<const char*>(buffer.data()), buffer.size()));
+        ASSERT(mMode == Mode::Write);
+        return bool(mStream.write(reinterpret_cast<const char*>(buffer.data()), buffer.size()));
     }
 
 private:
-    std::fstream m_stream;
-    Mode m_mode;
+    std::fstream mStream;
+    Mode mMode;
 };
 
 } // namespace crypto

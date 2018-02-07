@@ -22,21 +22,21 @@ public:
         if (!isValid(key.size())) {
             throw Exception("Invalid key size passed");
         }
-        m_key = std::move(key);
+        mKey = std::move(key);
     }
 
     AesKey(const HexString& key) {
         if (!isValid(key.size())) {
             throw Exception("Invalid key size passed");
         }
-        m_key += key;
+        mKey += key;
     }
 
     /// Returns the key size in bytes
-    Size size() const override { return m_key.size(); }
+    Size size() const override { return mKey.size(); }
 
     /// Returns the byte representation of the key
-    const ByteBuffer& getBytes() const override { return m_key; }
+    const ByteBuffer& getBytes() const override { return mKey; }
 
 private:
     AesKey& operator=(const AesKey&) = delete;
@@ -44,7 +44,7 @@ private:
     AesKey& operator=(AesKey&&) = delete;
     AesKey(AesKey&&) = delete;
 
-    ByteBuffer m_key;
+    ByteBuffer mKey;
 };
 
 } // namespace crypto

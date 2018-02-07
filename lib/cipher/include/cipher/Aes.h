@@ -30,7 +30,7 @@ public:
     explicit Aes(const AesKey& key) { setKey(key); }
 
     Aes& operator=(Aes&& other) {
-        m_roundKeys = std::move(other.m_roundKeys);
+        mRoundKeys = std::move(other.mRoundKeys);
         return *this;
     }
 
@@ -67,37 +67,37 @@ public:
     }
 
 protected:
-    void processFirstRound(ByteBufferView buffer) const { AesCore::addRoundKey(buffer, m_roundKeys, 0); }
+    void processFirstRound(ByteBufferView buffer) const { AesCore::addRoundKey(buffer, mRoundKeys, 0); }
 
     void processRound(ByteBufferView buffer, const Byte round) const {
         AesCore::subBytes(buffer);
         AesCore::shiftRows(buffer);
         AesCore::mixColumns(buffer);
-        AesCore::addRoundKey(buffer, m_roundKeys, round + 1);
+        AesCore::addRoundKey(buffer, mRoundKeys, round + 1);
     }
 
     void processLastRound(ByteBufferView buffer) const {
         AesCore::subBytes(buffer);
         AesCore::shiftRows(buffer);
-        AesCore::addRoundKey(buffer, m_roundKeys, getNumberOfRounds());
+        AesCore::addRoundKey(buffer, mRoundKeys, getNumberOfRounds());
     }
 
     void processFirstRoundInv(ByteBufferView buffer) const {
-        AesCore::addRoundKey(buffer, m_roundKeys, getNumberOfRounds());
+        AesCore::addRoundKey(buffer, mRoundKeys, getNumberOfRounds());
         AesCore::shiftRowsInv(buffer);
         AesCore::subBytesInv(buffer);
     }
 
     void processRoundInv(ByteBufferView buffer, const Byte round) const {
-        AesCore::addRoundKey(buffer, m_roundKeys, round);
+        AesCore::addRoundKey(buffer, mRoundKeys, round);
         AesCore::mixColumnsInv(buffer);
         AesCore::shiftRowsInv(buffer);
         AesCore::subBytesInv(buffer);
     }
 
-    void processLastRoundInv(ByteBufferView buffer) const { AesCore::addRoundKey(buffer, m_roundKeys, 0); }
+    void processLastRoundInv(ByteBufferView buffer) const { AesCore::addRoundKey(buffer, mRoundKeys, 0); }
 
-    ByteBuffer m_roundKeys;
+    ByteBuffer mRoundKeys;
 
 private:
     Aes& operator=(const Aes&) = delete;
@@ -128,22 +128,22 @@ private:
     }
 
     void keySchedule(const ConstByteBufferView& key) override {
-        m_roundKeys.insert(m_roundKeys.end(), key.begin(), key.end());
+        mRoundKeys.insert(mRoundKeys.end(), key.begin(), key.end());
         Byte rconIteration = 0;
-        while (m_roundKeys.size() < getExpandedKeySize()) {
+        while (mRoundKeys.size() < getExpandedKeySize()) {
             StaticBuffer<Byte, 4> word32;
-            word32.insert(word32.end(), m_roundKeys.end() - 4, m_roundKeys.end());
+            word32.insert(word32.end(), mRoundKeys.end() - 4, mRoundKeys.end());
 
-            if (m_roundKeys.size() % getKeySize() == 0) {
+            if (mRoundKeys.size() % getKeySize() == 0) {
                 AesCore::keyScheduleCore(word32, ++rconIteration);
             }
 
-            if (getKeySize() == Aes256 && m_roundKeys.size() % getKeySize() == 16) {
+            if (getKeySize() == Aes256 && mRoundKeys.size() % getKeySize() == 16) {
                 AesCore::subBytes(word32);
             }
 
             for (Byte i = 0; i < 4; ++i) {
-                m_roundKeys += m_roundKeys[m_roundKeys.size() - getKeySize()] ^ word32[i];
+                mRoundKeys += mRoundKeys[mRoundKeys.size() - getKeySize()] ^ word32[i];
             }
         }
     }

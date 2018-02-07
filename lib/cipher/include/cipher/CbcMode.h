@@ -11,6 +11,9 @@ namespace crypto {
 
 using ByteBufferView = BufferView<Byte>;
 
+/// Convenience class for constructing block cipher encryptors/decryptors
+///
+/// For more details, see \ref CbcEncrypt and \ref CbcDecrypt
 template <typename CipherT>
 class CbcMode {
     using StaticByteBufferBase = StaticBufferBase<Byte>;
@@ -22,49 +25,49 @@ public:
     struct Encryption {
         using CipherType = CipherT;
 
-        Encryption(const Key& key, InitializationVector& IV) : m_encryptor(m_cipher, key, IV) {}
+        Encryption(const Key& key, InitializationVector& IV) : mEncryptor(mCipher, key, IV) {}
 
         template <typename TContainer>
         Size update(const ByteBufferView& input, TContainer& output) {
-            return m_encryptor.update(input, output);
+            return mEncryptor.update(input, output);
         }
 
         template <typename TContainer>
         void doFinal(const ByteBufferView& input, TContainer& output, const Padding& padder) {
-             m_encryptor.doFinal(input, output, padder);
+             mEncryptor.doFinal(input, output, padder);
         }
 
         Size getBlockSize() const {
-            return m_cipher.getBlockSize();
+            return mCipher.getBlockSize();
         }
 
     private:
-        CipherT m_cipher;
-        CbcEncrypt m_encryptor;
+        CipherT mCipher;
+        CbcEncrypt mEncryptor;
     };
 
     struct Decryption {
         using CipherType = CipherT;
 
-        Decryption(const Key& key, InitializationVector& IV) : m_decryptor(m_cipher, key, IV) {}
+        Decryption(const Key& key, InitializationVector& IV) : mDecryptor(mCipher, key, IV) {}
 
         template <typename TContainer>
         Size update(const ByteBufferView& input, TContainer& output) {
-            return m_decryptor.update(input, output);
+            return mDecryptor.update(input, output);
         }
 
         template <typename TContainer>
         void doFinal(const ByteBufferView& input, TContainer& output, const Padding& padder) {
-             m_decryptor.doFinal(input, output, padder);
+             mDecryptor.doFinal(input, output, padder);
         }
 
         Size getBlockSize() const {
-            return m_cipher.getBlockSize();
+            return mCipher.getBlockSize();
         }
 
     private:
-        CipherT m_cipher;
-        CbcDecrypt m_decryptor;
+        CipherT mCipher;
+        CbcDecrypt mDecryptor;
     };
 };
 

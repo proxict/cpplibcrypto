@@ -347,6 +347,7 @@ private:
         std::move(begin(), end(), newData);
         if (mData) {
             mAllocator.destroy(mData);
+            mAllocator.deallocate(mData, 0);
         }
         mData = newData;
     }

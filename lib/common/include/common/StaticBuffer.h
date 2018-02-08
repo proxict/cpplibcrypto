@@ -10,7 +10,6 @@
 
 namespace crypto {
 
-// TODO(ProXicT): Sensitive flag, move ctor, initialization list ctor
 template <typename T>
 class StaticBufferBase {
 public:
@@ -195,14 +194,15 @@ public:
     using iterator = Iterator;
     using const_iterator = ConstIterator;
 
-    StaticBuffer() : mStored(0) {}
+    explicit StaticBuffer() : mStored(0) {}
 
     explicit StaticBuffer(const Size count) : StaticBuffer() {
         ASSERT(count <= TCapacity);
         resize(count);
     }
 
-    explicit StaticBuffer(const Size count, ConstReference value) : StaticBuffer() {
+    StaticBuffer(const Size count, ConstReference value)
+    : StaticBuffer() {
         ASSERT(count <= TCapacity);
         insert(end(), value, count);
     }
@@ -213,17 +213,33 @@ public:
         insert(end(), first, last);
     }
 
-    StaticBuffer(StaticBuffer&& other) : StaticBuffer() { *this = std::move(other); }
+    explicit StaticBuffer(std::initializer_list<ValueType> list) : StaticBuffer(list.begin(), list.end()) {}
+
+    explicit StaticBuffer(StaticBuffer&& other) { *this = std::move(other); }
 
     StaticBuffer& operator=(StaticBuffer&& other) {
+        std::swap(mWipe, other.mWipe);
         std::swap(mData, other.mData);
         std::swap(mStored, other.mStored);
         return *this;
     }
 
-    StaticBuffer(std::initializer_list<ValueType> list) : StaticBuffer(list.begin(), list.end()) {}
+    ~StaticBuffer() {
+        clear();
+        if (mWipe) {
+            for (auto it : *this) {
+                memory::wipe(&it);
+            }
+        }
+    }
 
-    ~StaticBuffer() { clear(); }
+    void setSensitive(const bool sensitive = true) {
+        mWipe = sensitive;
+    }
+
+    bool isSensitive() const {
+        return mWipe;
+    }
 
     ConstReference at(const Size index) const override { return mData[index]; }
 
@@ -373,6 +389,7 @@ public:
 private:
     ValueType mData[TCapacity];
     Size mStored;
+    bool mWipe = true;
 };
 
 template <typename T, Size TCapacity>

@@ -87,7 +87,7 @@ public:
     void destroy(Pointer ptr) {
         memory::destroy(*ptr);
         if (mWipe) {
-            wipe(ptr);
+            memory::wipe<ValueType>(ptr);
         }
     }
 
@@ -103,17 +103,7 @@ public:
     void destroy(Reference ref) {
         memory::destroy(ref);
         if (mWipe) {
-            wipe(&ref);
-        }
-    }
-
-    /// Wipes the value at the given pointer
-    ///
-    /// The memory can be set to a random byte sequence
-    void wipe(Pointer ptr) {
-        Byte* bytePtr = reinterpret_cast<Byte*>(ptr);
-        for (Size i = 0; i < sizeof(ValueType); ++i) {
-            bytePtr[i] = 0;
+            memory::wipe<ValueType>(&ref);
         }
     }
 

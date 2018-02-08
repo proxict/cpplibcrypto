@@ -62,6 +62,17 @@ inline void destroy(TIterator first, TIterator last) {
     }
 }
 
+/// Wipes the memory at the given pointer
+///
+/// The memory can be set to a random byte sequence
+template <typename T>
+void wipe(T* ptr) {
+    Byte* bytePtr = reinterpret_cast<Byte*>(ptr);
+    for (Size i = 0; i < sizeof(T); ++i) {
+        bytePtr[i] = 0;
+    }
+}
+
 } // namespace memory
 } // namespace crypto
 

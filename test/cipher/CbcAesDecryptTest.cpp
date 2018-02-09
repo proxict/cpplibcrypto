@@ -10,7 +10,7 @@
 #include "common/Hex.h"
 #include "common/HexString.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 TEST(CbcAes128DecryptTest, cbcDecrypt1) {
     AesIv iv(HexString("000102030405060708090A0B0C0D0E0F"));
@@ -214,4 +214,4 @@ TEST(CbcAes256DecryptResetChainTest, cbcDecryptResetChain1) {
     EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(out2)));
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END

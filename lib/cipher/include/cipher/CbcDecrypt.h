@@ -10,7 +10,7 @@
 #include "common/bufferUtils.h"
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Block cipher CBC decryptor
 class CbcDecrypt : public ModeOfOperation {
@@ -87,6 +87,6 @@ private:
     InitializationVector& mIv;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

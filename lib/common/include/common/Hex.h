@@ -6,7 +6,7 @@
 
 #include "common/DynamicBuffer.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Converted from base-16 to base-10 and vice versa
 class Hex {
@@ -37,6 +37,6 @@ std::string Hex::encode(const TBuffer& buf) {
     return bytes.str();
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

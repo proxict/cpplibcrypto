@@ -8,7 +8,7 @@
 #include "common/Memory.h"
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 template <typename T>
 class StaticBufferBase {
@@ -414,6 +414,6 @@ bool operator==(const StaticBufferBase<T>& lhs, const StaticBufferBase<T>& rhs) 
     return true;
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

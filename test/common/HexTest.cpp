@@ -5,7 +5,7 @@
 #include "common/DynamicBuffer.h"
 #include "common/Hex.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 TEST(HexTest, basic) {
     ByteBuffer s;
@@ -64,4 +64,4 @@ TEST(HexTest, exception) {
     EXPECT_THROW(Hex::decode("0q"), Exception);
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END

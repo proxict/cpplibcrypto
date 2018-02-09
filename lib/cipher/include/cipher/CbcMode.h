@@ -7,7 +7,7 @@
 #include "common/DynamicBuffer.h"
 #include "common/Key.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 using ByteBufferView = BufferView<Byte>;
 
@@ -68,6 +68,6 @@ public:
     };
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

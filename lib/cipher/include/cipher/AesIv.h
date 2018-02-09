@@ -10,7 +10,7 @@
 #include "common/HexString.h"
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Represents an initialization vector for AES
 class AesIv : public InitializationVectorSized<16> {
@@ -58,6 +58,6 @@ private:
     ByteBuffer mInitialIv;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

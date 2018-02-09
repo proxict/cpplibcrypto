@@ -6,7 +6,7 @@
 #include "common/DynamicBuffer.h"
 #include "common/HexString.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 using ByteBufferView = BufferView<Byte>;
 
@@ -50,4 +50,4 @@ TEST(AesCoreTest, mixColumns) {
     EXPECT_EQ(HexString("000102030405060708090A0B0C0D0E0F"), buffer);
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END

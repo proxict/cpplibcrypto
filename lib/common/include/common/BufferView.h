@@ -7,7 +7,7 @@
 #include "common/Memory.h"
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Provides a useful way to pass a pointer to a buffer of a known size
 ///
@@ -127,6 +127,6 @@ private:
     Size mCapacity;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

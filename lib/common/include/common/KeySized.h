@@ -7,7 +7,7 @@
 
 #include "common/DynamicBuffer.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Specifies the restraints for key size
 /// \param TMinKeySize Specifies the minimal key size required
@@ -33,6 +33,6 @@ protected:
     KeySized() = default;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

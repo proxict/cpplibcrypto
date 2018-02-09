@@ -7,7 +7,7 @@
 #include "common/Hex.h"
 #include "common/Exception.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 ByteBuffer Hex::decode(const std::string& hexStr) {
     if (hexStr.size() & 1) {
@@ -33,4 +33,5 @@ constexpr Byte Hex::hex2Byte(const char c) {
     }
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
+

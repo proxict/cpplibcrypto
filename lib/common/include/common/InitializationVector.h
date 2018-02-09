@@ -6,7 +6,7 @@
 #include "common/LinearIterator.h"
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 class InitializationVector {
 public:
@@ -55,6 +55,6 @@ public:
     ConstIterator cend() const { return ConstIterator(data(), size()); }
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

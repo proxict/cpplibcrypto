@@ -1,9 +1,11 @@
 #ifndef COMMON_TYPETRAITS_H_
 #define COMMON_TYPETRAITS_H_
 
+#include "common/common.h"
+
 #include <type_traits>
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 template <bool TTest, typename TType = void>
 using EnableIf = typename std::enable_if_t<TTest, TType>;
@@ -32,6 +34,6 @@ using ReferenceWrapper = std::reference_wrapper<T>;
 template <typename T>
 using ReferenceStorage = Conditional<IsReference<T>::value, ReferenceWrapper<RemoveReference<T>>, RemoveReference<T>>;
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

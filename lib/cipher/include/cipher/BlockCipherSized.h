@@ -3,7 +3,7 @@
 
 #include "cipher/BlockCipher.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Base class for block ciphers
 ///
@@ -18,6 +18,6 @@ protected:
     BlockCipherSized() = default;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

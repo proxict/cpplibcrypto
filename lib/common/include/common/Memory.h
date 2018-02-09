@@ -6,7 +6,7 @@
 #include "common/TypeTraits.h"
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 namespace memory {
 
 /// Allocates memory for the given number of elements
@@ -74,6 +74,6 @@ void wipe(T* ptr) {
 }
 
 } // namespace memory
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

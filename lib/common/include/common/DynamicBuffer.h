@@ -5,7 +5,7 @@
 #include "common/LinearIterator.h"
 #include "common/SecureAllocator.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Dynamically allocated buffer which also allowes to store references
 ///
@@ -361,6 +361,6 @@ private:
 
 using ByteBuffer = DynamicBuffer<Byte>;
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif // COMMON_BYTEBUFFER_H_

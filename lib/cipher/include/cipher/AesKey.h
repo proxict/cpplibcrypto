@@ -9,7 +9,7 @@
 #include "common/Exception.h"
 #include "common/HexString.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// AES key representation
 ///
@@ -47,6 +47,6 @@ private:
     ByteBuffer mKey;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

@@ -3,7 +3,7 @@
 
 #include "common/InitializationVector.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 template <Size TSize>
 class InitializationVectorSized : public InitializationVector {
@@ -14,6 +14,6 @@ protected:
     InitializationVectorSized() = default;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

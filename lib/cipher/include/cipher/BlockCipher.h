@@ -6,7 +6,7 @@
 #include "common/BufferView.h"
 #include "common/Key.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Interface for block ciphers.
 ///
@@ -33,6 +33,6 @@ public:
     virtual void decryptBlock(ByteBufferView) = 0;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

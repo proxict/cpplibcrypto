@@ -6,7 +6,7 @@
 #include "common/DynamicBuffer.h"
 #include "common/HexString.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 class AesKeyScheduleTest : public testing::Test, public Aes {
 public:
@@ -185,4 +185,4 @@ TEST_F(AesKeyScheduleTest, aes256test3) {
     EXPECT_EQ(HexString("24fc79ccbf0979e9371ac23c6d68de36"), getNthRoundKey(14));
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END

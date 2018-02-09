@@ -1,9 +1,11 @@
 #ifndef COMMON_EXCEPTION_H_
 #define COMMON_EXCEPTION_H_
 
+#include "common/common.h"
+
 #include <string>
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Object expected to be thrown
 ///
@@ -20,6 +22,6 @@ private:
     const std::string mStr;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

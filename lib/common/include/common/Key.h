@@ -5,7 +5,7 @@
 
 #include "common/DynamicBuffer.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 class Key {
 public:
@@ -21,6 +21,6 @@ public:
     virtual const ByteBuffer& getBytes() const = 0;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

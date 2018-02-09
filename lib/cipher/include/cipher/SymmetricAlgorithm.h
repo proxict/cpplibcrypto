@@ -5,7 +5,7 @@
 #include "common/DynamicBuffer.h"
 #include "common/Key.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 class SymmetricAlgorithm {
 public:
@@ -30,6 +30,6 @@ protected:
     Size mKeySize;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

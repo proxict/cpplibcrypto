@@ -6,7 +6,7 @@
 #include "common/StaticBuffer.h"
 #include "padding/Padding.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 using ByteBufferView = BufferView<Byte>;
 
@@ -24,6 +24,6 @@ public:
     virtual void doFinal(const ByteBufferView& in, StaticByteBufferBase& out, const Padding& padder) = 0;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

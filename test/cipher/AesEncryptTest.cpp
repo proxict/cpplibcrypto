@@ -7,7 +7,7 @@
 #include "common/Hex.h"
 #include "common/HexString.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 using ByteBufferView = BufferView<Byte>;
 
@@ -131,4 +131,4 @@ TEST(Aes256EncryptTest, encrypt4) {
     EXPECT_EQ(HexString("23304b7a39f9f3ff067d8d8f9e24ecc7"), HexString(Hex::encode(buffer)));
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END

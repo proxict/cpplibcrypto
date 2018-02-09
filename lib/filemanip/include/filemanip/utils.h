@@ -6,7 +6,7 @@
 #include "common/Exception.h"
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Returns whether or not the file specified exists
 inline bool fileExists(const std::string& filename) {
@@ -21,6 +21,6 @@ inline Size getFileSize(const std::string& filename) {
     return stream.tellg();
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

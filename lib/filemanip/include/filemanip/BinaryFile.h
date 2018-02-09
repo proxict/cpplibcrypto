@@ -8,7 +8,7 @@
 #include "common/Exception.h"
 #include "common/StaticBuffer.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Represents a binary file which can be read/written from/to a file system
 class BinaryFile {
@@ -58,6 +58,6 @@ private:
     Mode mMode;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

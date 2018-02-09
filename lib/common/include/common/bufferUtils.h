@@ -3,7 +3,7 @@
 
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 namespace bufferUtils {
 
 /// Applies an XOR operation on the given container with the given source
@@ -59,6 +59,6 @@ inline bool equal(const TBuffer1& c1, const TBuffer2& c2) {
 }
 
 } // namespace bufferUtils
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

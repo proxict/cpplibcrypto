@@ -6,7 +6,7 @@
 #include "common/StaticBuffer.h"
 #include "common/bufferUtils.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// Represents a base-16 string
 class HexString {
@@ -84,6 +84,6 @@ private:
     ByteBuffer mDecoded;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

@@ -10,13 +10,16 @@
 #include <cassert>
 #include <cstdint>
 
-namespace crypto {
+#define NAMESPACE_CRYPTO_BEGIN namespace crypto {
+#define NAMESPACE_CRYPTO_END }
+
+#define ASSERT(x) assert(x)
+
+NAMESPACE_CRYPTO_BEGIN
 
 using Byte = uint8_t;
 using Size = std::size_t;
 
-#define ASSERT(x) assert(x)
-
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

@@ -8,7 +8,7 @@
 #include "common/DynamicBuffer.h"
 #include "padding/Padding.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// RFC 2315 compliant PKCS#7 padding implementation
 class Pkcs7 : public Padding {
@@ -58,6 +58,6 @@ private:
     }
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

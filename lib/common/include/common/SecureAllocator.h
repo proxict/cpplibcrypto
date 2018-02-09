@@ -7,7 +7,7 @@
 #include "common/Memory.h"
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 template <class T>
 class SecureAllocator {
@@ -121,6 +121,6 @@ protected:
     bool mWipe;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

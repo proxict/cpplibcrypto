@@ -5,7 +5,7 @@
 #include "common/DynamicBuffer.h"
 #include "common/HexString.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 TEST(DynamicBufferTest, ctor) {
     ByteBuffer bb{0x01, 0x02, 0x03, 0x04, 0x05};
@@ -207,4 +207,4 @@ TEST(DynamicBufferTest, destroy) {
     EXPECT_EQ(1, d);
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END

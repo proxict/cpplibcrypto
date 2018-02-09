@@ -7,7 +7,7 @@
 #include "common/TypeTraits.h"
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 template <class T>
 class LinearIterator {
@@ -122,6 +122,6 @@ protected:
     Pointer mPtr;
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

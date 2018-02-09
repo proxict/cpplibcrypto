@@ -7,7 +7,7 @@
 #include "common/Hex.h"
 #include "common/HexString.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 TEST(Aes128DecryptTest, decrypt1) {
     Aes aes(AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")));
@@ -129,4 +129,4 @@ TEST(Aes256DecryptTest, decrypt4) {
     EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(buffer)));
 }
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END

@@ -12,7 +12,7 @@
 #include "common/Exception.h"
 #include "common/common.h"
 
-namespace crypto {
+NAMESPACE_CRYPTO_BEGIN
 
 /// AES algorithm implementation in all common key sizes (128, 192, 256 bits)
 class Aes : public BlockCipherSized<16> {
@@ -149,6 +149,6 @@ private:
     }
 };
 
-} // namespace crypto
+NAMESPACE_CRYPTO_END
 
 #endif

@@ -42,56 +42,71 @@ public:
     template <typename TBuffer>
     Size update(const ByteBufferView& in, TBuffer& out) {
         const Size blockSize = mCipher.getBlockSize();
-        if (in.size() < blockSize && in.size() % blockSize != 0) {
-            return 0;
+        StaticBuffer<Byte, 16> buffer;
+        ASSERT(mLeftoverBuffer.size() < blockSize);
+
+        bufferUtils::pushXored(buffer, mLeftoverBuffer.cbegin(), mLeftoverBuffer.cend(), mIv.cbegin());
+
+        Size processedInput = 0;
+        const Size numberOfBlocks = (buffer.size() + in.size()) / blockSize;
+        if (numberOfBlocks > 0) {
+            mLeftoverBuffer.clear();
         }
-
-        const Size numberOfBlocks = in.size() / blockSize;
         for (Size block = 0; block < numberOfBlocks; ++block) {
-            StaticBuffer<Byte, 16> buffer;
-            const Size currentBlockStart = block * blockSize;
-            const Size currentBlockEnd = currentBlockStart + blockSize;
-            bufferUtils::pushXored(buffer, in.begin() + currentBlockStart, in.begin() + currentBlockEnd, mIv.begin());
+            const Size toProcess = blockSize - buffer.size();
+            const Size blockStart = processedInput;
+            const Size blockEnd = blockStart + toProcess;
 
+            bufferUtils::pushXored(buffer, in.cbegin() + blockStart, in.cbegin() + blockEnd,
+                                   mIv.cbegin() + buffer.size());
+
+            ASSERT(buffer.size() == blockSize);
             mCipher.encryptBlock(buffer);
+            processedInput += toProcess;
 
             out.insert(out.end(), buffer.begin(), buffer.end());
             mIv.setNew(buffer.begin());
+            buffer.clear();
         }
+
+        ASSERT(in.size() - processedInput < blockSize);
+        mLeftoverBuffer.insert(mLeftoverBuffer.end(), in.begin() + processedInput, in.end());
+
         return out.size(); // return how many bytes were encrypted
     }
 
-    void doFinal(const ByteBufferView& in, DynamicBuffer<Byte>& out, const Padding& padder) override {
-        doFinal<DynamicBuffer<Byte>>(in, out, padder);
+    void doFinal(DynamicBuffer<Byte>& out, const Padding& padder) override {
+        doFinal<DynamicBuffer<Byte>>(out, padder);
     }
 
-    void doFinal(const ByteBufferView& in, StaticBufferBase<Byte>& out, const Padding& padder) override {
-        doFinal<StaticBufferBase<Byte>>(in, out, padder);
+    void doFinal(StaticBufferBase<Byte>& out, const Padding& padder) override {
+        doFinal<StaticBufferBase<Byte>>(out, padder);
     }
 
     /// Applies padding using the provided scheme
     template <typename TBuffer>
-    void doFinal(const ByteBufferView& in, TBuffer& out, const Padding& padder) {
-        ASSERT(in.size() < mCipher.getBlockSize());
-        StaticBuffer<Byte, 16> buffer;
-        buffer.insert(buffer.end(), in.begin(), in.end());
-        if (!padder.pad(buffer, mCipher.getBlockSize())) {
+    void doFinal(TBuffer& out, const Padding& padder) {
+        ASSERT(mLeftoverBuffer.size() < mCipher.getBlockSize());
+        if (!padder.pad(mLeftoverBuffer, mCipher.getBlockSize())) {
             throw Exception("Buffer size must be a multiple of block size for encryption");
         }
-        if (buffer.size() == 0) {
+        // This is valid in case no padding is applied
+        if (mLeftoverBuffer.size() == 0) {
             return;
         }
 
-        bufferUtils::xorBuffer(buffer, mIv);
-
-        mCipher.encryptBlock(buffer);
-        out.insert(out.end(), buffer.begin(), buffer.end());
+        ASSERT(mLeftoverBuffer.size() == mCipher.getBlockSize());
+        bufferUtils::xorBuffer(mLeftoverBuffer, mIv);
+        mCipher.encryptBlock(mLeftoverBuffer);
+        out.insert(out.end(), mLeftoverBuffer.begin(), mLeftoverBuffer.end());
+        mLeftoverBuffer.clear();
     }
 
     /// Resets the CB chain
     void resetChain() { mIv.reset(); }
 
 private:
+    StaticBuffer<Byte, 16> mLeftoverBuffer;
     BlockCipher& mCipher;
     InitializationVector& mIv;
 };

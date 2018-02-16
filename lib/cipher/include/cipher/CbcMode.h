@@ -34,8 +34,8 @@ public:
         }
 
         template <typename TBuffer>
-        void doFinal(const ByteBufferView& input, TBuffer& output, const Padding& padder) {
-            mEncryptor.doFinal(input, output, padder);
+        void doFinal(TBuffer& output, const Padding& padder) {
+            mEncryptor.doFinal(output, padder);
         }
 
         Size getBlockSize() const { return mCipher.getBlockSize(); }
@@ -56,8 +56,8 @@ public:
         }
 
         template <typename TBuffer>
-        void doFinal(const ByteBufferView& input, TBuffer& output, const Padding& padder) {
-            mDecryptor.doFinal(input, output, padder);
+        void doFinal(TBuffer& output, const Padding& padder) {
+            mDecryptor.doFinal(output, padder);
         }
 
         Size getBlockSize() const { return mCipher.getBlockSize(); }

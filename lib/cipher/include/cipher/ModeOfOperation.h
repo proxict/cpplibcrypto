@@ -20,8 +20,8 @@ public:
     virtual Size update(const ByteBufferView& in, DynamicBuffer<Byte>& out) = 0;
     virtual Size update(const ByteBufferView& in, StaticByteBufferBase& out) = 0;
 
-    virtual void doFinal(const ByteBufferView& in, DynamicBuffer<Byte>& out, const Padding& padder) = 0;
-    virtual void doFinal(const ByteBufferView& in, StaticByteBufferBase& out, const Padding& padder) = 0;
+    virtual void doFinal(DynamicBuffer<Byte>& out, const Padding& padder) = 0;
+    virtual void doFinal(StaticByteBufferBase& out, const Padding& padder) = 0;
 };
 
 NAMESPACE_CRYPTO_END

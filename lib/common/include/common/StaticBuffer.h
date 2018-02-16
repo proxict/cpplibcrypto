@@ -225,10 +225,12 @@ public:
     }
 
     ~StaticBuffer() {
+        Iterator first = begin();
+        Iterator last = end();
         clear();
         if (mWipe) {
-            for (auto it : *this) {
-                memory::wipe(&it);
+            for (Iterator it = first; it != last; ++it) {
+                memory::wipe(&*it);
             }
         }
     }
@@ -275,7 +277,7 @@ public:
 
     bool empty() const override { return mStored == 0; }
 
-    bool full() const override { return mStored == TCapacity; }
+    bool full() const override { return mStored >= TCapacity; }
 
     Size size() const override { return mStored; }
 
@@ -344,6 +346,7 @@ public:
     }
 
     void pop() override {
+        ASSERT(!empty());
         memory::destroy(back());
         --mStored;
     }
@@ -388,7 +391,7 @@ public:
 
 private:
     ValueType mData[TCapacity];
-    Size mStored;
+    Size mStored = 0;
     bool mWipe = true;
 };
 

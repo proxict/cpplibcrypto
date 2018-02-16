@@ -24,7 +24,7 @@ inline void xorBuffer(TBuffer& buffer, const TBufferXor& xorSource) {
 /// \param last The end of the data to be XORed
 /// \param xorSourceFirst The beginning of the data with which the given range will be XORed
 template <typename TIterator, typename TConstIterator>
-inline void xorBuffer(TIterator first, TIterator last, const TConstIterator xorSourceFirst) {
+inline void xorBuffer(TIterator first, TIterator last, TConstIterator xorSourceFirst) {
     TIterator srcIt = xorSourceFirst;
     for (TIterator it = first; it != last; ++it, ++srcIt) {
         *it ^= *srcIt;
@@ -37,10 +37,10 @@ inline void xorBuffer(TIterator first, TIterator last, const TConstIterator xorS
 /// \param first The beginning of the data to be XORed and pushed
 /// \param lasat The end of the data to be XORed and pushed
 /// \param xorSource The beginning of the data with which the given range will be XORed and pushed
-template <typename TBuffer, typename TIterator = typename TBuffer::ConstIterator>
-inline void pushXored(TBuffer& container, const TIterator first, const TIterator last, const TIterator xorSource) {
-    TIterator xorIt = xorSource;
-    for (TIterator it = first; it != last; ++it) {
+template <typename TBuffer, typename TConstIterator>
+inline void pushXored(TBuffer& container, TConstIterator first, TConstIterator last, TConstIterator xorSource) {
+    TConstIterator xorIt = xorSource;
+    for (TConstIterator it = first; it != last; ++it) {
         container.push(*it ^ *xorIt++);
     }
 }

@@ -4,7 +4,6 @@
 /// \brief Defines the entry point of the sandbox application.
 ///
 //------------------------------------------------------------------------------
-#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -14,53 +13,47 @@
 #include "common/Exception.h"
 #include "common/HexString.h"
 #include "common/StaticBuffer.h"
+#include "common/Stream.h"
 #include "filemanip/BinaryFile.h"
 #include "filemanip/utils.h"
 #include "padding/Pkcs7.h"
 
 template <typename Encryptor>
 void encFile(Encryptor& encryptor, const std::string& inputFileName, const std::string& outputFileName) {
-    crypto::BinaryFile input(inputFileName, crypto::BinaryFile::Mode::Read);
-    crypto::BinaryFile output(outputFileName, crypto::BinaryFile::Mode::Write);
-    //crypto::StaticBuffer<crypto::Byte, 32> plainBuffer;
-    //crypto::StaticBuffer<crypto::Byte, 32> cipherBuffer;
-    crypto::DynamicBuffer<crypto::Byte> plainBuffer;
+    crypto::FileInputStream input(inputFileName);
+    crypto::FileOutputStream output(outputFileName);
     crypto::DynamicBuffer<crypto::Byte> cipherBuffer;
 
-    // Read max of plainBuffer.capacity()
-    while (input.read(plainBuffer, 8)) {
-        // Encrypt max of plainBuffer.size(), save the encrypted bytes to cipherBuffer and remove the plain data, which
-        // got encrypted, from the plainBuffer.
-        const crypto::Size encrypted = encryptor.update(plainBuffer, cipherBuffer); // BufferView in the lower level???
-        plainBuffer.erase(0U, encrypted);
-
-        // Save max of cipherBuffer.size() to output and erase the saved data from the cipherBuffer
-        output.write(cipherBuffer);
+    while (!input.eof()) {
+        crypto::StaticBuffer<crypto::Byte, 4096> plainBuffer(4096);
+        const crypto::Size read = input.read(plainBuffer.data(), plainBuffer.size());
+        plainBuffer.resize(read);
+        encryptor.update(plainBuffer, cipherBuffer);
+        output.write(cipherBuffer.data(), cipherBuffer.size());
         cipherBuffer.clear();
     }
 
-    // Apply padding to the remaining bytes if any and save the result into cipherBuffer
-    encryptor.doFinal(plainBuffer, cipherBuffer, crypto::Pkcs7());
-    // Write the last chunk to the output
-    output.write(cipherBuffer);
+    encryptor.doFinal(cipherBuffer, crypto::Pkcs7());
+    output.write(cipherBuffer.data(), cipherBuffer.size());
 }
 
 template <typename Decryptor>
 void decFile(Decryptor& decryptor, const std::string& inputFileName, const std::string& outputFileName) {
-    crypto::BinaryFile input(inputFileName, crypto::BinaryFile::Mode::Read);
-    crypto::BinaryFile output(outputFileName, crypto::BinaryFile::Mode::Write);
-    crypto::StaticBuffer<crypto::Byte, 4096> cipherBuffer;
-    crypto::StaticBuffer<crypto::Byte, 4096> plainBuffer;
+    crypto::FileInputStream input(inputFileName);
+    crypto::FileOutputStream output(outputFileName);
+    crypto::DynamicBuffer<crypto::Byte> plainBuffer;
 
-    while (input.read(cipherBuffer, cipherBuffer.capacity() - cipherBuffer.size())) {
-        const crypto::Size decrypted = decryptor.update(cipherBuffer, plainBuffer);
-        cipherBuffer.erase(0U, decrypted);
-        output.write(plainBuffer);
+    while (!input.eof()) {
+        crypto::StaticBuffer<crypto::Byte, 4096> cipherBuffer(4096);
+        const crypto::Size read = input.read(cipherBuffer.data(), cipherBuffer.capacity());
+        cipherBuffer.resize(read);
+        decryptor.update(cipherBuffer, plainBuffer);
+        output.write(plainBuffer.data(), plainBuffer.size());
         plainBuffer.clear();
     }
 
-    decryptor.doFinal(cipherBuffer, plainBuffer, crypto::Pkcs7());
-    output.write(plainBuffer);
+    decryptor.doFinal(plainBuffer, crypto::Pkcs7());
+    output.write(plainBuffer.data(), plainBuffer.size());
 }
 
 /// The entry point of the sandbox application

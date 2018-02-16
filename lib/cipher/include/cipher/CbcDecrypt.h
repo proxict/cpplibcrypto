@@ -42,41 +42,61 @@ public:
     template <typename TBuffer>
     Size update(const ByteBufferView& in, TBuffer& out) {
         const Size blockSize = mCipher.getBlockSize();
-        ASSERT(in.size() % blockSize == 0);
-        const Size numberOfBlocks = in.size() / blockSize - 1;
-
-        for (Size block = 0; block < numberOfBlocks; ++block) {
-            StaticBuffer<Byte, 16> buffer;
-            const Size currentBlockStart = block * blockSize;
-            const Size currentBlockEnd = currentBlockStart + blockSize;
-            buffer.insert(buffer.end(), in.begin() + currentBlockStart, in.begin() + currentBlockEnd);
-
-            mCipher.decryptBlock(buffer);
-            bufferUtils::pushXored(out, buffer.cbegin(), buffer.cend(), mIv.begin());
-
-            mIv.setNew(in.begin() + currentBlockStart);
-        }
-        return out.size();
-    }
-
-    void doFinal(const ByteBufferView& in, DynamicBuffer<Byte>& out, const Padding& padder) override {
-        doFinal<DynamicBuffer<Byte>>(in, out, padder);
-    }
-
-    void doFinal(const ByteBufferView& in, StaticBufferBase<Byte>& out, const Padding& padder) override {
-        doFinal<StaticBufferBase<Byte>>(in, out, padder);
-    }
-
-    /// Applies padding using the provided scheme
-    template <typename TBuffer>
-    void doFinal(const ByteBufferView& in, TBuffer& out, const Padding& padder) {
-        ASSERT(in.size() == mCipher.getBlockSize());
         StaticBuffer<Byte, 16> buffer;
-        buffer.insert(buffer.end(), in.begin(), in.end());
+        ASSERT(mLeftoverBuffer.size() <= blockSize);
 
-        mCipher.decryptBlock(buffer);
-        bufferUtils::pushXored(out, buffer.cbegin(), buffer.cend(), mIv.cbegin());
+        buffer.insert(buffer.end(), mLeftoverBuffer.begin(), mLeftoverBuffer.end());
+
+        // In case this is a full block, we will not decrypt it yet. We want to keep the last block for the final round
+        // so we can unpad the it.
+        const bool isFullBlock = ((buffer.size() + in.size()) % blockSize) == 0;
+        const Size numberOfBlocks = ((buffer.size() + in.size()) / blockSize) - int(isFullBlock);
+
+        // If there is some block we should prcess, we can be sure we will process the leftovers from last round
+        // (these leftovers are already in the buffer to decrypt) If there, however, isn't a block to process, we cannot
+        // clear it since we would throw away the already gathered, but unprocessed leftovers from previous rounds.
+        if (numberOfBlocks > 0) {
+            mLeftoverBuffer.clear();
+        }
+
+        Size processedInput = 0;
+        for (Size block = 0; block < numberOfBlocks; ++block) {
+            const Size toProcess = blockSize - buffer.size();
+            const Size blockStart = processedInput;
+            const Size blockEnd = blockStart + toProcess;
+
+            buffer.insert(buffer.end(), in.begin() + blockStart, in.begin() + blockEnd);
+            ASSERT(buffer.size() == blockSize);
+            StaticBuffer<Byte, 16> newIv;
+            newIv.insert(newIv.end(), buffer.begin(), buffer.end());
+            mCipher.decryptBlock(buffer);
+            bufferUtils::pushXored(out, buffer.cbegin(), buffer.cend(), mIv.cbegin());
+            processedInput += toProcess;
+            mIv.setNew(newIv.begin());
+            buffer.clear();
+        }
+        ASSERT(in.size() - processedInput <= blockSize);
+        mLeftoverBuffer.insert(mLeftoverBuffer.end(), in.begin() + processedInput, in.end());
+
+        return out.size(); // return how many bytes were decrypted
+    }
+
+    void doFinal(DynamicBuffer<Byte>& out, const Padding& padder) override {
+        doFinal<DynamicBuffer<Byte>>(out, padder);
+    }
+
+    void doFinal(StaticBufferBase<Byte>& out, const Padding& padder) override {
+        doFinal<StaticBufferBase<Byte>>(out, padder);
+    }
+
+    /// Removes padding
+    template <typename TBuffer>
+    void doFinal(TBuffer& out, const Padding& padder) {
+        ASSERT(mLeftoverBuffer.size() == mCipher.getBlockSize());
+        mCipher.decryptBlock(mLeftoverBuffer);
+        bufferUtils::pushXored(out, mLeftoverBuffer.cbegin(), mLeftoverBuffer.cend(), mIv.cbegin());
         padder.unpad(out);
+        mLeftoverBuffer.clear();
     }
 
     /// Resets the CB chain
@@ -85,6 +105,7 @@ public:
 private:
     BlockCipher& mCipher;
     InitializationVector& mIv;
+    StaticBuffer<Byte, 16> mLeftoverBuffer;
 };
 
 NAMESPACE_CRYPTO_END

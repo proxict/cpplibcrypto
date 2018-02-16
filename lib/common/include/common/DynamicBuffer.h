@@ -61,6 +61,7 @@ public:
     ~DynamicBuffer() {
         clear();
         mAllocator.deallocate(mData, 0);
+        mData = nullptr;
         mCapacity = 0;
     }
 
@@ -346,7 +347,7 @@ private:
         Pointer newData = mAllocator.allocate(size);
         std::move(begin(), end(), newData);
         if (mData) {
-            mAllocator.destroy(mData);
+            mAllocator.destroy(begin(), end());
             mAllocator.deallocate(mData, 0);
         }
         mData = newData;

@@ -84,12 +84,14 @@ public:
         memory::constructRange<ValueType>(first, last, with);
     }
 
-    void destroy(Pointer ptr) {
-        memory::destroy(*ptr);
+    void destroy(Reference ref) {
+        memory::destroy(ref);
         if (mWipe) {
-            memory::wipe<ValueType>(ptr);
+            memory::wipe<ValueType>(&ref);
         }
     }
+
+    void destroy(Pointer ptr) { memory::destroy(*ptr); }
 
     /// Destructs range of elements
     ///
@@ -97,13 +99,6 @@ public:
     void destroy(Pointer first, Pointer last) {
         for (Pointer it = first; it != last; ++it) {
             destroy(it);
-        }
-    }
-
-    void destroy(Reference ref) {
-        memory::destroy(ref);
-        if (mWipe) {
-            memory::wipe<ValueType>(&ref);
         }
     }
 

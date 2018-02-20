@@ -230,6 +230,10 @@ public:
         FileStreamBase::seek(offset, position);
     }
 
+    Size getFileSize() const {
+        return mFileSize;
+    }
+
 protected:
     virtual Size readImpl(void* output, const Size count) override {
         if (!isOpen()) {

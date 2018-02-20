@@ -1,26 +1,30 @@
 #ifndef FILEMANIP_UTILS_H_
 #define FILEMANIP_UTILS_H_
 
-#include <fstream>
-
 #include "common/Exception.h"
-#include "common/common.h"
+#include "common/Stream.h"
 
 NAMESPACE_CRYPTO_BEGIN
+namespace utils {
 
 /// Returns whether or not the file specified exists
 inline bool fileExists(const std::string& filename) {
-    std::ifstream stream(filename);
-    return stream.good();
+    try {
+        FileInputStream(filename);
+    } catch (const Exception& e) {
+        return false;
+    }
+    return true;
 }
 
 /// Returns the size of the file specified
+/// \throws Exceotion in case the file doesn't exist
 inline Size getFileSize(const std::string& filename) {
-    std::ifstream stream(filename, std::ios::binary | std::ios::ate);
-    if (!stream.is_open()) throw crypto::Exception("Could not open the file specified (" + filename + ')');
-    return stream.tellg();
+    FileInputStream input(filename);
+    return input.getFileSize();
 }
 
+} // namespace utils
 NAMESPACE_CRYPTO_END
 
 #endif

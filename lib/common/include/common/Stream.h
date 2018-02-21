@@ -8,12 +8,18 @@
 
 NAMESPACE_CRYPTO_BEGIN
 
+// Base class for input streams
 class InputStream {
 public:
     InputStream() = default;
 
     virtual ~InputStream() {}
 
+    /// Reads \ref count bytes from input
+    /// \param output The destinaion memory to save the data to
+    /// \param count The number of bytes to read from the stream
+    /// \returns The number of bytes read. This should be equal to \ref count in case \ref count bytes was available in
+    /// the stream. If the return value is less than \ref count, EOF must have been reached.
     Size read(void* output, const Size count) {
         ASSERT(output != nullptr || count == 0);
         if (count == 0 || output == nullptr) {
@@ -23,6 +29,7 @@ public:
         return readImpl(destination, count);
     }
 
+    /// Tells whether or not the stream is at the EOF
     bool eof() const { return eofImpl(); }
 
 protected:
@@ -37,6 +44,9 @@ public:
 
     virtual ~OutputStream() {}
 
+    /// Writes the given data to the stream
+    /// \param source Pointer to the data to write
+    /// \param count The number of bytes to write to the stream
     void write(const void* source, const Size count) {
         ASSERT(source != nullptr || count == 0);
         if (source == nullptr || count == 0) {
@@ -45,6 +55,10 @@ public:
         writeImpl(source, count);
     }
 
+    /// Flushes the stream
+    ///
+    /// When data is written to some stream, it can be buffered and thus not be written directly to the requested
+    /// destination. This function flushes this buffer so it reaches the destination immediately.
     virtual void flush() = 0;
 
 protected:
@@ -55,8 +69,12 @@ enum class SeekPosition { BEGINNING, CURRENT, END };
 
 class SeekableInputStream : public InputStream {
 public:
+    /// Returns the position in the input stream
     virtual Size getPosition() const = 0;
 
+    /// Sets the current read position
+    /// \param offset The offset from the specified position
+    /// \param position The position origin
     void seek(const Size offset, const SeekPosition position = SeekPosition::BEGINNING) {
         return seekImpl(offset, position);
     }
@@ -67,8 +85,12 @@ protected:
 
 class SeekableOutputStream : public OutputStream {
 public:
+    /// Returns the position in the output stream
     virtual Size getPosition() const = 0;
 
+    /// Sets the current write position
+    /// \param offset The offset from the specified position
+    /// \param position The position origin
     void seek(const Size offset, const SeekPosition position = SeekPosition::BEGINNING) {
         return seekImpl(offset, position);
     }
@@ -85,6 +107,7 @@ public:
         }
     }
 
+    /// Closes the file
     void close() {
         if (mFile == nullptr) {
             throw Exception("Closing file that has not been open");
@@ -98,13 +121,14 @@ public:
         }
     }
 
+    /// Returns whether or not the file is open
     bool isOpen() const { return mFile != nullptr; }
 
 protected:
-    enum OpenMode : int {
-        READ = 1 << 0,
-        WRITE = 1 << 1,
-        APPEND = 1 << 2,
+    enum class OpenMode {
+        READ,
+        WRITE,
+        APPEND
     };
 
     FileStreamBase() = default;
@@ -125,23 +149,19 @@ protected:
         return *this;
     }
 
-    void open(const std::string& filename, const int mode) {
+    /// Opens a file in the given mode
+    /// \param filename The path to the file to open
+    /// \param mode The mode to open the file in. Could be either READ, WRITE or APPEND
+    /// \throws Exception in case the file coudn't be open for any reason
+    void open(const std::string& filename, const OpenMode mode) {
         if (mFile) {
             throw Exception("Opening an instance of FileStream that has already been open. Current file (" + mFileName +
                             ") Requested file (" + filename + ')');
         }
 
-        const char* openMode = nullptr;
-        if ((mode & READ) != 0) {
-            openMode = "rb";
-        } else if ((mode & APPEND) != 0) {
-            openMode = "ab";
-        } else if ((mode & WRITE) != 0) {
-            openMode = "wb";
-        }
-        ASSERT(openMode != nullptr);
-
-        mFile = fopen(filename.c_str(), openMode);
+        const char* openFlags = toFileOpenFlags(mode);
+        ASSERT(openFlags != nullptr);
+        mFile = fopen(filename.c_str(), openFlags);
 
         if (!mFile) {
             throw Exception("Could not open the file specified (" + filename + ')');
@@ -150,11 +170,12 @@ protected:
         mFileName = filename;
         seek(0, SeekPosition::END);
         mFileSize = getPosition();
-        if ((mode & APPEND) == 0) {
+        if (mode != OpenMode::APPEND) {
             seek(0, SeekPosition::BEGINNING);
         }
     }
 
+    /// Returns the position in the current file
     Size getPosition() const {
         if (!isOpen()) {
             throw Exception("Getting position on a FileInputStream that has not been open");
@@ -162,6 +183,10 @@ protected:
         return ftello(mFile);
     }
 
+    /// Sets the current position in the file
+    /// \param offset The offset from the specified position
+    /// \param position The position origin
+    /// \throws Exception if the file is not open and in case the seek fails
     void seek(const Size offset, const SeekPosition position) {
         if (!isOpen()) {
             throw Exception("Seeking in a FileInputStream that has not been open");
@@ -187,6 +212,22 @@ protected:
         }
     }
 
+private:
+    static const char* toFileOpenFlags(const OpenMode mode) {
+        switch (mode) {
+            case OpenMode::READ:
+                return "rb";
+            case OpenMode::WRITE:
+                return "wb";
+            case OpenMode::APPEND:
+                return "ab";
+            default:
+                ASSERT(false);
+                return nullptr;
+        }
+    }
+
+protected:
     std::string mFileName;
     FILE* mFile = nullptr;
     Size mFileSize = 0;
@@ -196,6 +237,7 @@ class FileInputStream : public FileStreamBase, public SeekableInputStream {
 public:
     FileInputStream() {}
 
+    /// Opens the given file for reading
     explicit FileInputStream(const std::string& filename) { open(filename); }
 
     FileInputStream(FileInputStream&& other) : FileStreamBase(std::move(other)) {}
@@ -205,8 +247,13 @@ public:
         return *this;
     }
 
-    void open(const std::string& filename) { FileStreamBase::open(filename, FileStreamBase::READ); }
+    /// \copydoc FileInputStream(const std::string&)
+    void open(const std::string& filename) { FileStreamBase::open(filename, FileStreamBase::OpenMode::READ); }
 
+    /// Returns the file size
+    Size getFileSize() const { return mFileSize; }
+
+protected:
     virtual Size getPosition() const override { return FileStreamBase::getPosition(); }
 
     virtual void seekImpl(const Size offset, SeekPosition position) override {
@@ -230,11 +277,6 @@ public:
         FileStreamBase::seek(offset, position);
     }
 
-    Size getFileSize() const {
-        return mFileSize;
-    }
-
-protected:
     virtual Size readImpl(void* output, const Size count) override {
         if (!isOpen()) {
             throw Exception("Trying to read FileInputStream that has not been open");
@@ -258,6 +300,7 @@ public:
 
     ~FileOutputStream() { flush(); }
 
+    /// Opens the given file in the given mode
     explicit FileOutputStream(const std::string& filename, const OpenMode mode = OpenMode::OVERWRITE) {
         open(filename, mode);
     }
@@ -269,14 +312,15 @@ public:
         return *this;
     }
 
+    /// \copdoc FileOutputStream(const std::string&, const OpenMode)
     void open(const std::string& filename, const OpenMode mode = OpenMode::OVERWRITE) {
         FileStreamBase::open(filename, toBaseOpenMode(mode));
     }
 
-    virtual Size getPosition() const override { return FileStreamBase::getPosition(); }
-
-    virtual void seekImpl(const Size offset, SeekPosition position) override { FileStreamBase::seek(offset, position); }
-
+    /// Flushes the stream
+    ///
+    /// When data is written to some stream, it can be buffered and thus not be written directly to the requested
+    /// destination. This function flushes this buffer so it reaches the destination immediately.
     void flush() override {
         if (fflush(mFile) != 0) {
             throw Exception("Failed to flush FileOutputStream");
@@ -284,6 +328,10 @@ public:
     }
 
 protected:
+    virtual Size getPosition() const override { return FileStreamBase::getPosition(); }
+
+    virtual void seekImpl(const Size offset, SeekPosition position) override { FileStreamBase::seek(offset, position); }
+
     virtual void writeImpl(const void* source, const Size count) override {
         if (!isOpen()) {
             throw Exception("Writing to FileInputStream that has not been open");
@@ -303,7 +351,7 @@ private:
             return FileStreamBase::OpenMode::APPEND;
         default:
             ASSERT(false);
-            return FileStreamBase::OpenMode::APPEND;
+            return FileStreamBase::OpenMode::APPEND; // The least destructive
         }
     }
 };

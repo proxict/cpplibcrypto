@@ -26,7 +26,7 @@ void encFile(Encryptor& encryptor, const crypto::String& inputFileName, const cr
         cipherBuffer.clear();
     }
 
-    encryptor.doFinal(cipherBuffer, crypto::Pkcs7());
+    encryptor.finalize(cipherBuffer, crypto::Pkcs7());
     output.write(cipherBuffer.data(), cipherBuffer.size());
 }
 
@@ -45,7 +45,7 @@ void decFile(Decryptor& decryptor, const crypto::String& inputFileName, const cr
         plainBuffer.clear();
     }
 
-    decryptor.doFinal(plainBuffer, crypto::Pkcs7());
+    decryptor.finalize(plainBuffer, crypto::Pkcs7());
     output.write(plainBuffer.data(), plainBuffer.size());
 }
 

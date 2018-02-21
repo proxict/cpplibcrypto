@@ -75,17 +75,17 @@ public:
         return out.size(); // return how many bytes were encrypted
     }
 
-    void doFinal(DynamicBuffer<Byte>& out, const Padding& padder) override {
-        doFinal<DynamicBuffer<Byte>>(out, padder);
+    void finalize(DynamicBuffer<Byte>& out, const Padding& padder) override {
+        finalize<DynamicBuffer<Byte>>(out, padder);
     }
 
-    void doFinal(StaticBufferBase<Byte>& out, const Padding& padder) override {
-        doFinal<StaticBufferBase<Byte>>(out, padder);
+    void finalize(StaticBufferBase<Byte>& out, const Padding& padder) override {
+        finalize<StaticBufferBase<Byte>>(out, padder);
     }
 
     /// Applies padding using the provided scheme
     template <typename TBuffer>
-    void doFinal(TBuffer& out, const Padding& padder) {
+    void finalize(TBuffer& out, const Padding& padder) {
         ASSERT(mLeftoverBuffer.size() < mCipher.getBlockSize());
         if (!padder.pad(mLeftoverBuffer, mCipher.getBlockSize())) {
             throw Exception("Buffer size must be a multiple of block size for encryption");

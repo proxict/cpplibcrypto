@@ -81,17 +81,17 @@ public:
         return out.size(); // return how many bytes were decrypted
     }
 
-    void doFinal(DynamicBuffer<Byte>& out, const Padding& padder) override {
-        doFinal<DynamicBuffer<Byte>>(out, padder);
+    void finalize(DynamicBuffer<Byte>& out, const Padding& padder) override {
+        finalize<DynamicBuffer<Byte>>(out, padder);
     }
 
-    void doFinal(StaticBufferBase<Byte>& out, const Padding& padder) override {
-        doFinal<StaticBufferBase<Byte>>(out, padder);
+    void finalize(StaticBufferBase<Byte>& out, const Padding& padder) override {
+        finalize<StaticBufferBase<Byte>>(out, padder);
     }
 
     /// Removes padding
     template <typename TBuffer>
-    void doFinal(TBuffer& out, const Padding& padder) {
+    void finalize(TBuffer& out, const Padding& padder) {
         ASSERT(mLeftoverBuffer.size() == mCipher.getBlockSize());
         mCipher.decryptBlock(mLeftoverBuffer);
         bufferUtils::pushXored(out, mLeftoverBuffer.cbegin(), mLeftoverBuffer.cend(), mIv.cbegin());

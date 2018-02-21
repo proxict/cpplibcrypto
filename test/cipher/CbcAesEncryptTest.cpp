@@ -194,7 +194,7 @@ TEST(CbcAes128EncryptTest, cbcEncryptMultipleBlocks) {
     StaticBuffer<Byte, 48> out;
     const Size processed = cipher.update(buffer, out);
     buffer.erase(0, processed);
-    cipher.doFinal(out, PaddingNone());
+    cipher.finalize(out, PaddingNone());
 
     ByteBuffer expected;
     expected += HexString("3f81c441d47f750c13ce8438cf7bcb12");
@@ -218,7 +218,7 @@ TEST(CbcAes128EncryptTest, cbcEncryptMultipleBlocksPadding) {
     StaticBuffer<Byte, 64> out;
     const Size processed = cipher.update(buffer, out);
     buffer.erase(0, processed);
-    cipher.doFinal(out, Pkcs7());
+    cipher.finalize(out, Pkcs7());
 
     ByteBuffer expected;
     expected += HexString("3f81c441d47f750c13ce8438cf7bcb12");

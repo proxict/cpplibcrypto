@@ -1,15 +1,10 @@
-//------------------------------------------------------------------------------
-///
-/// \file
-/// \brief Provides functions for converting base16 to base10 and vice versa
-///
-//------------------------------------------------------------------------------
 #include "common/Hex.h"
 #include "common/Exception.h"
+#include "common/String.h"
 
 NAMESPACE_CRYPTO_BEGIN
 
-ByteBuffer Hex::decode(const std::string& hexStr) {
+ByteBuffer Hex::decode(const String& hexStr) {
     if (hexStr.size() & 1) {
         throw Exception("Odd HEX data length passed");
     }

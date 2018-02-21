@@ -2,9 +2,9 @@
 #define COMMON_STREAM_H_
 
 #include "common/Exception.h"
+#include "common/String.h"
 
 #include <cstdio>
-#include <string>
 
 NAMESPACE_CRYPTO_BEGIN
 
@@ -153,7 +153,7 @@ protected:
     /// \param filename The path to the file to open
     /// \param mode The mode to open the file in. Could be either READ, WRITE or APPEND
     /// \throws Exception in case the file coudn't be open for any reason
-    void open(const std::string& filename, const OpenMode mode) {
+    void open(const String& filename, const OpenMode mode) {
         if (mFile) {
             throw Exception("Opening an instance of FileStream that has already been open. Current file (" + mFileName +
                             ") Requested file (" + filename + ')');
@@ -228,7 +228,7 @@ private:
     }
 
 protected:
-    std::string mFileName;
+    String mFileName;
     FILE* mFile = nullptr;
     Size mFileSize = 0;
 };
@@ -238,7 +238,7 @@ public:
     FileInputStream() {}
 
     /// Opens the given file for reading
-    explicit FileInputStream(const std::string& filename) { open(filename); }
+    explicit FileInputStream(const String& filename) { open(filename); }
 
     FileInputStream(FileInputStream&& other) : FileStreamBase(std::move(other)) {}
 
@@ -247,8 +247,8 @@ public:
         return *this;
     }
 
-    /// \copydoc FileInputStream(const std::string&)
-    void open(const std::string& filename) { FileStreamBase::open(filename, FileStreamBase::OpenMode::READ); }
+    /// \copydoc FileInputStream(const String&)
+    void open(const String& filename) { FileStreamBase::open(filename, FileStreamBase::OpenMode::READ); }
 
     /// Returns the file size
     Size getFileSize() const { return mFileSize; }
@@ -301,7 +301,7 @@ public:
     ~FileOutputStream() { flush(); }
 
     /// Opens the given file in the given mode
-    explicit FileOutputStream(const std::string& filename, const OpenMode mode = OpenMode::OVERWRITE) {
+    explicit FileOutputStream(const String& filename, const OpenMode mode = OpenMode::OVERWRITE) {
         open(filename, mode);
     }
 
@@ -312,8 +312,8 @@ public:
         return *this;
     }
 
-    /// \copdoc FileOutputStream(const std::string&, const OpenMode)
-    void open(const std::string& filename, const OpenMode mode = OpenMode::OVERWRITE) {
+    /// \copdoc FileOutputStream(const String&, const OpenMode)
+    void open(const String& filename, const OpenMode mode = OpenMode::OVERWRITE) {
         FileStreamBase::open(filename, toBaseOpenMode(mode));
     }
 

@@ -5,7 +5,6 @@
 ///
 //------------------------------------------------------------------------------
 #include <iostream>
-#include <string>
 
 #include "cipher/Aes.h"
 #include "cipher/AesIv.h"
@@ -16,9 +15,10 @@
 #include "common/Stream.h"
 #include "filemanip/utils.h"
 #include "padding/Pkcs7.h"
+#include "common/String.h"
 
 template <typename Encryptor>
-void encFile(Encryptor& encryptor, const std::string& inputFileName, const std::string& outputFileName) {
+void encFile(Encryptor& encryptor, const crypto::String& inputFileName, const crypto::String& outputFileName) {
     crypto::FileInputStream input(inputFileName);
     crypto::FileOutputStream output(outputFileName);
     crypto::DynamicBuffer<crypto::Byte> cipherBuffer;
@@ -37,7 +37,7 @@ void encFile(Encryptor& encryptor, const std::string& inputFileName, const std::
 }
 
 template <typename Decryptor>
-void decFile(Decryptor& decryptor, const std::string& inputFileName, const std::string& outputFileName) {
+void decFile(Decryptor& decryptor, const crypto::String& inputFileName, const crypto::String& outputFileName) {
     crypto::FileInputStream input(inputFileName);
     crypto::FileOutputStream output(outputFileName);
     crypto::DynamicBuffer<crypto::Byte> plainBuffer;

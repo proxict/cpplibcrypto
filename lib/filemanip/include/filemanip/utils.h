@@ -3,12 +3,13 @@
 
 #include "common/Exception.h"
 #include "common/Stream.h"
+#include "common/String.h"
 
 NAMESPACE_CRYPTO_BEGIN
 namespace utils {
 
 /// Returns whether or not the file specified exists
-inline bool fileExists(const std::string& filename) {
+inline bool fileExists(const String& filename) {
     try {
         FileInputStream(filename);
     } catch (const Exception& e) {
@@ -19,7 +20,7 @@ inline bool fileExists(const std::string& filename) {
 
 /// Returns the size of the file specified
 /// \throws Exceotion in case the file doesn't exist
-inline Size getFileSize(const std::string& filename) {
+inline Size getFileSize(const String& filename) {
     FileInputStream input(filename);
     return input.getFileSize();
 }

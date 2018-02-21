@@ -5,6 +5,7 @@
 #include "common/Hex.h"
 #include "common/StaticBuffer.h"
 #include "common/bufferUtils.h"
+#include "common/String.h"
 
 NAMESPACE_CRYPTO_BEGIN
 
@@ -15,7 +16,7 @@ class HexString {
 public:
     /// \param hexStr Hexadecimal data in string representation
     /// \throws Exception if hexStr contains an invalid base-16 character
-    HexString(const std::string& hexStr) : mDecoded(Hex::decode(hexStr)) {}
+    HexString(const String& hexStr) : mDecoded(Hex::decode(hexStr)) {}
 
     HexString& operator=(HexString&& other) noexcept {
         mDecoded = std::move(other.mDecoded);

@@ -1,8 +1,8 @@
 #ifndef COMMON_EXCEPTION_H_
 #define COMMON_EXCEPTION_H_
 
-#include "common/common.h"
 #include "common/String.h"
+#include "common/common.h"
 
 NAMESPACE_CRYPTO_BEGIN
 

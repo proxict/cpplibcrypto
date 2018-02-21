@@ -1,11 +1,3 @@
-//------------------------------------------------------------------------------
-///
-/// \file
-/// \brief Defines the entry point of the sandbox application.
-///
-//------------------------------------------------------------------------------
-#include <iostream>
-
 #include "cipher/Aes.h"
 #include "cipher/AesIv.h"
 #include "cipher/CbcMode.h"
@@ -16,6 +8,8 @@
 #include "filemanip/utils.h"
 #include "padding/Pkcs7.h"
 #include "common/String.h"
+
+#include <iostream>
 
 template <typename Encryptor>
 void encFile(Encryptor& encryptor, const crypto::String& inputFileName, const crypto::String& outputFileName) {

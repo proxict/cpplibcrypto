@@ -12,4 +12,3 @@ using String = std::string;
 NAMESPACE_CRYPTO_END
 
 #endif
-

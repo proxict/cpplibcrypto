@@ -201,8 +201,7 @@ public:
         resize(count);
     }
 
-    StaticBuffer(const Size count, ConstReference value)
-    : StaticBuffer() {
+    StaticBuffer(const Size count, ConstReference value) : StaticBuffer() {
         ASSERT(count <= TCapacity);
         insert(end(), value, count);
     }
@@ -235,13 +234,9 @@ public:
         }
     }
 
-    void setSensitive(const bool sensitive = true) {
-        mWipe = sensitive;
-    }
+    void setSensitive(const bool sensitive = true) { mWipe = sensitive; }
 
-    bool isSensitive() const {
-        return mWipe;
-    }
+    bool isSensitive() const { return mWipe; }
 
     ConstReference at(const Size index) const override { return mData[index]; }
 

@@ -29,4 +29,3 @@ constexpr Byte Hex::hex2Byte(const char c) {
 }
 
 NAMESPACE_CRYPTO_END
-

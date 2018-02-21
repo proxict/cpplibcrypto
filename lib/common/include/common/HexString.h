@@ -4,8 +4,8 @@
 #include "common/DynamicBuffer.h"
 #include "common/Hex.h"
 #include "common/StaticBuffer.h"
-#include "common/bufferUtils.h"
 #include "common/String.h"
+#include "common/bufferUtils.h"
 
 NAMESPACE_CRYPTO_BEGIN
 

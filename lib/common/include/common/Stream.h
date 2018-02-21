@@ -125,11 +125,7 @@ public:
     bool isOpen() const { return mFile != nullptr; }
 
 protected:
-    enum class OpenMode {
-        READ,
-        WRITE,
-        APPEND
-    };
+    enum class OpenMode { READ, WRITE, APPEND };
 
     FileStreamBase() = default;
 
@@ -215,15 +211,15 @@ protected:
 private:
     static const char* toFileOpenFlags(const OpenMode mode) {
         switch (mode) {
-            case OpenMode::READ:
-                return "rb";
-            case OpenMode::WRITE:
-                return "wb";
-            case OpenMode::APPEND:
-                return "ab";
-            default:
-                ASSERT(false);
-                return nullptr;
+        case OpenMode::READ:
+            return "rb";
+        case OpenMode::WRITE:
+            return "wb";
+        case OpenMode::APPEND:
+            return "ab";
+        default:
+            ASSERT(false);
+            return nullptr;
         }
     }
 

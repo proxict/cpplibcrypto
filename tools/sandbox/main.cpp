@@ -8,6 +8,7 @@
 #include "filemanip/utils.h"
 #include "padding/Pkcs7.h"
 #include "common/String.h"
+#include "cipher/Sha1.h"
 
 #include <iostream>
 
@@ -49,9 +50,23 @@ void decFile(Decryptor& decryptor, const crypto::String& inputFileName, const cr
     output.write(plainBuffer.data(), plainBuffer.size());
 }
 
+void sha1digest(const crypto::String& inputFileName) {
+    crypto::FileInputStream input(inputFileName);
+    crypto::Sha1 sha1;
+    while (!input.eof()) {
+        crypto::StaticBuffer<crypto::Byte, 32> dataBuffer(32);
+        const crypto::Size read = input.read(dataBuffer.data(), dataBuffer.capacity());
+        dataBuffer.resize(read);
+        sha1.update(dataBuffer);
+    }
+    sha1.finalize();
+}
+
 /// The entry point of the sandbox application
 /// \returns Process exit code whete \c 0 means success
 int main() {
+    sha1digest("CMakeCache.txt");
+    return 0;
     try {
         crypto::Aes::Key key(crypto::HexString("2b7e151628aed2a6abf7158809cf4f3c"));
         crypto::Aes::Iv iv(crypto::HexString("000102030405060708090A0B0C0D0E0F"));

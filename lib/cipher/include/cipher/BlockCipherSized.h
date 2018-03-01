@@ -14,6 +14,8 @@ public:
     /// Returns the block size of this cipher
     Size getBlockSize() const override { return TBlockSize; }
 
+    virtual ~BlockCipherSized() = default;
+
 protected:
     BlockCipherSized() = default;
 };

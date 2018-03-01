@@ -9,9 +9,8 @@
 
 NAMESPACE_CRYPTO_BEGIN
 
-// Base class for input streams
+/// Base class for input streams
 class InputStream {
-
 public:
     virtual ~InputStream() = default;
 
@@ -36,10 +35,10 @@ private:
     InputStream& operator=(const InputStream&) = delete;
 };
 
+/// Base class for output streams
 class OutputStream {
-
 public:
-    virtual ~OutputStream() {}
+    virtual ~OutputStream() = default;
 
     /// Writes the given data to the stream
     /// \param source Pointer to the data to write

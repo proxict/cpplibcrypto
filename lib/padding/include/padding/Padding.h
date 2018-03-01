@@ -11,6 +11,8 @@ class Padding {
 public:
     using StaticByteBufferBase = StaticBufferBase<Byte>;
 
+    virtual ~Padding() = default;
+
     virtual bool pad(DynamicBuffer<Byte>&, const Size) const = 0;
     virtual bool pad(StaticByteBufferBase&, const Size) const = 0;
 

@@ -10,6 +10,8 @@ class InitializationVectorSized : public InitializationVector {
 public:
     bool isValid(const Size size) const override { return (size == TSize); }
 
+    virtual ~InitializationVectorSized() = default;
+
 protected:
     InitializationVectorSized() = default;
 };

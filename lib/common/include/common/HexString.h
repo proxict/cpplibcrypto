@@ -10,7 +10,7 @@
 NAMESPACE_CRYPTO_BEGIN
 
 /// Represents a base-16 string
-class HexString {
+class HexString final {
     using StaticByteBufferBase = StaticBufferBase<Byte>;
 
 public:

@@ -13,7 +13,7 @@ NAMESPACE_CRYPTO_BEGIN
 ///
 /// This view also allows to modify the elements.
 template <typename T>
-class BufferView {
+class BufferView final {
 public:
     using ValueType = ReferenceStorage<T>;
     using Reference = ValueType&;

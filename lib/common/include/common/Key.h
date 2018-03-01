@@ -11,6 +11,8 @@ class Key {
 public:
     Key() = default;
 
+    virtual ~Key() = default;
+
     /// Tells whether or not the given size is valid for this key
     virtual bool isValid(const Size) const = 0;
 

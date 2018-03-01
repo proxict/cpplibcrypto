@@ -17,6 +17,8 @@ public:
 
     ModeOfOperation(BlockCipher& cipher, const Key& key) { cipher.setKey(key); }
 
+    virtual ~ModeOfOperation() = default;
+
     virtual Size update(const ByteBufferView& in, DynamicBuffer<Byte>& out) = 0;
     virtual Size update(const ByteBufferView& in, StaticByteBufferBase& out) = 0;
 

@@ -12,6 +12,8 @@ public:
     using ConstByteBufferView = BufferView<const Byte>;
     SymmetricAlgorithm() : mKeySize(0) {}
 
+    virtual ~SymmetricAlgorithm() = default;
+
     /// Performs a key schedule using the key provided
     /// \param key The key to use for key schedule
     void setKey(const Key& key) {

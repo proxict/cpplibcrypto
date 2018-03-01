@@ -10,7 +10,7 @@
 NAMESPACE_CRYPTO_BEGIN
 
 template <class T>
-class SecureAllocator {
+class SecureAllocator final {
 public:
     using ValueType = T;
     using Reference = ValueType&;

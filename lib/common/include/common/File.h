@@ -14,20 +14,14 @@ enum class SeekPosition { BEGINNING, CURRENT, END };
 /// RAII wrapper for FILE* and its operations. Non-copyable, movable.
 /// Default-constructed and moved-from instances are considered closed, i.e. isOpen returns false
 class File final {
-
 public:
     enum class OpenMode { READ, WRITE, APPEND };
 
-public:
     File() = default;
 
-    virtual ~File() noexcept {
-        closeImpl();
-    }
+    virtual ~File() noexcept { closeImpl(); }
 
-    File(File&& other) noexcept : mFileName(std::move(other.mFileName)), mFile(other.mFile) {
-        other.mFile = nullptr;
-    }
+    File(File&& other) noexcept : mFileName(std::move(other.mFileName)), mFile(other.mFile) { other.mFile = nullptr; }
 
     File& operator=(File&& other) noexcept {
         if (&other != this) {
@@ -41,7 +35,7 @@ public:
     /// Closes the file
     void close() {
         ASSERT(isOpen());
-        String fileName = std::move(mFileName);     //save filename in case we need it for the exception below
+        String fileName = std::move(mFileName); // save filename in case we need it for the exception below
         if (closeImpl() != 0) {
             throw Exception("Failed to close file (" + fileName + ')');
         }
@@ -125,17 +119,33 @@ public:
     /// \param mode The mode to open the file in. Could be either READ, WRITE or APPEND
     /// \throws Exception in case the file coudn't be open for any reason
     static File open(const String& fileName, const OpenMode mode) {
-        FILE *file = fopen(fileName.c_str(), toFileOpenFlags(mode));
+        FILE* file = fopen(fileName.c_str(), toFileOpenFlags(mode));
         if (!file) {
             throw Exception("Could not open the file specified (" + fileName + ')');
         }
         return File(std::move(fileName), file);
     }
 
-private:
-    File(String fileName, FILE *file) : mFileName(std::move(fileName)), mFile(file) {
-        ASSERT(mFile != nullptr);
+    /// Returns whether or not the file specified exists
+    static bool exists(const String& filename) {
+        try {
+            File::open(filename, File::OpenMode::READ);
+        } catch (const Exception& e) {
+            return false;
+        }
+        return true;
     }
+
+    /// Returns the size of the file specified
+    /// \throws Exception in case the file doesn't exist
+    static Size getSize(const String& filename) {
+        File f = File::open(filename, File::OpenMode::READ);
+        f.seek(0, SeekPosition::END);
+        return f.getPosition();
+    }
+
+private:
+    File(String fileName, FILE* file) : mFileName(std::move(fileName)), mFile(file) { ASSERT(mFile != nullptr); }
 
     File(const File&) = delete;
     File& operator=(const File&) = delete;

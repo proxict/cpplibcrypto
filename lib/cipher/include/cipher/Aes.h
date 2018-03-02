@@ -36,8 +36,6 @@ public:
 
     Aes(Aes&& other) { *this = std::move(other); }
 
-    virtual ~Aes() = default;
-
     /// Encrypts one block
     ///
     /// Asserts the buffer size to be 16 bytes

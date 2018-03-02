@@ -17,6 +17,8 @@ public:
 
     BlockCipher() = default;
 
+    virtual ~BlockCipher() = default;
+
     /// Returns the block size of this cipher
     virtual Size getBlockSize() const = 0;
 

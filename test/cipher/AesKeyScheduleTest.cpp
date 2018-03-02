@@ -11,6 +11,7 @@ NAMESPACE_CRYPTO_BEGIN
 class AesKeyScheduleTest : public testing::Test, public Aes {
 public:
     AesKeyScheduleTest() = default;
+
     virtual ~AesKeyScheduleTest() = default;
 
     ByteBuffer getNthRoundKey(const Size index) const {

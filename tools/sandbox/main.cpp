@@ -5,7 +5,6 @@
 #include "common/HexString.h"
 #include "common/StaticBuffer.h"
 #include "common/Stream.h"
-#include "filemanip/utils.h"
 #include "padding/Pkcs7.h"
 #include "common/String.h"
 #include "cipher/Sha1.h"

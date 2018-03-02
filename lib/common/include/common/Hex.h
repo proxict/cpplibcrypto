@@ -9,7 +9,7 @@
 NAMESPACE_CRYPTO_BEGIN
 
 /// Converted from base-16 to base-10 and vice versa
-class Hex {
+class Hex final {
 public:
     /// Encodes the given buffer to base-16
     /// \returns string representation of the encoded data

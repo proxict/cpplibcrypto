@@ -31,6 +31,8 @@ public:
 
     LinearIterator() = default;
 
+    virtual ~LinearIterator() = default;
+
     template <typename T2 = ValueType>
     operator DisableIf<IsConst<T2>::value, LinearIterator<const ValueType>>() const {
         return *(LinearIterator<const ValueType>*)this;

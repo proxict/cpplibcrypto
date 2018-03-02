@@ -31,7 +31,8 @@ public:
     using const_iterator = ConstIterator;
 
     StaticBufferBase() = default;
-    virtual ~StaticBufferBase() {}
+
+    virtual ~StaticBufferBase() = default;
 
     /// Returns a const reference to the data at the given index
     virtual ConstReference at(const Size index) const = 0;
@@ -174,7 +175,7 @@ public:
 };
 
 template <typename T, Size TCapacity>
-class StaticBuffer : public StaticBufferBase<T> {
+class StaticBuffer final : public StaticBufferBase<T> {
 public:
     using Base = StaticBufferBase<T>;
     using ValueType = T;

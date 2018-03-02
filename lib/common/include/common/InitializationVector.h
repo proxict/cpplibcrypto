@@ -21,6 +21,8 @@ public:
 
     InitializationVector() = default;
 
+    virtual ~InitializationVector() = default;
+
     /// Tells whether or not the given size is valid for this IV
     virtual bool isValid(const Size) const = 0;
 

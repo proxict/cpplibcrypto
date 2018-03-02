@@ -16,6 +16,8 @@ NAMESPACE_CRYPTO_BEGIN
 template <Size TMinKeySize, Size TMaxKeySize = 0, Size TMod = 1>
 class KeySized : public Key {
 public:
+    virtual ~KeySized() = default;
+
     bool isValid(const Size keySize) const override {
         return ((keySize >= getMin()) && (keySize <= getMax()) && (keySize % getMod() == 0));
     }

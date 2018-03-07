@@ -239,9 +239,15 @@ public:
 
     bool isSensitive() const { return mWipe; }
 
-    ConstReference at(const Size index) const override { return mData[index]; }
+    ConstReference at(const Size index) const override {
+        ASSERT(index <= mStored);
+        return mData[index];
+    }
 
-    Reference at(const Size index) override { return mData[index]; }
+    Reference at(const Size index) override {
+        ASSERT(index <= mStored);
+        return mData[index];
+    }
 
     ConstReference operator[](const Size index) const override { return at(index); }
 

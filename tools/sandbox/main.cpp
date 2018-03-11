@@ -7,7 +7,7 @@
 #include "common/Stream.h"
 #include "padding/Pkcs7.h"
 #include "common/String.h"
-#include "cipher/Sha1.h"
+#include "hash/Sha1.h"
 
 #include <iostream>
 
@@ -58,7 +58,9 @@ void sha1digest(const crypto::String& inputFileName) {
         dataBuffer.resize(read);
         sha1.update(dataBuffer);
     }
-    sha1.finalize();
+    crypto::StaticBuffer<crypto::Byte, 20> digest(20);
+    sha1.finalize(digest);
+    std::cout << crypto::Hex::encode(digest) << std::endl;
 }
 
 /// The entry point of the sandbox application

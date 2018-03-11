@@ -31,21 +31,23 @@ public:
     using iterator = Iterator;
     using const_iterator = ConstIterator;
 
-    /// Constructs the buffer with the given sensitive flag
-    ///
-    /// For more information about the sensitive flag, see \ref setSensitive()
-    explicit DynamicBuffer(const bool sensitive = true) : mAllocator(sensitive) {}
+    /// By default the buffer is constructed with a sensitive flag
+    /// For more information about the sensitive flag, \see setSensitive()
+    DynamicBuffer() : mAllocator(true) {}
 
-    /// Constructs the buffer with the given size and given sensitive flag
-    ///
-    /// For more information about the sensitive flag, see \ref setSensitive()
-    explicit DynamicBuffer(const Size size, const bool sensitive = true) : mAllocator(sensitive) { resize(size); }
+    /// Constructs the buffer with count default-inserted instances of ValueType. No copies are made.
+    explicit DynamicBuffer(const Size size) : DynamicBuffer() { resize(size); }
 
-    /// Constructs the buffer with the content of the initializer list and with the given sensitive flag
-    ///
-    /// For more information about the sensitive flag, see \ref setSensitive()
-    DynamicBuffer(std::initializer_list<ValueType> list, const bool sensitive = true) : mAllocator(sensitive) {
+    /// Constructs the buffer with \ref count copies of \ref value value
+    explicit DynamicBuffer(const Size count, const ValueType& value) : DynamicBuffer() { insert(end(), value, count); }
+
+    /// Constructs the buffer with the content of the initializer list
+    DynamicBuffer(std::initializer_list<ValueType> list) : DynamicBuffer() { insert(end(), list.begin(), list.end()); }
+
+    DynamicBuffer& operator=(std::initializer_list<ValueType> list) {
+        clear();
         insert(end(), list.begin(), list.end());
+        return *this;
     }
 
     DynamicBuffer& operator=(DynamicBuffer&& other) noexcept {
@@ -191,8 +193,14 @@ public:
         if (newSize < size()) {
             erase(begin() + newSize, end());
         } else if (newSize > size()) {
-            insert(end(), ValueType(), newSize - size());
+            const Size deltaSize = newSize - size();
+            reserve(newSize);
+            for (Size i = 0; i < deltaSize; ++i) {
+                mAllocator.construct(end(), std::move(ValueType()));
+                ++mSize;
+            }
         }
+        ASSERT(size() == newSize);
     }
 
     /// Appends new element to the end of the buffer

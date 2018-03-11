@@ -18,6 +18,42 @@ TEST(DynamicBufferTest, ctor) {
     EXPECT_EQ(0x05, bb[4]);
 }
 
+TEST(DynamicBufferTest, ctorSize) {
+    struct Element {
+        constexpr Element() : value(0) {}
+
+        Element(const int val) : value(val) {}
+
+        Element(const Element&) { throw Exception("Copying object ctor"); }
+
+        Element& operator=(const Element&) { throw Exception("Copying object assign"); }
+
+        Element(Element&& other) {
+            std::swap(value, other.value);
+        }
+
+        int value;
+    };
+
+    bool thrown = false;
+    try {
+        DynamicBuffer<Element> eb(5);
+        EXPECT_EQ(5U, eb.size());
+    } catch (const Exception& e) {
+        thrown = true;
+    }
+    EXPECT_FALSE(thrown);
+
+    thrown = false;
+    try {
+        DynamicBuffer<Element> eb(5, Element(1));
+        EXPECT_EQ(5U, eb.size());
+    } catch (const Exception& e) {
+        thrown = true;
+    }
+    EXPECT_TRUE(thrown);
+}
+
 TEST(DynamicBufferTest, addingByte) {
     ByteBuffer bb;
     bb += 0xab;
@@ -92,7 +128,7 @@ TEST(DynamicBufferTest, eraseElementsCount) {
     EXPECT_EQ(2U, bb.size());
     EXPECT_EQ(ByteBuffer({0x05, 0x06}), bb);
     EXPECT_TRUE(next == bb.end());
-    
+
     next = bb.erase(0, 2);
     EXPECT_EQ(0U, bb.size());
     EXPECT_TRUE(next == bb.end());
@@ -154,8 +190,8 @@ TEST(DynamicBufferTest, insertElements) {
 }
 
 TEST(DynamicBufferTest, replaceElements) {
-    DynamicBuffer<Byte> db{ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 };
-    StaticBuffer<Byte, 6> sb{ 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
+    DynamicBuffer<Byte> db{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+    StaticBuffer<Byte, 6> sb{0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
     const auto replaced = db.replace(db.begin() + 1, db.begin() + 4, sb.begin() + 2);
 
     EXPECT_EQ(DynamicBuffer<Byte>({0x00, 0x0c, 0x0d, 0x0e, 0x04, 0x05, 0x06}), db);
@@ -163,7 +199,7 @@ TEST(DynamicBufferTest, replaceElements) {
 }
 
 TEST(DynamicBufferTest, storeReference) {
-    DynamicBuffer<Byte> first = { 1, 2, 3 };
+    DynamicBuffer<Byte> first = {1, 2, 3};
     DynamicBuffer<Byte&> second;
     second.insert(second.begin(), first.begin(), first.end());
     EXPECT_EQ(first.size(), second.size());

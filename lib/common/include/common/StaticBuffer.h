@@ -215,7 +215,7 @@ public:
 
     explicit StaticBuffer(std::initializer_list<ValueType> list) : StaticBuffer(list.begin(), list.end()) {}
 
-    explicit StaticBuffer(StaticBuffer&& other) { *this = std::move(other); }
+    StaticBuffer(StaticBuffer&& other) { *this = std::move(other); }
 
     StaticBuffer& operator=(StaticBuffer&& other) {
         std::swap(mWipe, other.mWipe);

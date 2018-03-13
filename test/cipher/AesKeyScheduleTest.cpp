@@ -2,9 +2,9 @@
 
 #include "gtest/gtest.h"
 
-#include "cipher/Aes.h"
-#include "common/DynamicBuffer.h"
-#include "common/HexString.h"
+#include "cpplibcrypto/buffer/DynamicBuffer.h"
+#include "cpplibcrypto/buffer/HexString.h"
+#include "cpplibcrypto/cipher/Aes.h"
 
 NAMESPACE_CRYPTO_BEGIN
 

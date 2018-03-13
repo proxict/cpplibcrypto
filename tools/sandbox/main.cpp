@@ -1,18 +1,20 @@
-#include "cipher/Aes.h"
-#include "cipher/AesIv.h"
-#include "cipher/CbcMode.h"
-#include "common/Exception.h"
-#include "common/HexString.h"
-#include "common/StaticBuffer.h"
-#include "common/Stream.h"
-#include "padding/Pkcs7.h"
-#include "common/String.h"
-#include "hash/Sha1.h"
+#include "cpplibcrypto/buffer/HexString.h"
+#include "cpplibcrypto/buffer/StaticBuffer.h"
+#include "cpplibcrypto/buffer/String.h"
+#include "cpplibcrypto/cipher/Aes.h"
+#include "cpplibcrypto/cipher/AesIv.h"
+#include "cpplibcrypto/cipher/CbcMode.h"
+#include "cpplibcrypto/common/Exception.h"
+#include "cpplibcrypto/hash/Sha1.h"
+#include "cpplibcrypto/io/Stream.h"
+#include "cpplibcrypto/padding/Pkcs7.h"
 
 #include <iostream>
 
 template <typename Encryptor>
-void encFile(Encryptor& encryptor, const crypto::String& inputFileName, const crypto::String& outputFileName) {
+void encFile(Encryptor& encryptor,
+             const crypto::String& inputFileName,
+             const crypto::String& outputFileName) {
     crypto::FileInputStream input(inputFileName);
     crypto::FileOutputStream output(outputFileName);
     crypto::DynamicBuffer<crypto::Byte> cipherBuffer;
@@ -31,7 +33,9 @@ void encFile(Encryptor& encryptor, const crypto::String& inputFileName, const cr
 }
 
 template <typename Decryptor>
-void decFile(Decryptor& decryptor, const crypto::String& inputFileName, const crypto::String& outputFileName) {
+void decFile(Decryptor& decryptor,
+             const crypto::String& inputFileName,
+             const crypto::String& outputFileName) {
     crypto::FileInputStream input(inputFileName);
     crypto::FileOutputStream output(outputFileName);
     crypto::DynamicBuffer<crypto::Byte> plainBuffer;

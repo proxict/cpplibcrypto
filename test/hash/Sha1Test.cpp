@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
 
-#include "hash/Sha1.h"
-#include "common/Hex.h"
-#include "common/String.h"
-#include "common/StaticBuffer.h"
+#include "cpplibcrypto/buffer/StaticBuffer.h"
+#include "cpplibcrypto/buffer/String.h"
+#include "cpplibcrypto/common/Hex.h"
+#include "cpplibcrypto/hash/Sha1.h"
 
 NAMESPACE_CRYPTO_BEGIN
 

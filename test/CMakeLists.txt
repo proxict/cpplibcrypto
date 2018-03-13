@@ -4,10 +4,10 @@ endif()
 
 add_executable(unittests
     main.cpp
-    common/DynamicBufferTest.cpp
-    common/StaticBufferTest.cpp
+    buffer/DynamicBufferTest.cpp
+    buffer/StaticBufferTest.cpp
+    buffer/HexStringTest.cpp
     common/HexTest.cpp
-    common/HexStringTest.cpp
     hash/Sha1Test.cpp
     cipher/AesCoreTest.cpp
     cipher/AesKeyScheduleTest.cpp
@@ -15,13 +15,6 @@ add_executable(unittests
     cipher/AesEncryptTest.cpp
     cipher/CbcAesDecryptTest.cpp
     cipher/CbcAesEncryptTest.cpp
-)
-
-target_include_directories(unittests
-    PRIVATE ${common_includes}
-    PRIVATE ${cipher_includes}
-    PRIVATE ${padding_includes}
-    PRIVATE ${filemanip_includes}
 )
 
 target_link_libraries(unittests

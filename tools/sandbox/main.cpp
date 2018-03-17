@@ -6,6 +6,7 @@
 #include "cpplibcrypto/cipher/CbcMode.h"
 #include "cpplibcrypto/common/Exception.h"
 #include "cpplibcrypto/hash/Sha1.h"
+#include "cpplibcrypto/hash/Md5.h"
 #include "cpplibcrypto/io/Stream.h"
 #include "cpplibcrypto/padding/Pkcs7.h"
 
@@ -67,10 +68,25 @@ void sha1digest(const crypto::String& inputFileName) {
     std::cout << crypto::Hex::encode(digest) << std::endl;
 }
 
+void md5digest(const crypto::String& inputFileName) {
+    crypto::FileInputStream input(inputFileName);
+    crypto::Md5 md5;
+    while (!input.eof()) {
+        crypto::StaticBuffer<crypto::Byte, 4096> dataBuffer(4096);
+        const crypto::Size read = input.read(dataBuffer.data(), dataBuffer.capacity());
+        dataBuffer.resize(read);
+        md5.update(dataBuffer);
+    }
+    crypto::StaticBuffer<crypto::Byte, 16> digest(16);
+    md5.finalize(digest);
+    std::cout << crypto::Hex::encode(digest) << std::endl;
+}
+
 /// The entry point of the sandbox application
 /// \returns Process exit code whete \c 0 means success
 int main() {
     sha1digest("CMakeCache.txt");
+    md5digest("CMakeCache.txt");
     return 0;
     try {
         crypto::Aes::Key key(crypto::HexString("2b7e151628aed2a6abf7158809cf4f3c"));

@@ -9,6 +9,7 @@ add_executable(unittests
     buffer/HexStringTest.cpp
     common/HexTest.cpp
     hash/Sha1Test.cpp
+    hash/Md5Test.cpp
     cipher/AesCoreTest.cpp
     cipher/AesKeyScheduleTest.cpp
     cipher/AesDecryptTest.cpp

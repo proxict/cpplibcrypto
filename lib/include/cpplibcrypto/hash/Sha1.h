@@ -171,7 +171,7 @@ private:
     void padBlock() {
         ASSERT(mBlock.size() < BLOCK_SIZE);
         mBlock.push(0x80);
-        if (mBlock.size() >= 55) {
+        if (mBlock.size() > 56U) {
             mBlock.insert(mBlock.end(), 0x00, BLOCK_SIZE - mBlock.size());
             ASSERT(mBlock.size() == BLOCK_SIZE);
             processBlock(mBlock);

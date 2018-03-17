@@ -7,15 +7,17 @@
 
 NAMESPACE_CRYPTO_BEGIN
 
-// First algorithm from the SHA family - computing 20byte digest
+/// First algorithm from the SHA family
+/// Computes 20 bytes digest
 class Sha1 final {
 public:
-    using Word = uint32_t;
+    using Dword = uint32_t;
+    using Qword = uint64_t;
     static constexpr Byte DIGEST_SIZE = 20U;
     static constexpr Byte BLOCK_SIZE = 64U;
 
     struct State {
-        StaticBuffer<Word, DIGEST_SIZE / 4> H;
+        StaticBuffer<Dword, DIGEST_SIZE / 4> H;
 
         State() { reset(); }
 
@@ -25,6 +27,10 @@ public:
             std::swap(H, other.H);
             return *this;
         }
+
+        Dword& operator[](const Size index) { return H[index]; }
+
+        const Dword& operator[](const Size index) const { return H[index]; }
 
         void reset() {
             H.clear();
@@ -64,7 +70,10 @@ public:
     /// \param in The input from which the digest will be computed
     template <typename TBuffer>
     void update(const TBuffer& in) {
-        ASSERT(!mFinalized);
+        if (mFinalized) {
+            throw Exception(
+                "The state already has been computed. Reset the state to compute another digest.");
+        }
         for (const Byte b : in) {
             mBlock.push(b);
 
@@ -85,12 +94,15 @@ public:
     /// \param out A memory block to which the digest will be saved. Must have at least 20 bytes in size.
     template <typename T>
     void finalize(T& out) {
-        ASSERT(!mFinalized);
+        if (mFinalized) {
+            throw Exception(
+                "The state already has been computed. Reset the state to compute another digest.");
+        }
         padBlock();
         mTotalSize = 0;
 
         for (int i = 0; i < DIGEST_SIZE; ++i) {
-            out[i] = mState.H[i >> 2] >> 8 * (3 - (i & 0x03));
+            out[i] = mState[i >> 2] >> 8 * (3 - (i & 0x03));
         }
         mFinalized = true;
     }
@@ -103,10 +115,10 @@ private:
     Sha1(const Sha1&) = delete;
     Sha1& operator=(const Sha1&) = delete;
 
-    void processBlock(BufferView<Byte> in) {
-        const StaticBuffer<Word, 4> K({ 0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6 });
-        StaticBuffer<Word, 80> W(80);
-        Word A, B, C, D, E;
+    void processBlock(BufferView<const Byte> in) {
+        const StaticBuffer<Dword, 4> K({ 0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6 });
+        StaticBuffer<Dword, 80> W(80);
+        Dword A, B, C, D, E;
 
         for (int t = 0; t < 16; t++) {
             W[t] = in[t * 4] << 24;
@@ -119,14 +131,14 @@ private:
             W[t] = rotateLeft(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
         }
 
-        A = mState.H[0];
-        B = mState.H[1];
-        C = mState.H[2];
-        D = mState.H[3];
-        E = mState.H[4];
+        A = mState[0];
+        B = mState[1];
+        C = mState[2];
+        D = mState[3];
+        E = mState[4];
 
         for (int t = 0; t < 20; t++) {
-            const Word temp = rotateLeft(A, 5) + ((B & C) | ((~B) & D)) + E + W[t] + K[0];
+            const Dword temp = rotateLeft(A, 5) + ((B & C) | ((~B) & D)) + E + W[t] + K[0];
             E = D;
             D = C;
             C = rotateLeft(B, 30);
@@ -135,7 +147,7 @@ private:
         }
 
         for (int t = 20; t < 40; t++) {
-            const Word temp = rotateLeft(A, 5) + (B ^ C ^ D) + E + W[t] + K[1];
+            const Dword temp = rotateLeft(A, 5) + (B ^ C ^ D) + E + W[t] + K[1];
             E = D;
             D = C;
             C = rotateLeft(B, 30);
@@ -144,7 +156,7 @@ private:
         }
 
         for (int t = 40; t < 60; t++) {
-            const Word temp = rotateLeft(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2];
+            const Dword temp = rotateLeft(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2];
             E = D;
             D = C;
             C = rotateLeft(B, 30);
@@ -153,7 +165,7 @@ private:
         }
 
         for (int t = 60; t < 80; t++) {
-            const Word temp = rotateLeft(A, 5) + (B ^ C ^ D) + E + W[t] + K[3];
+            const Dword temp = rotateLeft(A, 5) + (B ^ C ^ D) + E + W[t] + K[3];
             E = D;
             D = C;
             C = rotateLeft(B, 30);
@@ -161,11 +173,11 @@ private:
             A = temp;
         }
 
-        mState.H[0] += A;
-        mState.H[1] += B;
-        mState.H[2] += C;
-        mState.H[3] += D;
-        mState.H[4] += E;
+        mState[0] += A;
+        mState[1] += B;
+        mState[2] += C;
+        mState[3] += D;
+        mState[4] += E;
     }
 
     void padBlock() {
@@ -177,24 +189,26 @@ private:
             processBlock(mBlock);
             mBlock.clear();
         }
-
         mBlock.insert(mBlock.end(), 0x00, 56U - mBlock.size());
-        const uint64_t totalBits = mTotalSize * 8;
+        ASSERT(mBlock.size() == 56U);
+
+        const Qword totalBits = mTotalSize * 8;
         const Byte* totalBitsPtr = reinterpret_cast<const Byte*>(&totalBits);
         for (int i = 7; i >= 0; --i) {
             mBlock.push(totalBitsPtr[i]);
         }
+        ASSERT(mBlock.size() == BLOCK_SIZE);
         processBlock(mBlock);
         mBlock.clear();
     }
 
-    static Word rotateLeft(const Word value, const Byte bits) {
+    static Dword rotateLeft(const Dword value, const Byte bits) {
         return (value << bits) | (value >> (32 - bits));
     }
 
     State mState;
     StaticBuffer<Byte, BLOCK_SIZE> mBlock;
-    Size mTotalSize = 0;
+    Qword mTotalSize = 0;
     bool mFinalized = false;
 };
 

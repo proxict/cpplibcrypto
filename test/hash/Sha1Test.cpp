@@ -7,7 +7,7 @@
 
 NAMESPACE_CRYPTO_BEGIN
 
-bool operator==(const StaticBufferBase<Byte>& lhs, const DynamicBuffer<Byte>& rhs) {
+static bool operator==(const StaticBufferBase<Byte>& lhs, const DynamicBuffer<Byte>& rhs) {
     if (lhs.size() != rhs.size()) {
         return false;
     }
@@ -19,7 +19,7 @@ bool operator==(const StaticBufferBase<Byte>& lhs, const DynamicBuffer<Byte>& rh
     return true;
 }
 
-bool operator==(const DynamicBuffer<Byte>& lhs, const StaticBufferBase<Byte>& rhs) {
+static bool operator==(const DynamicBuffer<Byte>& lhs, const StaticBufferBase<Byte>& rhs) {
     return rhs == lhs;
 }
 

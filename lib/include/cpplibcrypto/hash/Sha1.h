@@ -2,7 +2,6 @@
 #define CPPLIBCRYPTO_HASH_SHA1_H_
 
 #include "cpplibcrypto/buffer/BufferView.h"
-#include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 
 NAMESPACE_CRYPTO_BEGIN

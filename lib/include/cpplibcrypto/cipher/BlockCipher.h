@@ -1,7 +1,7 @@
 #ifndef CPPLIBCRYPTO_CIPHER_BLOCKCIPHER_H_
 #define CPPLIBCRYPTO_CIPHER_BLOCKCIPHER_H_
 
-#include "cpplibcrypto/cipher/SymmetricAlgorithm.h"
+#include "cpplibcrypto/common/SymmetricAlgorithm.h"
 
 #include "cpplibcrypto/buffer/BufferView.h"
 #include "cpplibcrypto/common/Key.h"

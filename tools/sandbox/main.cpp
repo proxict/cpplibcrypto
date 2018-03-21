@@ -9,6 +9,7 @@
 #include "cpplibcrypto/hash/Md5.h"
 #include "cpplibcrypto/io/Stream.h"
 #include "cpplibcrypto/padding/Pkcs7.h"
+#include "cpplibcrypto/hash/Hmac.h"
 
 #include <iostream>
 
@@ -82,13 +83,25 @@ void md5digest(const crypto::String& inputFileName) {
     std::cout << crypto::Hex::encode(digest) << std::endl;
 }
 
+void hmacDigest() {
+    crypto::Hmac<crypto::Sha1> hmac;
+    hmac.setKey(crypto::ByteBuffer({'k', 'e', 'y'}));
+    crypto::StaticBuffer<crypto::Byte, crypto::Sha1::DIGEST_SIZE> digest(crypto::Sha1::DIGEST_SIZE);
+    hmac.update(crypto::String("The quick brown fox jumps "));
+    hmac.update(crypto::String("over the lazy dog"));
+    hmac.finalize(digest);
+    std::cout << crypto::Hex::encode(digest) << std::endl;
+}
+
 /// The entry point of the sandbox application
 /// \returns Process exit code whete \c 0 means success
 int main() {
-    sha1digest("CMakeCache.txt");
-    md5digest("CMakeCache.txt");
-    return 0;
     try {
+        sha1digest("CMakeCache.txt");
+        md5digest("CMakeCache.txt");
+        hmacDigest();
+        return 0;
+
         crypto::Aes::Key key(crypto::HexString("2b7e151628aed2a6abf7158809cf4f3c"));
         crypto::Aes::Iv iv(crypto::HexString("000102030405060708090A0B0C0D0E0F"));
 

@@ -5,11 +5,11 @@
 #include "cpplibcrypto/cipher/AesIv.h"
 #include "cpplibcrypto/cipher/CbcMode.h"
 #include "cpplibcrypto/common/Exception.h"
-#include "cpplibcrypto/hash/Sha1.h"
+#include "cpplibcrypto/hash/Hmac.h"
 #include "cpplibcrypto/hash/Md5.h"
+#include "cpplibcrypto/hash/Sha1.h"
 #include "cpplibcrypto/io/Stream.h"
 #include "cpplibcrypto/padding/Pkcs7.h"
-#include "cpplibcrypto/hash/Hmac.h"
 
 #include <iostream>
 
@@ -64,7 +64,7 @@ void sha1digest(const crypto::String& inputFileName) {
         dataBuffer.resize(read);
         sha1.update(dataBuffer);
     }
-    crypto::StaticBuffer<crypto::Byte, 20> digest(20);
+    crypto::StaticBuffer<crypto::Byte, crypto::Sha1::DIGEST_SIZE> digest(crypto::Sha1::DIGEST_SIZE);
     sha1.finalize(digest);
     std::cout << crypto::Hex::encode(digest) << std::endl;
 }
@@ -78,14 +78,14 @@ void md5digest(const crypto::String& inputFileName) {
         dataBuffer.resize(read);
         md5.update(dataBuffer);
     }
-    crypto::StaticBuffer<crypto::Byte, 16> digest(16);
+    crypto::StaticBuffer<crypto::Byte, crypto::Md5::DIGEST_SIZE> digest(crypto::Md5::DIGEST_SIZE);
     md5.finalize(digest);
     std::cout << crypto::Hex::encode(digest) << std::endl;
 }
 
 void hmacDigest() {
     crypto::Hmac<crypto::Sha1> hmac;
-    hmac.setKey(crypto::ByteBuffer({'k', 'e', 'y'}));
+    hmac.setKey(crypto::ByteBuffer({ 'k', 'e', 'y' }));
     crypto::StaticBuffer<crypto::Byte, crypto::Sha1::DIGEST_SIZE> digest(crypto::Sha1::DIGEST_SIZE);
     hmac.update(crypto::String("The quick brown fox jumps "));
     hmac.update(crypto::String("over the lazy dog"));
@@ -100,7 +100,6 @@ int main() {
         sha1digest("CMakeCache.txt");
         md5digest("CMakeCache.txt");
         hmacDigest();
-        return 0;
 
         crypto::Aes::Key key(crypto::HexString("2b7e151628aed2a6abf7158809cf4f3c"));
         crypto::Aes::Iv iv(crypto::HexString("000102030405060708090A0B0C0D0E0F"));

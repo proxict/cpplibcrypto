@@ -1,8 +1,7 @@
 #ifndef CPPLIBCRYPTO_HASH_HMAC_H_
 #define CPPLIBCRYPTO_HASH_HMAC_H_
 
-// TODO(ProXicT): Move SA to common
-#include "cpplibcrypto/cipher/SymmetricAlgorithm.h"
+#include "cpplibcrypto/common/SymmetricAlgorithm.h"
 
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/buffer/HexString.h"
@@ -77,10 +76,20 @@ public:
         mKeySet = true;
     }
 
+    void reset() {
+        mHasher.reset();
+        updateKey();
+        mFinalized = false;
+    }
+
     template <typename TBuffer>
     void update(const TBuffer& in) {
         if (!mKeySet) {
             throw Exception("Key not set");
+        }
+        if (mFinalized) {
+            throw Exception(
+                "The digest already has been computed. Reset the state to compute another digest.");
         }
         mHasher.update(in);
     }
@@ -88,6 +97,10 @@ public:
     template <typename TOut>
     void finalize(TOut& out) {
         ASSERT(mDerivedKey.size() == BLOCK_SIZE);
+        if (mFinalized) {
+            throw Exception(
+                "The digest already has been computed. Reset the state to compute another digest.");
+        }
         StaticBuffer<Byte, DIGEST_SIZE> digest(DIGEST_SIZE);
         mHasher.finalize(digest);
 
@@ -99,6 +112,7 @@ public:
         mHasher.update(oKeyPad);
         mHasher.update(digest);
         mHasher.finalize(out);
+        mFinalized = true;
     }
 
 private:
@@ -132,6 +146,7 @@ private:
     StaticBuffer<Byte, BLOCK_SIZE> mDerivedKey;
     THash mHasher;
     bool mKeySet = false;
+    bool mFinalized = false;
 };
 
 NAMESPACE_CRYPTO_END

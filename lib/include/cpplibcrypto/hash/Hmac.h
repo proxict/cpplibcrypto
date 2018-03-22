@@ -9,6 +9,7 @@
 
 NAMESPACE_CRYPTO_BEGIN
 
+/// Key for HMAC. Non-copyable, movable.
 class HmacKey : public KeySized<0, std::numeric_limits<Size>::max()> {
 public:
     HmacKey()
@@ -48,6 +49,8 @@ private:
     ByteBuffer mKey;
 };
 
+/// RFC 2104 HMAC implementation.
+/// Computes a digest based on the given underlying hashing algorithm.
 template <typename THash>
 class Hmac : public SymmetricAlgorithm {
 public:
@@ -56,7 +59,7 @@ public:
 
     Hmac() = default;
 
-    Hmac(const HmacKey& key)
+    explicit Hmac(const HmacKey& key)
         : Hmac() {
         setKey(key);
     }
@@ -70,18 +73,28 @@ public:
         return *this;
     }
 
+    /// Sets new key for the HMAC.
+    /// \throws Exception if \ref finalize() has been called already
     void setKey(const HmacKey& key) {
+        if (mFinalized) {
+            throw Exception(
+                "The digest already has been computed. Reset the state to compute another digest.");
+        }
         SymmetricAlgorithm::setKey(key);
         updateKey();
         mKeySet = true;
     }
 
+    /// Resets the state
+    /// After calling this function, new digest can be computed using the same instance of this object
     void reset() {
         mHasher.reset();
         updateKey();
         mFinalized = false;
     }
 
+    /// Updates the state with the given input
+    /// \throws Exception in case the key has not been set or in case \ref finalize() has been called already
     template <typename TBuffer>
     void update(const TBuffer& in) {
         if (!mKeySet) {
@@ -94,6 +107,8 @@ public:
         mHasher.update(in);
     }
 
+    /// Finishes the digest computation and outputs the result in the given buffer
+    /// \throws Exception if called twice without resetting the state
     template <typename TOut>
     void finalize(TOut& out) {
         ASSERT(mDerivedKey.size() == BLOCK_SIZE);

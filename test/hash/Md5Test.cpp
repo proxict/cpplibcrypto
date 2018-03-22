@@ -2,26 +2,11 @@
 
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 #include "cpplibcrypto/buffer/String.h"
+#include "cpplibcrypto/buffer/utils/bufferUtils.h"
 #include "cpplibcrypto/common/Hex.h"
 #include "cpplibcrypto/hash/Md5.h"
 
 NAMESPACE_CRYPTO_BEGIN
-
-static bool operator==(const StaticBufferBase<Byte>& lhs, const DynamicBuffer<Byte>& rhs) {
-    if (lhs.size() != rhs.size()) {
-        return false;
-    }
-    for (Size i = 0; i < lhs.size(); ++i) {
-        if (lhs[i] != rhs[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-static bool operator==(const DynamicBuffer<Byte>& lhs, const StaticBufferBase<Byte>& rhs) {
-    return rhs == lhs;
-}
 
 TEST(Md5Test, empty) {
     Md5 md5;
@@ -30,7 +15,7 @@ TEST(Md5Test, empty) {
     StaticBuffer<Byte, 16> digest(16);
     md5.finalize(digest);
 
-    EXPECT_EQ(Hex::decode("d41d8cd98f00b204e9800998ecf8427e"), digest);
+    EXPECT_TRUE(bufferUtils::equal(Hex::decode("d41d8cd98f00b204e9800998ecf8427e"), digest));
 }
 
 TEST(Md5Test, case1) {
@@ -40,7 +25,7 @@ TEST(Md5Test, case1) {
     StaticBuffer<Byte, 16> digest(16);
     md5.finalize(digest);
 
-    EXPECT_EQ(Hex::decode("0cc175b9c0f1b6a831c399e269772661"), digest);
+    EXPECT_TRUE(bufferUtils::equal(Hex::decode("0cc175b9c0f1b6a831c399e269772661"), digest));
 }
 
 TEST(Md5Test, case2) {
@@ -50,7 +35,7 @@ TEST(Md5Test, case2) {
     StaticBuffer<Byte, 16> digest(16);
     md5.finalize(digest);
 
-    EXPECT_EQ(Hex::decode("900150983cd24fb0d6963f7d28e17f72"), digest);
+    EXPECT_TRUE(bufferUtils::equal(Hex::decode("900150983cd24fb0d6963f7d28e17f72"), digest));
 }
 
 TEST(Md5Test, case3) {
@@ -60,7 +45,7 @@ TEST(Md5Test, case3) {
     StaticBuffer<Byte, 16> digest(16);
     md5.finalize(digest);
 
-    EXPECT_EQ(Hex::decode("c3fcd3d76192e4007dfb496cca67e13b"), digest);
+    EXPECT_TRUE(bufferUtils::equal(Hex::decode("c3fcd3d76192e4007dfb496cca67e13b"), digest));
 }
 
 TEST(Md5Test, case4) {
@@ -70,7 +55,7 @@ TEST(Md5Test, case4) {
     StaticBuffer<Byte, 16> digest(16);
     md5.finalize(digest);
 
-    EXPECT_EQ(Hex::decode("f96b697d7cb7938d525a2f31aaf161d0"), digest);
+    EXPECT_TRUE(bufferUtils::equal(Hex::decode("f96b697d7cb7938d525a2f31aaf161d0"), digest));
 }
 
 TEST(Md5Test, case5) {
@@ -82,7 +67,7 @@ TEST(Md5Test, case5) {
     StaticBuffer<Byte, 16> digest(16);
     md5.finalize(digest);
 
-    EXPECT_EQ(Hex::decode("7707d6ae4e027c70eea2a935c2296f21"), digest);
+    EXPECT_TRUE(bufferUtils::equal(Hex::decode("7707d6ae4e027c70eea2a935c2296f21"), digest));
 }
 
 TEST(Md5Test, reset) {
@@ -90,12 +75,12 @@ TEST(Md5Test, reset) {
     md5.update(String("abc"));
     StaticBuffer<Byte, 16> digest(16);
     md5.finalize(digest);
-    EXPECT_EQ(Hex::decode("900150983cd24fb0d6963f7d28e17f72"), digest);
+    EXPECT_TRUE(bufferUtils::equal(Hex::decode("900150983cd24fb0d6963f7d28e17f72"), digest));
 
     md5.reset();
     md5.update(String("abc"));
     md5.finalize(digest);
-    EXPECT_EQ(Hex::decode("900150983cd24fb0d6963f7d28e17f72"), digest);
+    EXPECT_TRUE(bufferUtils::equal(Hex::decode("900150983cd24fb0d6963f7d28e17f72"), digest));
 }
 
 TEST(Md5Test, move) {
@@ -105,7 +90,7 @@ TEST(Md5Test, move) {
 
     Md5 md5other = std::move(md5);
     md5other.finalize(digest);
-    EXPECT_EQ(Hex::decode("900150983cd24fb0d6963f7d28e17f72"), digest);
+    EXPECT_TRUE(bufferUtils::equal(Hex::decode("900150983cd24fb0d6963f7d28e17f72"), digest));
 }
 
 NAMESPACE_CRYPTO_END

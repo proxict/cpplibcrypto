@@ -14,13 +14,15 @@ class HexString final {
     using StaticByteBufferBase = StaticBufferBase<Byte>;
 
 public:
+    HexString() = default;
+
     /// \param hexStr Hexadecimal data in string representation
     /// \throws Exception if hexStr contains an invalid base-16 character
     HexString(const String& hexStr)
         : mDecoded(Hex::decode(hexStr)) {}
 
     HexString& operator=(HexString&& other) noexcept {
-        mDecoded = std::move(other.mDecoded);
+        std::swap(mDecoded, other.mDecoded);
         return *this;
     }
 
@@ -31,7 +33,7 @@ public:
 
     /// Returns a copy of this HexString with another HexString appended
     HexString operator+(const HexString& rhs) const {
-        HexString hexString("");
+        HexString hexString;
         hexString += *this;
         hexString += rhs;
         return hexString;
@@ -79,7 +81,6 @@ public:
     }
 
 private:
-    HexString() = delete;
     HexString(const HexString&) = delete;
     HexString& operator=(const HexString&) = delete;
 

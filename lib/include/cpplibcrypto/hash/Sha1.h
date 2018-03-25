@@ -12,8 +12,8 @@ class Sha1 final {
 public:
     using Dword = uint32_t;
     using Qword = uint64_t;
-    static constexpr Byte DIGEST_SIZE = 20U;
-    static constexpr Byte BLOCK_SIZE = 64U;
+    static constexpr Size DIGEST_SIZE = 20U;
+    static constexpr Size BLOCK_SIZE = 64U;
 
     struct State {
         StaticBuffer<Dword, DIGEST_SIZE / 4> H;
@@ -100,7 +100,7 @@ public:
         padBlock();
         mTotalSize = 0;
 
-        for (int i = 0; i < DIGEST_SIZE; ++i) {
+        for (Size i = 0; i < DIGEST_SIZE; ++i) {
             out[i] = mState[i >> 2] >> 8 * (3 - (i & 0x03));
         }
         mFinalized = true;

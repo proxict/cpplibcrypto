@@ -14,8 +14,8 @@ class Md5 final {
 public:
     using Dword = uint32_t;
     using Qword = uint64_t;
-    static constexpr Byte DIGEST_SIZE = 16U;
-    static constexpr Byte BLOCK_SIZE = 64U;
+    static constexpr Size DIGEST_SIZE = 16U;
+    static constexpr Size BLOCK_SIZE = 64U;
 
     struct State {
         StaticBuffer<Dword, DIGEST_SIZE / 4> H;

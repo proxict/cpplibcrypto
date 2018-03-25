@@ -5,6 +5,7 @@
 
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/buffer/HexString.h"
+#include "cpplibcrypto/buffer/Password.h"
 #include "cpplibcrypto/common/KeySized.h"
 
 NAMESPACE_CRYPTO_BEGIN
@@ -27,6 +28,13 @@ public:
             throw Exception("Invalid key size passed");
         }
         mKey += key;
+    }
+
+    HmacKey(const Password& password) {
+        if (!isValid(password.size())) {
+            throw Exception("Invalid key size passed");
+        }
+        mKey.insert(mKey.end(), password.begin(), password.end());
     }
 
     HmacKey& operator=(HmacKey&& other) {
@@ -145,6 +153,7 @@ private:
     }
 
     void keySchedule(const ConstByteBufferView& key) override {
+        mDerivedKey.clear();
         if (key.size() > BLOCK_SIZE) {
             mHasher.reset();
             mHasher.update(key);

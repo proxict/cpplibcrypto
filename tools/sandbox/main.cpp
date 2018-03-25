@@ -10,6 +10,7 @@
 #include "cpplibcrypto/hash/Sha1.h"
 #include "cpplibcrypto/io/Stream.h"
 #include "cpplibcrypto/padding/Pkcs7.h"
+#include "cpplibcrypto/kdf/Pbkdf.h"
 
 #include <iostream>
 
@@ -93,6 +94,13 @@ void hmacDigest() {
     std::cout << crypto::Hex::encode(digest) << std::endl;
 }
 
+void pbkdf2() {
+    crypto::Pbkdf2 pbkdf2(crypto::Password(crypto::String("password")), crypto::Salt(crypto::String("salt")));
+    crypto::StaticBuffer<crypto::Byte, 20> dk(20);
+    pbkdf2.derive(dk.size(), dk, 1);
+    std::cout << crypto::Hex::encode(dk) << std::endl;
+}
+
 /// The entry point of the sandbox application
 /// \returns Process exit code whete \c 0 means success
 int main() {
@@ -100,6 +108,7 @@ int main() {
         sha1digest("CMakeCache.txt");
         md5digest("CMakeCache.txt");
         hmacDigest();
+        pbkdf2();
 
         crypto::Aes::Key key(crypto::HexString("2b7e151628aed2a6abf7158809cf4f3c"));
         crypto::Aes::Iv iv(crypto::HexString("000102030405060708090A0B0C0D0E0F"));

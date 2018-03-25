@@ -11,6 +11,7 @@ add_executable(unittests
     hash/Sha1Test.cpp
     hash/Md5Test.cpp
     hash/HmacTest.cpp
+    kdf/PbkdfTest.cpp
     cipher/AesCoreTest.cpp
     cipher/AesKeyScheduleTest.cpp
     cipher/AesDecryptTest.cpp

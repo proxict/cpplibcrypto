@@ -25,7 +25,7 @@ public:
         , mCipher(cipher)
         , mIv(iv) {
         if (mIv.size() != mCipher.getBlockSize()) {
-            throw Exception("The Initialization Vector size does not match the cipher block size");
+            throw Exception("CBC-Mode: The Initialization Vector size does not match the cipher block size");
         }
     }
 

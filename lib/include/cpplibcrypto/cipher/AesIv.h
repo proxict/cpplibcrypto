@@ -15,20 +15,19 @@ NAMESPACE_CRYPTO_BEGIN
 /// Represents an initialization vector for AES
 class AesIv : public InitializationVectorSized<16> {
 public:
-    AesIv()
-        : InitializationVectorSized() {}
-
+    /// \throws Exception if the IV size is not 16 bytes
     AesIv(ByteBuffer&& iv) {
         if (!isValid(iv.size())) {
-            throw Exception("Invalid Initialization Vector size passed");
+            throw Exception("AES-IV: Invalid Initialization Vector size passed");
         }
         mIv = std::move(iv);
         mInitialIv += mIv;
     }
 
+    /// \throws Exception if the IV size is not 16 bytes
     AesIv(const HexString& iv) {
         if (!isValid(iv.size())) {
-            throw Exception("Invalid Initialization Vector size passed");
+            throw Exception("AES-IV: Invalid Initialization Vector size passed");
         }
         mIv += iv;
         mInitialIv += iv;

@@ -6,7 +6,7 @@ NAMESPACE_CRYPTO_BEGIN
 
 ByteBuffer Hex::decode(const String& hexStr) {
     if (hexStr.size() & 1) {
-        throw Exception("Odd HEX data length passed");
+        throw Exception("Hex: Odd data length passed");
     }
 
     ByteBuffer output(hexStr.size() / 2);
@@ -24,7 +24,7 @@ constexpr Byte Hex::hex2Byte(const char c) {
     } else if ('A' <= c && c <= 'F') {
         return c - 'A' + 10;
     } else {
-        throw Exception("Invalid HEX char passed");
+        throw Exception("Hex: Invalid character passed");
     }
 }
 

@@ -12,7 +12,7 @@ NAMESPACE_CRYPTO_BEGIN
 enum class SeekPosition { BEGINNING, CURRENT, END };
 
 /// RAII wrapper for FILE* and its operations. Non-copyable, movable.
-/// Default-constructed and moved-from instances are considered closed, i.e. isOpen returns false
+/// Default-constructed and moved-from instances are considered closed, i.e. \ref isOpen() returns false
 class File final {
 public:
     enum class OpenMode { READ, WRITE, APPEND };
@@ -37,6 +37,7 @@ public:
     }
 
     /// Closes the file
+    /// \throws Exception in case the file couldn't be closed for any reason
     void close() {
         ASSERT(isOpen());
         String fileName = std::move(mFileName); // save filename in case we need it for the exception below
@@ -57,7 +58,7 @@ public:
     /// Sets the current position in the file
     /// \param offset The offset from the specified position
     /// \param position The position origin
-    /// \throws Exception if the file is not open and in case the seek fails
+    /// \throws Exception in case the seek fails
     void seek(const Size offset, const SeekPosition position) {
         ASSERT(isOpen());
         int whence = 0;
@@ -81,19 +82,23 @@ public:
         }
     }
 
+    /// Reads \ref count bytes to the given output buffer
+    /// \throws Exception in case the data couldn't be read
     Size read(void* output, const Size count) {
         ASSERT(isOpen());
         ASSERT(output != nullptr || count == 0);
         if (output == nullptr || count == 0) {
             return 0;
         }
-        Size r = fread(output, 1, count, mFile);
+        const Size r = fread(output, 1, count, mFile);
         if (ferror(mFile)) {
             throw Exception("Error reading bytes from file (" + mFileName + ')');
         }
         return r;
     }
 
+    /// Writes count bytes to the file
+    /// \throws Exception in case not all data could have been written
     void write(const void* source, const Size count) {
         ASSERT(isOpen());
         ASSERT(source != nullptr || count == 0);
@@ -106,6 +111,8 @@ public:
         }
     }
 
+    /// Forces a write of all user-space buffered data to the file
+    /// \throws Exception in case the operation fails for any reason
     void flush() {
         ASSERT(isOpen());
         if (fflush(mFile) != 0) {
@@ -121,7 +128,7 @@ public:
     /// Opens a file in the given mode
     /// \param filename The path to the file to open
     /// \param mode The mode to open the file in. Could be either READ, WRITE or APPEND
-    /// \throws Exception in case the file coudn't be open for any reason
+    /// \throws Exception in case the file couldn't be open for any reason
     static File open(const String& fileName, const OpenMode mode) {
         FILE* file = fopen(fileName.c_str(), toFileOpenFlags(mode));
         if (!file) {

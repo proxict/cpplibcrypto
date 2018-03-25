@@ -3,7 +3,6 @@
 
 #include "cpplibcrypto/buffer/utils/LinearIterator.h"
 #include "cpplibcrypto/buffer/utils/SecureAllocator.h"
-#include "cpplibcrypto/common/Exception.h"
 
 NAMESPACE_CRYPTO_BEGIN
 

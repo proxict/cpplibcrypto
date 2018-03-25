@@ -2,7 +2,6 @@
 #define CPPLIBCRYPTO_BUFFER_STATICBYTEBUFFER_H_
 
 #include "cpplibcrypto/buffer/utils/LinearIterator.h"
-#include "cpplibcrypto/common/Exception.h"
 #include "cpplibcrypto/common/Memory.h"
 #include "cpplibcrypto/common/common.h"
 

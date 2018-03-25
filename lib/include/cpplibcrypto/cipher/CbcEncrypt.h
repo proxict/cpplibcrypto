@@ -25,7 +25,7 @@ public:
         , mCipher(cipher)
         , mIv(iv) {
         if (mIv.size() != mCipher.getBlockSize()) {
-            throw Exception("The Initialization Vector size does not match the cipher block size");
+            throw Exception("CBC-Mode: The Initialization Vector size does not match the cipher block size");
         }
     }
 
@@ -86,11 +86,12 @@ public:
     }
 
     /// Applies padding using the provided scheme
+    /// \throws Exception if the provided padding algorithm fails
     template <typename TBuffer>
     void finalize(TBuffer& out, const Padding& padder) {
         ASSERT(mLeftoverBuffer.size() < mCipher.getBlockSize());
         if (!padder.pad(mLeftoverBuffer, mCipher.getBlockSize())) {
-            throw Exception("Buffer size must be a multiple of block size for encryption");
+            throw Exception("CBC-Mode: Buffer size must be a multiple of block size for encryption");
         }
         // This is valid in case no padding is applied
         if (mLeftoverBuffer.size() == 0) {

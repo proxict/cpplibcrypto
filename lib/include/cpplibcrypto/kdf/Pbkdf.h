@@ -4,6 +4,7 @@
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/buffer/Password.h"
 #include "cpplibcrypto/buffer/Salt.h"
+#include "cpplibcrypto/common/Exception.h"
 #include "cpplibcrypto/hash/Hmac.h"
 #include "cpplibcrypto/hash/Sha1.h"
 
@@ -52,10 +53,11 @@ public:
     /// \param out The output buffer where the derived key will be stored. Must be at least as big as the
     /// requested length \param iterations The number of iterations which will be used to derive the key. More
     /// iterations usualy means more secure key.
+    /// \throws Exception if the \ref Password is not set
     template <typename TOut>
     void derive(const Size length, TOut& out, const Size iterations) {
         if (!mKeySet) {
-            throw Exception("Key not set");
+            throw Exception("PBKDF: Password not set");
         }
         StaticBuffer<Byte, DIGEST_SIZE> blockBuffer(DIGEST_SIZE);
         Size derived = 0;

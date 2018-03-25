@@ -41,6 +41,7 @@ public:
     /// Asserts the buffer size to be 16 bytes
     /// \param buffer The buffer which will get encrypted. Note that the buffer will be overwritten with the
     /// encrypted data.
+    /// \throws Exception if \ref AesKey is not set
     void encryptBlock(ByteBufferView buffer) override {
         ASSERT(buffer.size() == getBlockSize());
         processFirstRound(buffer);
@@ -55,6 +56,7 @@ public:
     /// Asserts the buffer size to be 16 bytes
     /// \param buffer The buffer which will get decrypted. Note that the buffer will be overwritten with the
     /// decrypted data.
+    /// \throws Exception if \ref AesKey is not set
     void decryptBlock(ByteBufferView buffer) override {
         ASSERT(buffer.size() == getBlockSize());
         processFirstRoundInv(buffer);
@@ -110,7 +112,7 @@ private:
         case Aes256:
             return 240;
         }
-        throw Exception("Key not set");
+        throw Exception("AES: Key not set");
     }
 
     Byte getNumberOfRounds() const {
@@ -122,7 +124,7 @@ private:
         case Aes256:
             return 14;
         }
-        throw Exception("Key not set");
+        throw Exception("AES: Key not set");
     }
 
     void keySchedule(const ConstByteBufferView& key) override {

@@ -2,7 +2,6 @@
 #define CPPLIBCRYPTO_IO_STREAM_H_
 
 #include "cpplibcrypto/buffer/String.h"
-#include "cpplibcrypto/common/Exception.h"
 #include "cpplibcrypto/io/File.h"
 
 #include <utility>

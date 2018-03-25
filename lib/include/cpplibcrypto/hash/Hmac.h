@@ -6,6 +6,7 @@
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/buffer/HexString.h"
 #include "cpplibcrypto/buffer/Password.h"
+#include "cpplibcrypto/common/Exception.h"
 #include "cpplibcrypto/common/KeySized.h"
 
 NAMESPACE_CRYPTO_BEGIN
@@ -13,27 +14,20 @@ NAMESPACE_CRYPTO_BEGIN
 /// Key for HMAC. Non-copyable, movable.
 class HmacKey : public KeySized<0, std::numeric_limits<Size>::max()> {
 public:
-    HmacKey()
-        : KeySized() {}
+    HmacKey() = default;
 
     HmacKey(ByteBuffer&& key) {
-        if (!isValid(key.size())) {
-            throw Exception("Invalid key size passed");
-        }
+        ASSERT(isValid(key.size()));
         mKey = std::move(key);
     }
 
     HmacKey(const HexString& key) {
-        if (!isValid(key.size())) {
-            throw Exception("Invalid key size passed");
-        }
+        ASSERT(isValid(key.size()));
         mKey += key;
     }
 
     HmacKey(const Password& password) {
-        if (!isValid(password.size())) {
-            throw Exception("Invalid key size passed");
-        }
+        ASSERT(isValid(password.size()));
         mKey.insert(mKey.end(), password.begin(), password.end());
     }
 
@@ -82,11 +76,11 @@ public:
     }
 
     /// Sets new key for the HMAC.
-    /// \throws Exception if \ref finalize() has been called already
+    /// \throws Exception if \ref finalize() has already been called
     void setKey(const HmacKey& key) {
         if (mFinalized) {
             throw Exception(
-                "The digest already has been computed. Reset the state to compute another digest.");
+                "HMAC: The digest already has been computed. Reset the state to compute another digest.");
         }
         SymmetricAlgorithm::setKey(key);
         updateKey();
@@ -102,27 +96,28 @@ public:
     }
 
     /// Updates the state with the given input
-    /// \throws Exception in case the key has not been set or in case \ref finalize() has been called already
+    /// \throws Exception in case the key has not been set or in case \ref finalize() has already been called
     template <typename TBuffer>
     void update(const TBuffer& in) {
         if (!mKeySet) {
-            throw Exception("Key not set");
+            throw Exception("HMAC: Key not set");
         }
         if (mFinalized) {
             throw Exception(
-                "The digest already has been computed. Reset the state to compute another digest.");
+                "HMAC: The digest already has been computed. Reset the state to compute another digest.");
         }
         mHasher.update(in);
     }
 
-    /// Finishes the digest computation and outputs the result in the given buffer
-    /// \throws Exception if called twice without resetting the state
+    /// Finalizes the digest computation, outputs the result to the given buffer
+    /// \param out Output buffer where the digest will be saved. Must be at least \ref Hmac::DIGEST_SIZE long.
+    /// \throws Exception if \ref finalize() has already been called
     template <typename TOut>
     void finalize(TOut& out) {
         ASSERT(mDerivedKey.size() == BLOCK_SIZE);
         if (mFinalized) {
             throw Exception(
-                "The digest already has been computed. Reset the state to compute another digest.");
+                "HMAC: The digest already has been computed. Reset the state to compute another digest.");
         }
         StaticBuffer<Byte, DIGEST_SIZE> digest(DIGEST_SIZE);
         mHasher.finalize(digest);

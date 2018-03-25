@@ -4,6 +4,7 @@
 
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/buffer/HexString.h"
+#include "cpplibcrypto/common/Exception.h"
 
 NAMESPACE_CRYPTO_BEGIN
 

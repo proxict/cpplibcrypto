@@ -17,26 +17,26 @@ NAMESPACE_CRYPTO_BEGIN
 /// Requires the key to be at least 16 and at most 32 bytes in size and to be dividable by 8
 class AesKey : public KeySized<16, 32, 8> {
 public:
-    AesKey()
-        : KeySized() {}
-
+    /// \throws Exception if the key size does not match the requirements
     AesKey(ByteBuffer&& key) {
         if (!isValid(key.size())) {
-            throw Exception("Invalid key size passed");
+            throw Exception("AES-Key: Invalid key size passed");
         }
         mKey = std::move(key);
     }
 
+    /// \throws Exception if the key size does not match the requirements
     AesKey(const HexString& key) {
         if (!isValid(key.size())) {
-            throw Exception("Invalid key size passed");
+            throw Exception("AES-Key: Invalid key size passed");
         }
         mKey += key;
     }
 
+    /// \throws Exception if the key size does not match the requirements
     AesKey(const Password& password) {
         if (!isValid(password.size())) {
-            throw Exception("Invalid key size passed");
+            throw Exception("AES-Key: Invalid key size passed");
         }
         mKey.insert(mKey.end(), password.begin(), password.end());
     }

@@ -2,6 +2,7 @@
 #define CPPLIBCRYPTO_PADDING_PKCS7_H_
 
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
+#include "cpplibcrypto/common/Exception.h"
 #include "cpplibcrypto/padding/Padding.h"
 
 #include <limits>

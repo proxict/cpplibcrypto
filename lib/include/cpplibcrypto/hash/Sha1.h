@@ -3,6 +3,7 @@
 
 #include "cpplibcrypto/buffer/BufferView.h"
 #include "cpplibcrypto/buffer/StaticBuffer.h"
+#include "cpplibcrypto/common/Exception.h"
 
 NAMESPACE_CRYPTO_BEGIN
 
@@ -65,13 +66,14 @@ public:
         mState.reset();
     }
 
-    /// Updates the state using the given input
-    /// \param in The input from which the digest will be computed
+    /// Updates the state with the given data
+    /// \throws Exception if the \ref finalize() has already been called or if the overall input size exceeded
+    /// 2^64 bytes.
     template <typename TBuffer>
     void update(const TBuffer& in) {
         if (mFinalized) {
             throw Exception(
-                "The state already has been computed. Reset the state to compute another digest.");
+                "SHA1: The state already has been computed. Reset the state to compute another digest.");
         }
         for (const Byte b : in) {
             mBlock.push(b);
@@ -79,7 +81,7 @@ public:
             ++mTotalSize;
             // Overflowed
             if (mTotalSize == 0) {
-                throw Exception("Input is too long");
+                throw Exception("SHA1: Input is too long");
             }
 
             if (mBlock.size() == BLOCK_SIZE) {
@@ -89,13 +91,14 @@ public:
         }
     }
 
-    /// Finishes the computing process
-    /// \param out A memory block to which the digest will be saved. Must have at least 20 bytes in size.
-    template <typename T>
-    void finalize(T& out) {
+    /// Finalizes the digest computation, outputs the result to the given buffer
+    /// \param out Output buffer where the digest will be saved. Must be at least \ref Sha1::DIGEST_SIZE long.
+    /// \throws Exception if \ref finalize() has already been called
+    template <typename TOut>
+    void finalize(TOut& out) {
         if (mFinalized) {
             throw Exception(
-                "The state already has been computed. Reset the state to compute another digest.");
+                "SHA1: The state already has been computed. Reset the state to compute another digest.");
         }
         padBlock();
         mTotalSize = 0;

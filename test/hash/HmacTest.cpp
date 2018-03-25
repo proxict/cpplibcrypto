@@ -77,4 +77,15 @@ TEST(HmacTest, move) {
     EXPECT_TRUE(bufferUtils::equal(Hex::decode("74e6f7298a9c2d168935f58c001bad88"), digest));
 }
 
+TEST(HmacTest, setKey) {
+    Hmac<Sha1> hmac(HmacKey{});
+    hmac.setKey(HmacKey());
+    hmac.update(String(""));
+
+    StaticBuffer<Byte, Sha1::DIGEST_SIZE> digest(Sha1::DIGEST_SIZE);
+    hmac.finalize(digest);
+
+    EXPECT_TRUE(bufferUtils::equal(Hex::decode("fbdb1d1b18aa6c08324b7d64b71fb76370690e1d"), digest));
+}
+
 NAMESPACE_CRYPTO_END

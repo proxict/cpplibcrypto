@@ -57,8 +57,8 @@ TEST(DynamicBufferTest, ctorSize) {
 
 TEST(DynamicBufferTest, addingByte) {
     ByteBuffer bb;
-    bb += 0xab;
-    bb += 0xac;
+    bb << 0xab;
+    bb << 0xac;
 
     EXPECT_EQ(0xab, bb[0]);
     EXPECT_EQ(0xac, bb[1]);
@@ -89,15 +89,15 @@ TEST(DynamicBufferTest, resize) {
 
 TEST(DynamicBufferTest, chainingBuffers) {
     ByteBuffer bb1;
-    bb1 += 0xab;
-    bb1 += 0xcd;
+    bb1 << 0xab;
+    bb1 << 0xcd;
 
     ByteBuffer bb2;
-    bb2 += 0xef;
-    bb2 += 0xff;
+    bb2 << 0xef;
+    bb2 << 0xff;
 
     ByteBuffer bb;
-    bb += 0x00 + bb1 + bb2 + 0x0f;
+    bb << 0x00 << bb1 << bb2 << 0x0f;
 
     EXPECT_EQ(ByteBuffer({ 0x00, 0xab, 0xcd, 0xef, 0xff, 0x0f }), bb);
 }

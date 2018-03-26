@@ -71,7 +71,7 @@ public:
             buffer.insert(buffer.end(), in.begin() + blockStart, in.begin() + blockEnd);
             ASSERT(buffer.size() == blockSize);
             StaticBuffer<Byte, 16> newIv;
-            newIv.insert(newIv.end(), buffer.begin(), buffer.end());
+            newIv << buffer;
             mCipher.decryptBlock(buffer);
             bufferUtils::pushXored(out, buffer.cbegin(), buffer.cend(), mIv.cbegin());
             processedInput += toProcess;

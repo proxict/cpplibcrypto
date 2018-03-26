@@ -10,13 +10,13 @@ NAMESPACE_CRYPTO_BEGIN
 
 TEST(HexTest, basic) {
     ByteBuffer s;
-    s += Hex::decode("1234");
+    s << Hex::decode("1234");
 
     ByteBuffer bb(std::move(s));
-    bb += 0x56;
-    bb += Hex::decode("789A");
-    bb += Hex::decode("BCDE");
-    bb += 0xF;
+    bb << 0x56;
+    bb << Hex::decode("789A");
+    bb << Hex::decode("BCDE");
+    bb << 0xF;
 
     EXPECT_EQ(8U, bb.size());
     EXPECT_EQ(0x9a, bb[4]);

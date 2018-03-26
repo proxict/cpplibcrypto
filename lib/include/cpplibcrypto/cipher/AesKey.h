@@ -30,7 +30,7 @@ public:
         if (!isValid(key.size())) {
             throw Exception("AES-Key: Invalid key size passed");
         }
-        mKey += key;
+        mKey << key;
     }
 
     /// \throws Exception if the key size does not match the requirements

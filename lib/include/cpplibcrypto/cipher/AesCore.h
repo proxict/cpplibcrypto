@@ -261,13 +261,13 @@ public:
         ASSERT(buffer.size() == 16);
         StaticBuffer<Byte, 16> tmp;
         for (Byte i = 0; i < 4; ++i) {
-            tmp += static_cast<Byte>(mul2[buffer[4 * i]] ^ mul3[buffer[4 * i + 1]] ^ buffer[4 * i + 2] ^
+            tmp << static_cast<Byte>(mul2[buffer[4 * i]] ^ mul3[buffer[4 * i + 1]] ^ buffer[4 * i + 2] ^
                                      buffer[4 * i + 3]);
-            tmp += static_cast<Byte>(buffer[4 * i] ^ mul2[buffer[4 * i + 1]] ^ mul3[buffer[4 * i + 2]] ^
+            tmp << static_cast<Byte>(buffer[4 * i] ^ mul2[buffer[4 * i + 1]] ^ mul3[buffer[4 * i + 2]] ^
                                      buffer[4 * i + 3]);
-            tmp += static_cast<Byte>(buffer[4 * i] ^ buffer[4 * i + 1] ^ mul2[buffer[4 * i + 2]] ^
+            tmp << static_cast<Byte>(buffer[4 * i] ^ buffer[4 * i + 1] ^ mul2[buffer[4 * i + 2]] ^
                                      mul3[buffer[4 * i + 3]]);
-            tmp += static_cast<Byte>(mul3[buffer[4 * i]] ^ buffer[4 * i + 1] ^ buffer[4 * i + 2] ^
+            tmp << static_cast<Byte>(mul3[buffer[4 * i]] ^ buffer[4 * i + 1] ^ buffer[4 * i + 2] ^
                                      mul2[buffer[4 * i + 3]]);
         }
 
@@ -279,13 +279,13 @@ public:
         ASSERT(buffer.size() == 16);
         StaticBuffer<Byte, 16> tmp;
         for (Byte i = 0; i < 4; ++i) {
-            tmp += static_cast<Byte>(mul14[buffer[4 * i]] ^ mul11[buffer[4 * i + 1]] ^
+            tmp << static_cast<Byte>(mul14[buffer[4 * i]] ^ mul11[buffer[4 * i + 1]] ^
                                      mul13[buffer[4 * i + 2]] ^ mul9[buffer[4 * i + 3]]);
-            tmp += static_cast<Byte>(mul9[buffer[4 * i]] ^ mul14[buffer[4 * i + 1]] ^
+            tmp << static_cast<Byte>(mul9[buffer[4 * i]] ^ mul14[buffer[4 * i + 1]] ^
                                      mul11[buffer[4 * i + 2]] ^ mul13[buffer[4 * i + 3]]);
-            tmp += static_cast<Byte>(mul13[buffer[4 * i]] ^ mul9[buffer[4 * i + 1]] ^
+            tmp << static_cast<Byte>(mul13[buffer[4 * i]] ^ mul9[buffer[4 * i + 1]] ^
                                      mul14[buffer[4 * i + 2]] ^ mul11[buffer[4 * i + 3]]);
-            tmp += static_cast<Byte>(mul11[buffer[4 * i]] ^ mul13[buffer[4 * i + 1]] ^
+            tmp << static_cast<Byte>(mul11[buffer[4 * i]] ^ mul13[buffer[4 * i + 1]] ^
                                      mul9[buffer[4 * i + 2]] ^ mul14[buffer[4 * i + 3]]);
         }
 

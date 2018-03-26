@@ -19,7 +19,7 @@ TEST(CbcAes128DecryptTest, cbcDecrypt1) {
     CbcDecrypt cipher(aes, AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("7649abac8119b246cee98e9b12e9197d");
+    buffer << HexString("7649abac8119b246cee98e9b12e9197d");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -34,7 +34,7 @@ TEST(CbcAes128DecryptTest, cbcDecrypt2) {
     CbcDecrypt cipher(aes, AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("5086cb9b507219ee95db113a917678b2");
+    buffer << HexString("5086cb9b507219ee95db113a917678b2");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -49,7 +49,7 @@ TEST(CbcAes128DecryptTest, cbcDecrypt3) {
     CbcDecrypt cipher(aes, AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("73bed6b8e3c1743b7116e69e22229516");
+    buffer << HexString("73bed6b8e3c1743b7116e69e22229516");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -64,7 +64,7 @@ TEST(CbcAes128DecryptTest, cbcDecrypt4) {
     CbcDecrypt cipher(aes, AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("3ff1caa1681fac09120eca307586e1a7");
+    buffer << HexString("3ff1caa1681fac09120eca307586e1a7");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -79,7 +79,7 @@ TEST(CbcAes192DecryptTest, cbcDecrypt1) {
     CbcDecrypt cipher(aes, AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("4f021db243bc633d7178183a9fa071e8");
+    buffer << HexString("4f021db243bc633d7178183a9fa071e8");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -94,7 +94,7 @@ TEST(CbcAes192DecryptTest, cbcDecrypt2) {
     CbcDecrypt cipher(aes, AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("b4d9ada9ad7dedf4e5e738763f69145a");
+    buffer << HexString("b4d9ada9ad7dedf4e5e738763f69145a");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -109,7 +109,7 @@ TEST(CbcAes192DecryptTest, cbcDecrypt3) {
     CbcDecrypt cipher(aes, AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("571b242012fb7ae07fa9baac3df102e0");
+    buffer << HexString("571b242012fb7ae07fa9baac3df102e0");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -124,7 +124,7 @@ TEST(CbcAes192DecryptTest, cbcDecrypt4) {
     CbcDecrypt cipher(aes, AesKey(HexString("8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("08b0e27988598881d920a9e64f5615cd");
+    buffer << HexString("08b0e27988598881d920a9e64f5615cd");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -140,7 +140,7 @@ TEST(CbcAes256DecryptTest, cbcDecrypt1) {
         aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("f58c4c04d6e5f1ba779eabfb5f7bfbd6");
+    buffer << HexString("f58c4c04d6e5f1ba779eabfb5f7bfbd6");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -156,7 +156,7 @@ TEST(CbcAes256DecryptTest, cbcDecrypt2) {
         aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("9cfc4e967edb808d679f777bc6702c7d");
+    buffer << HexString("9cfc4e967edb808d679f777bc6702c7d");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -172,7 +172,7 @@ TEST(CbcAes256DecryptTest, cbcDecrypt3) {
         aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("39f23369a9d9bacfa530e26304231461");
+    buffer << HexString("39f23369a9d9bacfa530e26304231461");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -188,7 +188,7 @@ TEST(CbcAes256DecryptTest, cbcDecrypt4) {
         aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("b2eb05e2c39be9fcda6c19078c6a9d1b");
+    buffer << HexString("b2eb05e2c39be9fcda6c19078c6a9d1b");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);
@@ -204,7 +204,7 @@ TEST(CbcAes256DecryptResetChainTest, cbcDecryptResetChain1) {
         aes, AesKey(HexString("603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4")), iv);
 
     ByteBuffer buffer;
-    buffer += HexString("b2eb05e2c39be9fcda6c19078c6a9d1b");
+    buffer << HexString("b2eb05e2c39be9fcda6c19078c6a9d1b");
     StaticBuffer<Byte, 16> out;
     Size processed = cipher.update(buffer, out);
     EXPECT_EQ(0U, processed);

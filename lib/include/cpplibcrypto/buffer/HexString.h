@@ -31,24 +31,21 @@ public:
     /// Returns the number of bytes of the decoded data
     Size size() const { return mDecoded.size(); }
 
-    /// Returns a copy of this HexString with another HexString appended
-    HexString operator+(const HexString& rhs) const {
-        HexString hexString;
-        hexString += *this;
-        hexString += rhs;
-        return hexString;
-    }
-
     /// Appends data from the given HexString to this HexString
     /// \returns Reference to this object
-    HexString& operator+=(const HexString& rhs) {
-        mDecoded += rhs.mDecoded;
+    HexString& operator<<(const HexString& rhs) {
+        mDecoded << rhs.mDecoded;
         return *this;
     }
 
-    /// Appends data from this HexString to the given buffer
-    template <typename TBuffer>
-    friend TBuffer& operator+=(TBuffer& lhs, const HexString& rhs) {
+    /// Appends data from this HexString to the given \ref ByteBuffer
+    friend ByteBuffer& operator<<(ByteBuffer& lhs, const HexString& rhs) {
+        lhs << rhs.mDecoded;
+        return lhs;
+    }
+
+    /// Appends data from this HexString to the given \ref StaticBuffer
+    friend StaticByteBufferBase& operator<<(StaticByteBufferBase& lhs, const HexString& rhs) {
         lhs.insert(lhs.end(), rhs.mDecoded.begin(), rhs.mDecoded.end());
         return lhs;
     }

@@ -70,7 +70,7 @@ public:
             mHmac.finalize(blockBuffer);
 
             StaticBuffer<Byte, DIGEST_SIZE> roundBuffer;
-            roundBuffer.insert(roundBuffer.end(), blockBuffer.begin(), blockBuffer.end());
+            roundBuffer << blockBuffer;
             constexpr Size s = DIGEST_SIZE;
             const Size blockSize = std::min(length - derived, s);
             for (Size c = 1; c < iterations; ++c) {

@@ -11,8 +11,8 @@ TEST(HexStringTest, basic) {
 
 TEST(HexStringTest, chaining) {
     HexString hs("ab");
-    hs += HexString("cd");
-    hs += HexString("ef") + HexString("00");
+    hs << HexString("cd");
+    hs << HexString("ef") << HexString("00");
 
     EXPECT_EQ(HexString("abcdef00"), hs);
 }

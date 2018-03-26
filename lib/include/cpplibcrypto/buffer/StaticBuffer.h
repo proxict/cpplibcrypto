@@ -161,15 +161,18 @@ public:
     /// \returns Actual buffer capacity
     virtual Size reserve(const Size newCapacity) = 0;
 
-    /// Inserts the elements from the given buffer at the end of this buffer
-    /// \param b The buffer to be inserted
-    /// \returns Reference to this object
-    virtual StaticBufferBase& operator+=(const StaticBufferBase& b) = 0;
+    /// \copydoc push()
+    StaticBufferBase& operator<<(ConstReference v) {
+        push(v);
+        return *this;
+    }
 
-    /// Appends new element to the end of the buffer
-    /// \param e The element to be inserted
-    /// \returns Reference to this object
-    virtual StaticBufferBase& operator+=(ConstReference e) = 0;
+    /// Inserts all elements from the given buffer to the end of this buffer
+    StaticBufferBase& operator<<(const StaticBufferBase& v) {
+        reserve(size() + v.size());
+        insert(end(), v.begin(), v.end());
+        return *this;
+    }
 };
 
 template <typename T, Size TCapacity>
@@ -370,43 +373,11 @@ public:
         return capacity();
     }
 
-    Base& operator+=(const Base& b) override {
-        insert(end(), b.begin(), b.end());
-        return *this;
-    }
-
-    Base& operator+=(ConstReference e) override {
-        push(e);
-        return *this;
-    }
-
-    const StaticBuffer operator+(const Base& rhs) const {
-        StaticBuffer sbb;
-        sbb += *this;
-        sbb += rhs;
-        return sbb;
-    }
-
-    const StaticBuffer operator+(ConstReference rhs) const {
-        StaticBuffer sbb;
-        sbb += *this;
-        sbb += rhs;
-        return sbb;
-    }
-
 private:
     ValueType mData[TCapacity];
     Size mStored = 0;
     bool mWipe = true;
 };
-
-template <typename T, Size TCapacity>
-const StaticBuffer<T, TCapacity> operator+(const T& lhs, const StaticBufferBase<T>& rhs) {
-    StaticBuffer<T, TCapacity> sbb;
-    sbb += lhs;
-    sbb += rhs;
-    return sbb;
-}
 
 template <typename T>
 bool operator==(const StaticBufferBase<T>& lhs, const StaticBufferBase<T>& rhs) {

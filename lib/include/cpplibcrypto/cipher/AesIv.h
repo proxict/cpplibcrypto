@@ -21,7 +21,7 @@ public:
             throw Exception("AES-IV: Invalid Initialization Vector size passed");
         }
         mIv = std::move(iv);
-        mInitialIv += mIv;
+        mInitialIv << mIv;
     }
 
     /// \throws Exception if the IV size is not 16 bytes
@@ -29,8 +29,8 @@ public:
         if (!isValid(iv.size())) {
             throw Exception("AES-IV: Invalid Initialization Vector size passed");
         }
-        mIv += iv;
-        mInitialIv += iv;
+        mIv << iv;
+        mInitialIv << iv;
     }
 
     /// Returns the size of the key in bytes

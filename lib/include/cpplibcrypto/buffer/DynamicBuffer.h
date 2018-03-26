@@ -306,7 +306,7 @@ public:
     /// Inserts the elements from the given buffer at the end of this buffer
     /// \param b The buffer to be inserted
     /// \returns Reference to this object
-    DynamicBuffer& operator+=(const DynamicBuffer& b) {
+    DynamicBuffer& operator<<(const DynamicBuffer& b) {
         reserve(size() + b.size());
         insert(end(), b.begin(), b.end());
         return *this;
@@ -315,33 +315,9 @@ public:
     /// Appends new element to the end of the buffer
     /// \param e The element to be inserted
     /// \returns Reference to this object
-    DynamicBuffer& operator+=(ConstReference e) {
+    DynamicBuffer& operator<<(ConstReference e) {
         push(e);
         return *this;
-    }
-
-    /// Returns a copy of this buffer with appended elements from the given buffer
-    const DynamicBuffer operator+(const DynamicBuffer& rhs) const {
-        DynamicBuffer sbb;
-        sbb += *this;
-        sbb += rhs;
-        return sbb;
-    }
-
-    /// Returns a copy of this buffer with the given element appended
-    const DynamicBuffer operator+(ConstReference rhs) const {
-        DynamicBuffer sbb;
-        sbb += *this;
-        sbb += rhs;
-        return sbb;
-    }
-
-    /// Returns a copy of this buffer with the given element prepended
-    friend const DynamicBuffer operator+(ConstReference lhs, const DynamicBuffer& rhs) {
-        DynamicBuffer bb;
-        bb += lhs;
-        bb += rhs;
-        return bb;
     }
 
     /// Returns whether or not the given buffer is equal to this buffer
@@ -357,7 +333,7 @@ public:
         return true;
     }
 
-    /// \copydoc bool operator==()
+    /// \copydoc operator==()
     bool operator!=(const DynamicBuffer& rhs) const { return !(*this == rhs); }
 
 private:

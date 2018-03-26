@@ -143,7 +143,7 @@ private:
             }
 
             for (Byte i = 0; i < 4; ++i) {
-                mRoundKeys += mRoundKeys[mRoundKeys.size() - getKeySize()] ^ word32[i];
+                mRoundKeys << (mRoundKeys[mRoundKeys.size() - getKeySize()] ^ word32[i]);
             }
         }
     }

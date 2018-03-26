@@ -23,7 +23,7 @@ public:
 
     HmacKey(const HexString& key) {
         ASSERT(isValid(key.size()));
-        mKey += key;
+        mKey << key;
     }
 
     HmacKey(const Password& password) {

@@ -24,16 +24,19 @@ TEST(DynamicBufferTest, ctorSize) {
         constexpr Element()
             : value(0) {}
 
-        Element(const int val)
+        explicit Element(const int val)
             : value(val) {}
 
         Element(const Element&) { throw Exception("Copying object ctor"); }
 
-        Element& operator=(const Element&) { throw Exception("Copying object assign"); }
+        Element& operator=(const Element&) {
+            throw Exception("Copying object assign");
+            return *this;
+        }
 
         Element(Element&& other) { std::swap(value, other.value); }
 
-        int value;
+        int value = 0;
     };
 
     bool thrown = false;

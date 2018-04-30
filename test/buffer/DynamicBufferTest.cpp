@@ -21,41 +21,35 @@ TEST(DynamicBufferTest, ctor) {
 
 TEST(DynamicBufferTest, ctorSize) {
     struct Element {
+        enum class Flag { DEFAULT, COPIED, MOVED };
+
         constexpr Element()
-            : value(0) {}
+            : value(Flag::DEFAULT) {}
 
-        explicit Element(const int val)
-            : value(val) {}
-
-        Element(const Element&) { throw Exception("Copying object ctor"); }
+        Element(const Element&)
+            : value(Flag::COPIED) {}
 
         Element& operator=(const Element&) {
-            throw Exception("Copying object assign");
+            value = Flag::COPIED;
             return *this;
         }
 
-        Element(Element&& other) { std::swap(value, other.value); }
+        Element(Element&&) { value = Flag::MOVED; }
 
-        int value = 0;
+        Flag value;
     };
 
-    bool thrown = false;
-    try {
+    {
         DynamicBuffer<Element> eb(5);
         EXPECT_EQ(5U, eb.size());
-    } catch (const Exception& e) {
-        thrown = true;
+        EXPECT_EQ(Element::Flag::MOVED, eb.back().value);
     }
-    EXPECT_FALSE(thrown);
 
-    thrown = false;
-    try {
-        DynamicBuffer<Element> eb(5, Element(1));
+    {
+        DynamicBuffer<Element> eb(5, Element());
         EXPECT_EQ(5U, eb.size());
-    } catch (const Exception& e) {
-        thrown = true;
+        EXPECT_EQ(Element::Flag::COPIED, eb.back().value);
     }
-    EXPECT_TRUE(thrown);
 }
 
 TEST(DynamicBufferTest, addingByte) {

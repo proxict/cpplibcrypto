@@ -1,0 +1,12 @@
+image: cppimage
+
+matrix:
+  - env: SCRIPT=test1
+
+script:
+  - mkdir -p build
+  - cd build
+  - cmake ..
+  - make -j$(nproc)
+  - bin/unittests
+  

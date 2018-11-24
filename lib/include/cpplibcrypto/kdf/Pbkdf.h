@@ -21,7 +21,7 @@ class Pbkdf {
 public:
     Pbkdf() = default;
 
-    Pbkdf(Password&& password, Salt&& salt)
+    Pbkdf(Password password, Salt salt)
         : mPassword(std::move(password))
         , mSalt(std::move(salt))
         , mKeySet(true) {
@@ -39,14 +39,14 @@ public:
     }
 
     /// Sets new password for the Pbkdf
-    void setPassword(Password&& password) {
+    void setPassword(Password password) {
         mPassword = std::move(password);
         mHmac.setKey(HmacKey(mPassword));
         mKeySet = true;
     }
 
     /// Sets new salt for the Pbkdf
-    void setSalt(Salt&& salt) { mSalt = std::move(salt); }
+    void setSalt(Salt salt) { mSalt = std::move(salt); }
 
     /// Derives key from the given password and salt
     /// \param length Tells how long the derived key should be

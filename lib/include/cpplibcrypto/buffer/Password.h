@@ -19,6 +19,16 @@ public:
         mData.insert(mData.end(), buffer.begin(), buffer.end());
     }
 
+    Password& operator=(const Password& other) {
+        mData.clear();
+        mData.insert(mData.end(), other.begin(), other.end());
+        return *this;
+    }
+
+    Password(const Password& other) {
+        *this = other;
+    }
+
     Password(Password&& other) { *this = std::move(other); }
 
     Password& operator=(Password&& other) {
@@ -47,8 +57,6 @@ public:
     ConstIterator cend() const { return mData.end(); }
 
 private:
-    Password& operator=(const Password&) = delete;
-    Password(const Password&) = delete;
     DynamicBuffer<Byte> mData;
 };
 

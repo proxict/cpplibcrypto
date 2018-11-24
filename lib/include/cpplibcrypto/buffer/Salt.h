@@ -19,6 +19,16 @@ public:
         mData.insert(mData.end(), buffer.begin(), buffer.end());
     }
 
+    Salt& operator=(const Salt& other) {
+        mData.clear();
+        mData.insert(mData.end(), other.begin(), other.end());
+        return *this;
+    }
+
+    Salt(const Salt& other) {
+        *this = other;
+    }
+
     Salt(Salt&& other) { *this = std::move(other); }
 
     Salt& operator=(Salt&& other) {
@@ -47,8 +57,6 @@ public:
     ConstIterator cend() const { return mData.end(); }
 
 private:
-    Salt& operator=(const Salt&) = delete;
-    Salt(const Salt&) = delete;
     DynamicBuffer<Byte> mData;
 };
 

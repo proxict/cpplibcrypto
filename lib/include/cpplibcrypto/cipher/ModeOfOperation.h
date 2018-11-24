@@ -8,7 +8,7 @@
 
 NAMESPACE_CRYPTO_BEGIN
 
-using ByteBufferView = BufferView<Byte>;
+using ConstByteBufferView = BufferView<const Byte>;
 
 /// Base class for encryption/decryption operation modes
 class ModeOfOperation {
@@ -19,8 +19,8 @@ public:
 
     virtual ~ModeOfOperation() = default;
 
-    virtual Size update(const ByteBufferView& in, DynamicBuffer<Byte>& out) = 0;
-    virtual Size update(const ByteBufferView& in, StaticByteBufferBase& out) = 0;
+    virtual Size update(ConstByteBufferView in, DynamicBuffer<Byte>& out) = 0;
+    virtual Size update(ConstByteBufferView in, StaticByteBufferBase& out) = 0;
 
     virtual void finalize(DynamicBuffer<Byte>& out, const Padding& padder) = 0;
     virtual void finalize(StaticByteBufferBase& out, const Padding& padder) = 0;

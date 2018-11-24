@@ -9,8 +9,6 @@
 
 NAMESPACE_CRYPTO_BEGIN
 
-using ByteBufferView = BufferView<Byte>;
-
 /// Convenience class for constructing block cipher encryptors/decryptors
 ///
 /// For more details, see \ref CbcEncrypt and \ref CbcDecrypt
@@ -30,7 +28,7 @@ public:
             : mEncryptor(mCipher, key, iv) {}
 
         template <typename TBuffer>
-        Size update(const ByteBufferView& input, TBuffer& output) {
+        Size update(ConstByteBufferView input, TBuffer& output) {
             return mEncryptor.update(input, output);
         }
 
@@ -53,7 +51,7 @@ public:
             : mDecryptor(mCipher, key, iv) {}
 
         template <typename TBuffer>
-        Size update(const ByteBufferView& input, TBuffer& output) {
+        Size update(ConstByteBufferView input, TBuffer& output) {
             return mDecryptor.update(input, output);
         }
 

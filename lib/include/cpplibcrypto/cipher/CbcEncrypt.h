@@ -29,11 +29,11 @@ public:
         }
     }
 
-    Size update(const ByteBufferView& in, DynamicBuffer<Byte>& out) override {
+    Size update(ConstByteBufferView in, DynamicBuffer<Byte>& out) override {
         return update<DynamicBuffer<Byte>>(in, out);
     }
 
-    Size update(const ByteBufferView& in, StaticBufferBase<Byte>& out) override {
+    Size update(ConstByteBufferView in, StaticBufferBase<Byte>& out) override {
         return update<StaticBufferBase<Byte>>(in, out);
     }
 
@@ -42,7 +42,7 @@ public:
     /// \param out A buffer to which the encrypted data will be pushed. The buffer is expected to have push()
     /// and size() methods.
     template <typename TBuffer>
-    Size update(const ByteBufferView& in, TBuffer& out) {
+    Size update(ConstByteBufferView in, TBuffer& out) {
         const Size blockSize = mCipher.getBlockSize();
         StaticBuffer<Byte, 16> buffer;
         ASSERT(mLeftoverBuffer.size() < blockSize);

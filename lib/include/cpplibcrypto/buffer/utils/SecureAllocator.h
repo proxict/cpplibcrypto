@@ -10,7 +10,7 @@
 NAMESPACE_CRYPTO_BEGIN
 
 template <class T>
-class SecureAllocator final {
+class SecureAllocator {
 public:
     using ValueType = T;
     using Reference = ValueType&;
@@ -37,7 +37,7 @@ public:
     /// Constructs the allocator with the given wipe flag
     ///
     /// For more information about the wipe flag, see \ref setWipe()
-    explicit SecureAllocator(const bool wipe = false)
+    SecureAllocator(const bool wipe = true)
         : mWipe(wipe) {}
 
     SecureAllocator& operator=(SecureAllocator&& other) {
@@ -60,6 +60,9 @@ public:
 
     template <class T2>
     SecureAllocator(const SecureAllocator<T2>& other)
+        : mWipe(other.mWipe) {}
+
+    SecureAllocator(const SecureAllocator& other)
         : mWipe(other.mWipe) {}
 
     Pointer address(Reference ref) { return &ref; }

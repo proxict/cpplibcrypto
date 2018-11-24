@@ -51,8 +51,9 @@ private:
     static Byte getPkcs7Size(const Size dataLen, const Size blockSize) {
         const Size padding = blockSize - dataLen % blockSize;
         if (padding > std::numeric_limits<Byte>::max()) {
-            throw Exception("PKCS7 padding allows maximum block size of " +
-                            std::to_string(std::numeric_limits<Byte>::max()) + " bytes");
+            const std::string stdMax = std::to_string(std::numeric_limits<Byte>::max());
+            const String max(stdMax.begin(), stdMax.end());
+            throw Exception("PKCS7 padding allows maximum block size of " + max + " bytes");
         }
         return static_cast<Byte>(padding);
     }

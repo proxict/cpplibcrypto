@@ -3,10 +3,13 @@
 
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/buffer/String.h"
+#include "cpplibcrypto/buffer/utils/SecureAllocator.h"
 
 #include <sstream>
 
 NAMESPACE_CRYPTO_BEGIN
+
+using OutputStringStream = std::basic_ostringstream<char, std::char_traits<char>, SecureAllocator<char>>;
 
 /// Converted from base-16 to base-10 and vice versa
 class Hex final {
@@ -30,7 +33,7 @@ private:
 template <typename TBuffer>
 String Hex::encode(const TBuffer& buf) {
     constexpr static const char* lookupTable = "0123456789abcdef";
-    std::ostringstream bytes;
+    OutputStringStream bytes;
     for (const Byte b : buf) {
         bytes << lookupTable[b >> 4] << lookupTable[b & 0x0f];
     }

@@ -2,8 +2,10 @@
 #define CPPLIBCRYPTO_IO_STREAM_H_
 
 #include "cpplibcrypto/buffer/String.h"
+#include "cpplibcrypto/buffer/utils/SecureAllocator.h"
 #include "cpplibcrypto/io/File.h"
 
+#include <sstream>
 #include <utility>
 
 NAMESPACE_CRYPTO_BEGIN
@@ -91,6 +93,7 @@ public:
     /// Opens the given file in the given mode
     explicit FileOutputStream(String fileName, const OpenMode mode = OpenMode::OVERWRITE)
         : mFile(File::open(std::move(fileName), toBaseOpenMode(mode))) {}
+
     /// Flushes the stream
     ///
     /// When data is written to some stream, it can be buffered and thus not be written directly to the
@@ -114,10 +117,87 @@ private:
         }
     }
 
-private:
     File mFile;
+};
+
+class StringInputStream : public InputStream {
+public:
+    StringInputStream() = default;
+
+    explicit StringInputStream(String string)
+        : mStream(std::move(string)) {}
+
+    Size read(void* output, const Size count) override {
+        mStream.read(static_cast<char*>(output), count);
+        return mStream.gcount();
+    }
+
+    bool eof() const override { return mStream.eof(); }
+
+    void close() override {}
+
+    String toString() const {
+        return mStream.str();
+    }
+
+private:
+    using sstream = std::basic_istringstream<char, std::char_traits<char>, SecureAllocator<char>>;
+    sstream mStream;
+};
+
+class StringOutputStream : public OutputStream {
+public:
+    enum class OpenMode { OVERWRITE, APPEND };
+
+public:
+    ~StringOutputStream() noexcept {
+        try {
+            flush();
+        } catch (...) {
+        }
+    }
+
+    StringOutputStream() = default;
+
+    /// Opens the given file in the given mode
+    explicit StringOutputStream(String string, const OpenMode mode = OpenMode::OVERWRITE)
+        : mStream(std::move(string), toBaseOpenMode(mode)) {}
+
+    void flush() override { mStream.flush(); }
+
+    void write(const void* source, const Size count) override {
+        mStream.write(static_cast<const char*>(source), count);
+    }
+
+    void close() override {}
+
+    String toString() const {
+        return mStream.str();
+    }
+
+    template <typename T>
+    StringOutputStream& operator<<(T&& arg) {
+        mStream << std::forward<T>(arg);
+        return *this;
+    }
+
+private:
+    static std::ios_base::openmode toBaseOpenMode(const OpenMode mode) {
+        switch (mode) {
+        case OpenMode::OVERWRITE:
+            return std::ostringstream::out;
+        case OpenMode::APPEND:
+            return std::ostringstream::out | std::ostringstream::ate;
+        default:
+            ASSERT(false);
+            return std::ostringstream::out | std::ostringstream::ate; // The least destructive
+        }
+    }
+
+    using sstream = std::basic_ostringstream<char, std::char_traits<char>, SecureAllocator<char>>;
+    sstream mStream;
 };
 
 NAMESPACE_CRYPTO_END
 
-#endif // COMMON_STREAM_H_
+#endif // CPPLIBCRYPTO_IO_STREAM_H_

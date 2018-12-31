@@ -147,7 +147,7 @@ private:
         mHasher.update(iKeyPad);
     }
 
-    void keySchedule(const ConstByteBufferView& key) override {
+    void keySchedule(const ConstByteBufferSlice& key) override {
         mDerivedKey.clear();
         if (key.size() > BLOCK_SIZE) {
             mHasher.reset();

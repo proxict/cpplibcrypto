@@ -9,7 +9,7 @@
 
 NAMESPACE_CRYPTO_BEGIN
 
-using ByteBufferView = BufferView<Byte>;
+using ByteBufferSlice = BufferSlice<Byte>;
 
 TEST(Aes128EncryptTest, encrypt1) {
     Aes aes(AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")));

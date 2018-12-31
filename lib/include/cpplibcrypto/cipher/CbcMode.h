@@ -1,7 +1,7 @@
 #ifndef CPPLIBCRYPTO_CIPHER_CBCMODE_H_
 #define CPPLIBCRYPTO_CIPHER_CBCMODE_H_
 
-#include "cpplibcrypto/buffer/BufferView.h"
+#include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/cipher/CbcDecrypt.h"
 #include "cpplibcrypto/cipher/CbcEncrypt.h"
@@ -14,8 +14,6 @@ NAMESPACE_CRYPTO_BEGIN
 /// For more details, see \ref CbcEncrypt and \ref CbcDecrypt
 template <typename CipherT>
 class CbcMode final {
-    using StaticByteBufferBase = StaticBufferBase<Byte>;
-
 public:
     using CipherType = CipherT;
 
@@ -28,7 +26,7 @@ public:
             : mEncryptor(mCipher, key, iv) {}
 
         template <typename TBuffer>
-        Size update(ConstByteBufferView input, TBuffer& output) {
+        Size update(ConstByteBufferSlice input, TBuffer& output) {
             return mEncryptor.update(input, output);
         }
 
@@ -51,7 +49,7 @@ public:
             : mDecryptor(mCipher, key, iv) {}
 
         template <typename TBuffer>
-        Size update(ConstByteBufferView input, TBuffer& output) {
+        Size update(ConstByteBufferSlice input, TBuffer& output) {
             return mDecryptor.update(input, output);
         }
 

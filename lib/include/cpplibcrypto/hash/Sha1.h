@@ -1,7 +1,7 @@
 #ifndef CPPLIBCRYPTO_HASH_SHA1_H_
 #define CPPLIBCRYPTO_HASH_SHA1_H_
 
-#include "cpplibcrypto/buffer/BufferView.h"
+#include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 #include "cpplibcrypto/common/Exception.h"
 
@@ -117,7 +117,7 @@ private:
     Sha1(const Sha1&) = delete;
     Sha1& operator=(const Sha1&) = delete;
 
-    void processBlock(BufferView<const Byte> in) {
+    void processBlock(BufferSlice<const Byte> in) {
         const StaticBuffer<Dword, 4> K({ 0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6 });
         StaticBuffer<Dword, 80> W(80);
         Dword A, B, C, D, E;

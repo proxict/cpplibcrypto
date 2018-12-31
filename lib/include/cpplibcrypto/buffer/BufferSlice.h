@@ -1,5 +1,5 @@
-#ifndef CPPLIBCRYPTO_BUFFER_BUFFERVIEW_H_
-#define CPPLIBCRYPTO_BUFFER_BUFFERVIEW_H_
+#ifndef CPPLIBCRYPTO_BUFFER_BUFFERSLICE_H_
+#define CPPLIBCRYPTO_BUFFER_BUFFERSLICE_H_
 
 #include "cpplibcrypto/buffer/utils/LinearIterator.h"
 #include "cpplibcrypto/common/Memory.h"
@@ -11,7 +11,7 @@ NAMESPACE_CRYPTO_BEGIN
 ///
 /// This view also allows to modify the elements.
 template <typename T>
-class BufferView final {
+class BufferSlice final {
 public:
     using ValueType = ReferenceStorage<T>;
     using Reference = ValueType&;
@@ -36,7 +36,7 @@ public:
     /// The container must have these function present:
     /// data(), size(), capacity()
     template <typename TBuffer>
-    BufferView(TBuffer& container)
+    BufferSlice(TBuffer& container)
         : mFirst(container.data())
         , mLast(container.data() + container.size())
         , mSize(container.size())
@@ -47,7 +47,7 @@ public:
     /// In this case the capacity always equal to the size which is the distance between the iterators
     /// \param first The beginning of the data to view
     /// \param last The end of the data to view
-    BufferView(Pointer first, Pointer last)
+    BufferSlice(Pointer first, Pointer last)
         : mFirst(first)
         , mLast(last)
         , mSize(std::distance(first, last))

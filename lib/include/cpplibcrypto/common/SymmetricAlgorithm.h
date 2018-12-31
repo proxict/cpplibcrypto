@@ -1,7 +1,7 @@
 #ifndef CPPLIBCRYPTO_CIPHER_SYMMETRICALGORITHM_H_
 #define CPPLIBCRYPTO_CIPHER_SYMMETRICALGORITHM_H_
 
-#include "cpplibcrypto/buffer/BufferView.h"
+#include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/common/Key.h"
 
@@ -9,7 +9,7 @@ NAMESPACE_CRYPTO_BEGIN
 
 class SymmetricAlgorithm {
 public:
-    using ConstByteBufferView = BufferView<const Byte>;
+    using ConstByteBufferSlice = BufferSlice<const Byte>;
     SymmetricAlgorithm()
         : mKeySize(0) {}
 
@@ -28,7 +28,7 @@ public:
 protected:
     /// Performs key schedule using the key provided
     /// \param key The key to use for key schedule
-    virtual void keySchedule(const ConstByteBufferView& key) = 0;
+    virtual void keySchedule(const ConstByteBufferSlice& key) = 0;
 
     Size mKeySize;
 };

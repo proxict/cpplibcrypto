@@ -1,7 +1,7 @@
 #ifndef CPPLIBCRYPTO_HASH_MD5_H_
 #define CPPLIBCRYPTO_HASH_MD5_H_
 
-#include "cpplibcrypto/buffer/BufferView.h"
+#include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 #include "cpplibcrypto/common/Exception.h"
 
@@ -112,7 +112,7 @@ private:
     Md5(const Md5&) = delete;
     Md5& operator=(const Md5&) = delete;
 
-    void processBlock(BufferView<const Byte> in) {
+    void processBlock(BufferSlice<const Byte> in) {
         ASSERT(in.size() == BLOCK_SIZE);
         static const StaticBuffer<Dword, 64>
             constantsArray({ 0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee, 0xf57c0faf, 0x4787c62a,
@@ -195,7 +195,7 @@ private:
     }
 
     template <typename TBuffer>
-    static void encode(TBuffer& out, BufferView<const Dword> in) {
+    static void encode(TBuffer& out, BufferSlice<const Dword> in) {
         for (Size i = 0; i < in.size(); i++) {
             out[i << 2] = in[i] & 0xff;
             out[(i << 2) + 1] = (in[i] >> 8) & 0xff;
@@ -205,7 +205,7 @@ private:
     }
 
     template <typename TBuffer>
-    static void decode(TBuffer& out, BufferView<const Byte> in) {
+    static void decode(TBuffer& out, BufferSlice<const Byte> in) {
         static_assert(sizeof(typename TBuffer::ValueType) == sizeof(Dword),
                       "The output buffer elements must be 32 bit values");
         ASSERT(in.size() % 4 == 0);

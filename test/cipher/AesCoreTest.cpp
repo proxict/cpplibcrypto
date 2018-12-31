@@ -8,7 +8,7 @@
 
 NAMESPACE_CRYPTO_BEGIN
 
-using ByteBufferView = BufferView<Byte>;
+using ByteBufferSlice = BufferSlice<Byte>;
 
 TEST(AesCoreTest, subBytes) {
     StaticBuffer<Byte, 16> buffer;

@@ -3,7 +3,7 @@
 
 #include "cpplibcrypto/common/SymmetricAlgorithm.h"
 
-#include "cpplibcrypto/buffer/BufferView.h"
+#include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/common/Key.h"
 
 NAMESPACE_CRYPTO_BEGIN
@@ -14,7 +14,7 @@ NAMESPACE_CRYPTO_BEGIN
 /// BlockCipherSized
 class BlockCipher : public SymmetricAlgorithm {
 public:
-    using ByteBufferView = BufferView<Byte>;
+    using ByteBufferSlice = BufferSlice<Byte>;
 
     BlockCipher() = default;
 
@@ -27,13 +27,13 @@ public:
     ///
     /// \param buffer The buffer which will get encrypted. Note that the buffer can be overwritten with the
     /// encrypted data.
-    virtual void encryptBlock(ByteBufferView) = 0;
+    virtual void encryptBlock(ByteBufferSlice) = 0;
 
     /// Encrypts one block
     ///
     /// \param buffer The buffer which will get decrypted. Note that the buffer can be overwritten with the
     /// decrypted data.
-    virtual void decryptBlock(ByteBufferView) = 0;
+    virtual void decryptBlock(ByteBufferSlice) = 0;
 };
 
 NAMESPACE_CRYPTO_END

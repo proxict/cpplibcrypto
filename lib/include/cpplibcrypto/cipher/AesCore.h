@@ -1,7 +1,7 @@
 #ifndef CPPLIBCRYPTO_CIPHER_AESCORE_H_
 #define CPPLIBCRYPTO_CIPHER_AESCORE_H_
 
-#include "cpplibcrypto/buffer/BufferView.h"
+#include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 #include "cpplibcrypto/common/common.h"
@@ -183,13 +183,13 @@ static constexpr Byte rcon[256] = {
 
 /// Provides mandatory functions for an AES algorithm implementation
 class AesCore {
-    using ByteBufferView = BufferView<Byte>;
+    using ByteBufferSlice = BufferSlice<Byte>;
 
 public:
     /// Substitutes bytes in the given buffer using an sbox
     ///
     /// This operation can be undo by calling \ref subBytesInv()
-    static void subBytes(ByteBufferView buffer) {
+    static void subBytes(ByteBufferSlice buffer) {
         for (Byte i = 0; i < buffer.size(); ++i) {
             buffer[i] = sbox[buffer[i]];
         }
@@ -198,7 +198,7 @@ public:
     /// Substitutes bytes in the given buffer using an inverse sbox
     ///
     /// This operation undoes the \ref subBytes() operation
-    static void subBytesInv(ByteBufferView buffer) {
+    static void subBytesInv(ByteBufferSlice buffer) {
         for (Byte i = 0; i < buffer.size(); ++i) {
             buffer[i] = sboxinv[buffer[i]];
         }
@@ -208,7 +208,7 @@ public:
     ///
     /// First row is not shifted at all, second row gets shifted by one element to the left side, third by 2
     /// bytes to the left and fourth by 3 bytes to the left side
-    static void shiftRows(ByteBufferView buffer) {
+    static void shiftRows(ByteBufferSlice buffer) {
         ASSERT(buffer.size() == 16);
         Byte i = buffer[1];
         buffer[1] = buffer[5];
@@ -234,7 +234,7 @@ public:
     ///
     /// First row is not shifted at all, second row gets shifted by one element to the right side, third by 2
     /// bytes to the right and fourth by 3 bytes to the right side
-    static void shiftRowsInv(ByteBufferView buffer) {
+    static void shiftRowsInv(ByteBufferSlice buffer) {
         ASSERT(buffer.size() == 16);
         Byte i = buffer[1];
         buffer[1] = buffer[13];
@@ -257,7 +257,7 @@ public:
     }
 
     /// Performs mix columns step according to the AES specification
-    static void mixColumns(ByteBufferView buffer) {
+    static void mixColumns(ByteBufferSlice buffer) {
         ASSERT(buffer.size() == 16);
         StaticBuffer<Byte, 16> tmp;
         for (Byte i = 0; i < 4; ++i) {
@@ -275,7 +275,7 @@ public:
     }
 
     /// Performs inverse mix columns step according to the AES specification
-    static void mixColumnsInv(ByteBufferView buffer) {
+    static void mixColumnsInv(ByteBufferSlice buffer) {
         ASSERT(buffer.size() == 16);
         StaticBuffer<Byte, 16> tmp;
         for (Byte i = 0; i < 4; ++i) {
@@ -296,7 +296,7 @@ public:
     /// \param buffer 16 byte encryption/decryption chunk (state)
     /// \param roundKeys Buffer holding all precomputed round keys
     /// \param Index to the round key to be combined with the state
-    static void addRoundKey(ByteBufferView buffer, const ByteBuffer& roundKeys, const Byte keyIndex) {
+    static void addRoundKey(ByteBufferSlice buffer, const ByteBuffer& roundKeys, const Byte keyIndex) {
         ASSERT(buffer.size() == 16);
         for (Size i = 0; i < buffer.size(); ++i) {
             buffer[i] ^= roundKeys[i + buffer.size() * keyIndex];
@@ -304,8 +304,8 @@ public:
     }
 
     /// Rotates the given buffer to left by one element
-    static void rotateLeft(ByteBufferView buffer) {
-        const ByteBufferView::ValueType b = std::move(buffer.front());
+    static void rotateLeft(ByteBufferSlice buffer) {
+        const ByteBufferSlice::ValueType b = std::move(buffer.front());
         for (Size i = 0; i < buffer.size() - 1; ++i) {
             buffer[i] = std::move(buffer[i + 1]);
         }
@@ -313,7 +313,7 @@ public:
     }
 
     /// Performs the core of the key schedule step
-    static void keyScheduleCore(ByteBufferView buffer, const Byte i) {
+    static void keyScheduleCore(ByteBufferSlice buffer, const Byte i) {
         ASSERT(buffer.size() == 4);
         rotateLeft(buffer);
         subBytes(buffer);

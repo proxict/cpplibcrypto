@@ -3,7 +3,7 @@
 What is cpplibcrypto?
 ---------------------
 
-cpplibcrypto is a cryptographic library with ease-of-use in mind. 
+cpplibcrypto is a cryptographic library with ease-of-use in mind.
 
  - Written in a modern C++14 standard
  - Implements custom allocator for secure memory management
@@ -25,3 +25,4 @@ Building cpplibcrypto
  - `cmake --DCMAKE_BUILD_TYPE=Release ..`
  - `make -j$(nproc)`
  
+**Please, keep in mind, this is more intended for educational purposes rather than for use in any kind of a production environment.**

@@ -5,8 +5,6 @@ include(cmake/compiler-config.txt)
 include(cmake/doxygen.txt)
 include(cmake/coverage.txt)
 
-add_subdirectory(external/googletest)
-
-add_subdirectory(lib/common)
+add_subdirectory(lib)
 add_subdirectory(tools/sandbox)
 add_subdirectory(test)

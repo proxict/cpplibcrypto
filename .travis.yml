@@ -44,4 +44,6 @@ compiler:
 script:
   - mkdir build
   - cd build
-  - cmake .. && make && bin/unittests
+  - cmake ..
+  - make -j$(nproc)
+  - bin/unittests

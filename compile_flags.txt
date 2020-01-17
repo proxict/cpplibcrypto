@@ -1,0 +1,8 @@
+-std=c++14
+--language=c++
+-DCRYPTO_COVERAGE
+-DGTEST_HAS_PTHREAD=1
+-Itest/external/googletest/googlemock/include
+-Itest/external/googletest/googletest/include
+-Ilib/include
+-Wall

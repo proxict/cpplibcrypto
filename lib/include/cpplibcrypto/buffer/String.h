@@ -1,8 +1,8 @@
 #ifndef CPPLIBCRYPTO_BUFFER_STRING_H_
 #define CPPLIBCRYPTO_BUFFER_STRING_H_
 
-#include "cpplibcrypto/common/common.h"
 #include "cpplibcrypto/buffer/utils/SecureAllocator.h"
+#include "cpplibcrypto/common/common.h"
 
 #include <string>
 

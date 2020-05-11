@@ -136,9 +136,7 @@ public:
 
     void close() override {}
 
-    String toString() const {
-        return mStream.str();
-    }
+    String toString() const { return mStream.str(); }
 
 private:
     using sstream = std::basic_istringstream<char, std::char_traits<char>, SecureAllocator<char>>;
@@ -171,9 +169,7 @@ public:
 
     void close() override {}
 
-    String toString() const {
-        return mStream.str();
-    }
+    String toString() const { return mStream.str(); }
 
     template <typename T>
     StringOutputStream& operator<<(T&& arg) {

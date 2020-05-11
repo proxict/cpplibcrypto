@@ -25,9 +25,7 @@ public:
         return *this;
     }
 
-    Password(const Password& other) {
-        *this = other;
-    }
+    Password(const Password& other) { *this = other; }
 
     Password(Password&& other) { *this = std::move(other); }
 

@@ -25,9 +25,7 @@ public:
         return *this;
     }
 
-    Salt(const Salt& other) {
-        *this = other;
-    }
+    Salt(const Salt& other) { *this = other; }
 
     Salt(Salt&& other) { *this = std::move(other); }
 

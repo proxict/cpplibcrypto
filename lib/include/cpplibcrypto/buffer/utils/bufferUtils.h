@@ -11,7 +11,7 @@ namespace bufferUtils {
 /// \param buffer Buffer which will get XORed
 /// \param xorSource Data with which the given buffer will be XORed
 template <typename TBuffer, typename TBufferXor>
-inline void xorBuffer(TBuffer& buffer, const TBufferXor& xorSource) {
+constexpr inline void xorBuffer(TBuffer& buffer, const TBufferXor& xorSource) {
     Size index = 0;
     for (typename TBuffer::Reference b : buffer) {
         b ^= xorSource[index++];
@@ -24,7 +24,7 @@ inline void xorBuffer(TBuffer& buffer, const TBufferXor& xorSource) {
 /// \param last The end of the data to be XORed
 /// \param xorSourceFirst The beginning of the data with which the given range will be XORed
 template <typename TIterator, typename TConstIterator>
-inline void xorBuffer(TIterator first, TIterator last, TConstIterator xorSourceFirst) {
+constexpr inline void xorBuffer(TIterator first, TIterator last, TConstIterator xorSourceFirst) {
     TIterator srcIt = xorSourceFirst;
     for (TIterator it = first; it != last; ++it, ++srcIt) {
         *it ^= *srcIt;
@@ -38,7 +38,7 @@ inline void xorBuffer(TIterator first, TIterator last, TConstIterator xorSourceF
 /// \param lasat The end of the data to be XORed and pushed
 /// \param xorSource The beginning of the data with which the given range will be XORed and pushed
 template <typename TBuffer, typename TConstIterator>
-inline void
+constexpr inline void
 pushXored(TBuffer& container, TConstIterator first, TConstIterator last, TConstIterator xorSource) {
     TConstIterator xorIt = xorSource;
     for (TConstIterator it = first; it != last; ++it) {
@@ -47,7 +47,7 @@ pushXored(TBuffer& container, TConstIterator first, TConstIterator last, TConstI
 }
 
 template <typename TBuffer1, typename TBuffer2>
-inline bool equal(const TBuffer1& c1, const TBuffer2& c2) {
+constexpr inline bool equal(const TBuffer1& c1, const TBuffer2& c2) {
     if (c1.size() != c2.size()) {
         return false;
     }

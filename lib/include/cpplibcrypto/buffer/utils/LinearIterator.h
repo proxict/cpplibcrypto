@@ -25,102 +25,102 @@ public:
     using pointer = value_type*;
     using reference = value_type&;
 
-    LinearIterator(Pointer ptr, const Size offset)
+    constexpr LinearIterator(Pointer ptr, const Size offset)
         : mPtr(ptr + offset) {}
 
-    explicit LinearIterator(Pointer ptr)
+    constexpr explicit LinearIterator(Pointer ptr)
         : mPtr(ptr) {}
 
-    LinearIterator() = default;
+    constexpr LinearIterator() = default;
 
     virtual ~LinearIterator() = default;
 
     template <typename T2 = ValueType>
-    operator DisableIf<IsConst<T2>::value, LinearIterator<const ValueType>>() const {
+    constexpr operator DisableIf<IsConst<T2>::value, LinearIterator<const ValueType>>() const {
         return *(LinearIterator<const ValueType>*)this;
     }
 
-    bool operator==(const LinearIterator& other) const { return mPtr == other.mPtr; }
+    constexpr bool operator==(const LinearIterator& other) const { return mPtr == other.mPtr; }
 
-    bool operator!=(const LinearIterator& other) const { return !((*this) == other); }
+    constexpr bool operator!=(const LinearIterator& other) const { return !((*this) == other); }
 
-    bool operator<(const LinearIterator& other) const { return mPtr < other.mPtr; }
+    constexpr bool operator<(const LinearIterator& other) const { return mPtr < other.mPtr; }
 
-    bool operator>(const LinearIterator& other) const { return mPtr > other.mPtr; }
+    constexpr bool operator>(const LinearIterator& other) const { return mPtr > other.mPtr; }
 
-    bool operator<=(const LinearIterator& other) const { return mPtr <= other.mPtr; }
+    constexpr bool operator<=(const LinearIterator& other) const { return mPtr <= other.mPtr; }
 
-    bool operator>=(const LinearIterator& other) const { return mPtr >= other.mPtr; }
+    constexpr bool operator>=(const LinearIterator& other) const { return mPtr >= other.mPtr; }
 
-    ptrdiff_t operator-(const LinearIterator& other) const { return mPtr - other.mPtr; }
+    constexpr ptrdiff_t operator-(const LinearIterator& other) const { return mPtr - other.mPtr; }
 
-    Reference data() { return *mPtr; }
+    constexpr Reference data() { return *mPtr; }
 
-    Reference operator*() { return data(); }
+    constexpr Reference operator*() { return data(); }
 
-    ConstReference data() const { return *mPtr; }
+    constexpr ConstReference data() const { return *mPtr; }
 
-    ConstReference operator*() const { return data(); }
+    constexpr ConstReference operator*() const { return data(); }
 
-    Reference operator[](const int offset) { return mPtr[offset]; }
+    constexpr Reference operator[](const int offset) { return mPtr[offset]; }
 
-    ConstReference operator[](const int offset) const { return mPtr[offset]; }
+    constexpr ConstReference operator[](const int offset) const { return mPtr[offset]; }
 
-    Reference operator[](const Size offset) { return mPtr[offset]; }
+    constexpr Reference operator[](const Size offset) { return mPtr[offset]; }
 
-    ConstReference operator[](const Size offset) const { return mPtr[offset]; }
+    constexpr ConstReference operator[](const Size offset) const { return mPtr[offset]; }
 
-    Pointer operator->() { return (&**this); }
+    constexpr Pointer operator->() { return (&**this); }
 
-    ConstPointer operator->() const { return (&**this); }
+    constexpr ConstPointer operator->() const { return (&**this); }
 
-    LinearIterator& operator++() {
+    constexpr LinearIterator& operator++() {
         ++mPtr;
         return *this;
     }
 
-    LinearIterator operator++(int) {
+    constexpr LinearIterator operator++(int) {
         LinearIterator temp = *this;
         ++mPtr;
         return temp;
     }
 
-    LinearIterator& operator--() {
+    constexpr LinearIterator& operator--() {
         --mPtr;
         return *this;
     }
 
-    LinearIterator operator--(int) {
+    constexpr LinearIterator operator--(int) {
         LinearIterator temp = *this;
         --mPtr;
         return temp;
     }
 
-    LinearIterator& operator+=(const Size x) {
+    constexpr LinearIterator& operator+=(const Size x) {
         mPtr += x;
         return *this;
     }
 
-    LinearIterator& operator-=(const Size x) {
+    constexpr LinearIterator& operator-=(const Size x) {
         mPtr -= x;
         return *this;
     }
 
-    LinearIterator operator+(const Size x) const {
+    constexpr LinearIterator operator+(const Size x) const {
         LinearIterator res(*this);
         res.mPtr += x;
         return res;
     }
 
-    LinearIterator operator-(const Size x) const {
+    constexpr LinearIterator operator-(const Size x) const {
         LinearIterator res(*this);
         res.mPtr -= x;
         return res;
     }
 
-    operator const Pointer() const { return mPtr; }
+    constexpr operator const Pointer() const { return mPtr; }
 
-    operator Pointer() { return mPtr; }
+    constexpr operator Pointer() { return mPtr; }
 
 protected:
     Pointer mPtr;

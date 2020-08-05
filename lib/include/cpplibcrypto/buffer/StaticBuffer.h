@@ -196,34 +196,34 @@ public:
     using iterator = Iterator;
     using const_iterator = ConstIterator;
 
-    explicit StaticBuffer()
+    constexpr explicit StaticBuffer()
         : mStored(0) {}
 
-    explicit StaticBuffer(const Size count)
+    constexpr explicit StaticBuffer(const Size count)
         : StaticBuffer() {
         ASSERT(count <= TCapacity);
         resize(count);
     }
 
-    StaticBuffer(const Size count, ConstReference value)
+    constexpr StaticBuffer(const Size count, ConstReference value)
         : StaticBuffer() {
         ASSERT(count <= TCapacity);
         insert(end(), value, count);
     }
 
     template <typename TIterator>
-    StaticBuffer(TIterator first, TIterator last)
+    constexpr StaticBuffer(TIterator first, TIterator last)
         : StaticBuffer() {
         ASSERT(Size(std::distance(first, last)) <= TCapacity);
         insert(end(), first, last);
     }
 
-    explicit StaticBuffer(std::initializer_list<ValueType> list)
+    constexpr explicit StaticBuffer(std::initializer_list<ValueType> list)
         : StaticBuffer(list.begin(), list.end()) {}
 
-    StaticBuffer(StaticBuffer&& other) { *this = std::move(other); }
+    constexpr StaticBuffer(StaticBuffer&& other) { *this = std::move(other); }
 
-    StaticBuffer& operator=(StaticBuffer&& other) {
+    constexpr StaticBuffer& operator=(StaticBuffer&& other) {
         std::swap(mWipe, other.mWipe);
         std::swap(mData, other.mData);
         std::swap(mStored, other.mStored);
@@ -241,62 +241,62 @@ public:
         }
     }
 
-    void setSensitive(const bool sensitive = true) { mWipe = sensitive; }
+    constexpr void setSensitive(const bool sensitive = true) { mWipe = sensitive; }
 
-    bool isSensitive() const { return mWipe; }
+    constexpr bool isSensitive() const { return mWipe; }
 
-    ConstReference at(const Size index) const override {
+    constexpr ConstReference at(const Size index) const override {
         ASSERT(index <= mStored);
         return mData[index];
     }
 
-    Reference at(const Size index) override {
+    constexpr Reference at(const Size index) override {
         ASSERT(index <= mStored);
         return mData[index];
     }
 
-    ConstReference operator[](const Size index) const override { return at(index); }
+    constexpr ConstReference operator[](const Size index) const override { return at(index); }
 
-    Reference operator[](const Size index) override { return at(index); }
+    constexpr Reference operator[](const Size index) override { return at(index); }
 
-    ConstReference front() const override { return at(0); }
+    constexpr ConstReference front() const override { return at(0); }
 
-    Reference front() override { return at(0); }
+    constexpr Reference front() override { return at(0); }
 
-    ConstReference back() const override { return at(size() - 1); }
+    constexpr ConstReference back() const override { return at(size() - 1); }
 
-    Reference back() override { return at(size() - 1); }
+    constexpr Reference back() override { return at(size() - 1); }
 
-    ConstPointer data() const override { return mData; }
+    constexpr ConstPointer data() const override { return mData; }
 
-    Pointer data() override { return mData; }
+    constexpr Pointer data() override { return mData; }
 
-    Iterator begin() override { return Iterator(data()); }
+    constexpr Iterator begin() override { return Iterator(data()); }
 
-    Iterator end() override { return Iterator(data(), size()); }
+    constexpr Iterator end() override { return Iterator(data(), size()); }
 
-    ConstIterator begin() const override { return cbegin(); }
+    constexpr ConstIterator begin() const override { return cbegin(); }
 
-    ConstIterator end() const override { return cend(); }
+    constexpr ConstIterator end() const override { return cend(); }
 
-    ConstIterator cbegin() const override { return ConstIterator(data()); }
+    constexpr ConstIterator cbegin() const override { return ConstIterator(data()); }
 
-    ConstIterator cend() const override { return ConstIterator(data(), size()); }
+    constexpr ConstIterator cend() const override { return ConstIterator(data(), size()); }
 
-    bool empty() const override { return mStored == 0; }
+    constexpr bool empty() const override { return mStored == 0; }
 
-    bool full() const override { return mStored >= TCapacity; }
+    constexpr bool full() const override { return mStored >= TCapacity; }
 
-    Size size() const override { return mStored; }
+    constexpr Size size() const override { return mStored; }
 
-    Size capacity() const override { return TCapacity; }
+    constexpr Size capacity() const override { return TCapacity; }
 
-    void clear() override {
+    constexpr void clear() override {
         memory::destroy(begin(), end());
         mStored = 0;
     }
 
-    Iterator erase(const Iterator first, const Iterator last) override {
+    constexpr Iterator erase(const Iterator first, const Iterator last) override {
         ASSERT(first >= begin() && last <= end());
         memory::destroy(first, last);
         std::move(last, end(), first);
@@ -304,17 +304,17 @@ public:
         return first;
     }
 
-    Iterator erase(const Size from, const Size count = 1) override {
+    constexpr Iterator erase(const Size from, const Size count = 1) override {
         return erase(begin() + from, begin() + from + count);
     }
 
-    void push(ConstReference value) override {
+    constexpr void push(ConstReference value) override {
         ASSERT(!full());
         at(size()) = value;
         ++mStored;
     }
 
-    Iterator insert(const Iterator position, ConstPointer first, ConstPointer last) override {
+    constexpr Iterator insert(const Iterator position, ConstPointer first, ConstPointer last) override {
         const Size length = std::distance(first, last);
         ASSERT(size() + length <= TCapacity);
         if (length < 1U) {
@@ -331,7 +331,7 @@ public:
         return position;
     }
 
-    Iterator insert(const Iterator position, ConstReference value, const Size count = 1U) override {
+    constexpr Iterator insert(const Iterator position, ConstReference value, const Size count = 1U) override {
         const Size offset = position - begin();
         reserve(size() + count);
         Iterator pos = begin() + offset;
@@ -343,23 +343,23 @@ public:
         return pos;
     }
 
-    Iterator insert(const Size position, ConstReference value, const Size count = 1U) override {
+    constexpr Iterator insert(const Size position, ConstReference value, const Size count = 1U) override {
         return insert(begin() + position, value, count);
     }
 
-    Iterator replace(const Iterator first, const Iterator last, const ConstIterator source) {
+    constexpr Iterator replace(const Iterator first, const Iterator last, const ConstIterator source) {
         memory::destroy(first, last);
         memory::constructRange<ValueType>(first, last, source);
         return first;
     }
 
-    void pop() override {
+    constexpr void pop() override {
         ASSERT(!empty());
         memory::destroy(back());
         --mStored;
     }
 
-    void resize(const Size newSize) override {
+    constexpr void resize(const Size newSize) override {
         ASSERT(newSize <= TCapacity);
         if (newSize < mStored) {
             erase(begin() + newSize, end());
@@ -368,7 +368,7 @@ public:
         }
     }
 
-    Size reserve(const Size newCapacity) override {
+    constexpr Size reserve(const Size newCapacity) override {
         ASSERT(capacity() >= newCapacity);
         return capacity();
     }
@@ -380,7 +380,7 @@ private:
 };
 
 template <typename T>
-bool operator==(const StaticBufferBase<T>& lhs, const StaticBufferBase<T>& rhs) {
+constexpr bool operator==(const StaticBufferBase<T>& lhs, const StaticBufferBase<T>& rhs) {
     if (lhs.size() != rhs.size()) {
         return false;
     }

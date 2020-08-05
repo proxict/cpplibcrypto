@@ -4,6 +4,7 @@
 #include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 #include "cpplibcrypto/common/Exception.h"
+#include "cpplibcrypto/common/bitManip.h"
 
 NAMESPACE_CRYPTO_BEGIN
 
@@ -130,7 +131,7 @@ private:
         }
 
         for (int t = 16; t < 80; t++) {
-            W[t] = rotateLeft(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
+            W[t] = bits::rotateLeft(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
         }
 
         A = mState[0];
@@ -140,37 +141,37 @@ private:
         E = mState[4];
 
         for (int t = 0; t < 20; t++) {
-            const Dword temp = rotateLeft(A, 5) + ((B & C) | ((~B) & D)) + E + W[t] + K[0];
+            const Dword temp = bits::rotateLeft(A, 5) + ((B & C) | ((~B) & D)) + E + W[t] + K[0];
             E = D;
             D = C;
-            C = rotateLeft(B, 30);
+            C = bits::rotateLeft(B, 30);
             B = A;
             A = temp;
         }
 
         for (int t = 20; t < 40; t++) {
-            const Dword temp = rotateLeft(A, 5) + (B ^ C ^ D) + E + W[t] + K[1];
+            const Dword temp = bits::rotateLeft(A, 5) + (B ^ C ^ D) + E + W[t] + K[1];
             E = D;
             D = C;
-            C = rotateLeft(B, 30);
+            C = bits::rotateLeft(B, 30);
             B = A;
             A = temp;
         }
 
         for (int t = 40; t < 60; t++) {
-            const Dword temp = rotateLeft(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2];
+            const Dword temp = bits::rotateLeft(A, 5) + ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2];
             E = D;
             D = C;
-            C = rotateLeft(B, 30);
+            C = bits::rotateLeft(B, 30);
             B = A;
             A = temp;
         }
 
         for (int t = 60; t < 80; t++) {
-            const Dword temp = rotateLeft(A, 5) + (B ^ C ^ D) + E + W[t] + K[3];
+            const Dword temp = bits::rotateLeft(A, 5) + (B ^ C ^ D) + E + W[t] + K[3];
             E = D;
             D = C;
-            C = rotateLeft(B, 30);
+            C = bits::rotateLeft(B, 30);
             B = A;
             A = temp;
         }
@@ -202,10 +203,6 @@ private:
         ASSERT(mBlock.size() == BLOCK_SIZE);
         processBlock(mBlock);
         mBlock.clear();
-    }
-
-    static Dword rotateLeft(const Dword value, const Byte bits) {
-        return (value << bits) | (value >> (32 - bits));
     }
 
     State mState;

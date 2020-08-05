@@ -4,6 +4,7 @@
 #include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 #include "cpplibcrypto/common/Exception.h"
+#include "cpplibcrypto/common/bitManip.h"
 
 #include <cstring>
 
@@ -162,7 +163,7 @@ private:
             const Dword temp = D;
             D = C;
             C = B;
-            B += rotateLeft(A + F + constantsArray[i] + block[g], shiftsArray[i]);
+            B += bits::rotateLeft(A + F + constantsArray[i] + block[g], shiftsArray[i]);
             A = temp;
         }
 
@@ -213,10 +214,6 @@ private:
             out[i >> 2] = ((Dword)in[i]) | (((Dword)in[i + 1]) << 8) | (((Dword)in[i + 2]) << 16) |
                           (((Dword)in[i + 3]) << 24);
         }
-    }
-
-    static Dword rotateLeft(const Dword value, const Byte bits) {
-        return (value << bits) | (value >> (32 - bits));
     }
 
     State mState;

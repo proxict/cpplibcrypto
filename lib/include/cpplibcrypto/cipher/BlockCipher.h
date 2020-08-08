@@ -27,13 +27,13 @@ public:
     ///
     /// \param buffer The buffer which will get encrypted. Note that the buffer can be overwritten with the
     /// encrypted data.
-    virtual void encryptBlock(ByteBufferSlice) = 0;
+    virtual void encryptBlock(ByteBufferSlice) const = 0;
 
     /// Encrypts one block
     ///
     /// \param buffer The buffer which will get decrypted. Note that the buffer can be overwritten with the
     /// decrypted data.
-    virtual void decryptBlock(ByteBufferSlice) = 0;
+    virtual void decryptBlock(ByteBufferSlice) const = 0;
 };
 
 NAMESPACE_CRYPTO_END

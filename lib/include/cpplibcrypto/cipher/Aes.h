@@ -40,7 +40,7 @@ public:
     /// \param buffer The buffer which will get encrypted. Note that the buffer will be overwritten with the
     /// encrypted data.
     /// \throws Exception if \ref AesKey is not set
-    void encryptBlock(ByteBufferSlice buffer) override {
+    void encryptBlock(ByteBufferSlice buffer) const override {
         ASSERT(buffer.size() == getBlockSize());
         processFirstRound(buffer);
         for (Byte i = 0; i < getNumberOfRounds() - 1; ++i) {
@@ -55,7 +55,7 @@ public:
     /// \param buffer The buffer which will get decrypted. Note that the buffer will be overwritten with the
     /// decrypted data.
     /// \throws Exception if \ref AesKey is not set
-    void decryptBlock(ByteBufferSlice buffer) override {
+    void decryptBlock(ByteBufferSlice buffer) const override {
         ASSERT(buffer.size() == getBlockSize());
         processFirstRoundInv(buffer);
         for (Byte i = getNumberOfRounds() - 1; i >= 1; --i) {

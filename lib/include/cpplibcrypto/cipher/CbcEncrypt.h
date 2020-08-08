@@ -1,40 +1,33 @@
 #ifndef CPPLIBCRYPTO_CIPHER_CBCENCRYPT_H_
 #define CPPLIBCRYPTO_CIPHER_CBCENCRYPT_H_
 
-#include "cpplibcrypto/cipher/ModeOfOperation.h"
-
+#include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
+#include "cpplibcrypto/buffer/StaticBuffer.h"
 #include "cpplibcrypto/buffer/utils/bufferUtils.h"
+#include "cpplibcrypto/cipher/BlockCipher.h"
 #include "cpplibcrypto/common/Exception.h"
 #include "cpplibcrypto/common/InitializationVector.h"
 #include "cpplibcrypto/common/Key.h"
 #include "cpplibcrypto/common/common.h"
+#include "cpplibcrypto/padding/Padding.h"
 
 NAMESPACE_CRYPTO_BEGIN
 
 /// Block cipher CBC encryptor
-class CbcEncrypt : public ModeOfOperation {
+class CbcEncrypt {
 public:
     /// Constructs encryptor using the provided cipher algorithm, key and IV
     /// \param cipher Block cipher instance
     /// \param key The key for the cipher
     /// \param IV IV for the CB chain. The size has to match the cipher block size
     /// \throws Exception in case the IV size does not match the cipher block size
-    CbcEncrypt(BlockCipher& cipher, const Key& key, InitializationVector& iv)
-        : ModeOfOperation(cipher, key)
-        , mCipher(cipher)
+    CbcEncrypt(const BlockCipher& cipher, InitializationVector& iv)
+        : mCipher(cipher)
         , mIv(iv) {
         if (mIv.size() != mCipher.getBlockSize()) {
             throw Exception("CBC-Mode: The Initialization Vector size does not match the cipher block size");
         }
-    }
-
-    Size update(ConstByteBufferSlice in, DynamicBuffer<Byte>& out) override {
-        return update<DynamicBuffer<Byte>>(in, out);
-    }
-
-    Size update(ConstByteBufferSlice in, StaticBufferBase<Byte>& out) override {
-        return update<StaticBufferBase<Byte>>(in, out);
     }
 
     /// Encrypts the given input
@@ -42,7 +35,7 @@ public:
     /// \param out A buffer to which the encrypted data will be pushed. The buffer is expected to have push()
     /// and size() methods.
     template <typename TBuffer>
-    Size update(ConstByteBufferSlice in, TBuffer& out) {
+    Size update(BufferSlice<const Byte> in, TBuffer& out) {
         const Size blockSize = mCipher.getBlockSize();
         StaticBuffer<Byte, 16> buffer;
         ASSERT(mLeftoverBuffer.size() < blockSize);
@@ -77,14 +70,6 @@ public:
         return out.size(); // return how many bytes were encrypted
     }
 
-    void finalize(DynamicBuffer<Byte>& out, const Padding& padder) override {
-        finalize<DynamicBuffer<Byte>>(out, padder);
-    }
-
-    void finalize(StaticBufferBase<Byte>& out, const Padding& padder) override {
-        finalize<StaticBufferBase<Byte>>(out, padder);
-    }
-
     /// Applies padding using the provided scheme
     /// \throws Exception if the provided padding algorithm fails
     template <typename TBuffer>
@@ -109,8 +94,11 @@ public:
     void resetChain() { mIv.reset(); }
 
 private:
+    // Forbid temporary BlockCipher
+    CbcEncrypt(const BlockCipher&& cipher, InitializationVector& iv) = delete;
+
     StaticBuffer<Byte, 16> mLeftoverBuffer;
-    BlockCipher& mCipher;
+    const BlockCipher& mCipher;
     InitializationVector& mIv;
 };
 

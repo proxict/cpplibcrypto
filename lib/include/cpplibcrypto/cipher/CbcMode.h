@@ -22,11 +22,13 @@ public:
     struct Encryption {
         using CipherType = CipherT;
 
-        Encryption(const Key& key, InitializationVector& iv)
-            : mEncryptor(mCipher, key, iv) {}
+        template <typename TKey>
+        Encryption(const TKey& key, InitializationVector& iv)
+            : mCipher(key)
+            , mEncryptor(mCipher, iv) {}
 
         template <typename TBuffer>
-        Size update(ConstByteBufferSlice input, TBuffer& output) {
+        Size update(BufferSlice<const Byte> input, TBuffer& output) {
             return mEncryptor.update(input, output);
         }
 
@@ -45,11 +47,13 @@ public:
     struct Decryption {
         using CipherType = CipherT;
 
-        Decryption(const Key& key, InitializationVector& iv)
-            : mDecryptor(mCipher, key, iv) {}
+        template <typename TKey>
+        Decryption(const TKey& key, InitializationVector& iv)
+            : mCipher(key)
+            , mDecryptor(mCipher, iv) {}
 
         template <typename TBuffer>
-        Size update(ConstByteBufferSlice input, TBuffer& output) {
+        Size update(BufferSlice<const Byte> input, TBuffer& output) {
             return mDecryptor.update(input, output);
         }
 

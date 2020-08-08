@@ -37,7 +37,7 @@ public:
     /// Constructs the allocator with the given wipe flag
     ///
     /// For more information about the wipe flag, see \ref setWipe()
-    SecureAllocator(const bool wipe = true)
+    constexpr SecureAllocator(const bool wipe = true)
         : mWipe(wipe) {}
 
     SecureAllocator& operator=(SecureAllocator&& other) {
@@ -45,7 +45,7 @@ public:
         return *this;
     }
 
-    SecureAllocator(SecureAllocator&& other) { *this = std::move(other); }
+    constexpr SecureAllocator(SecureAllocator&& other) { *this = std::move(other); }
 
     ~SecureAllocator() = default;
 
@@ -53,67 +53,69 @@ public:
     ///
     /// Wipe flag means that on destruction and reallocation the data will not only be destroyed but also
     /// memset with a random bytes.
-    void setWipe(const bool wipe) { mWipe = wipe; }
+    constexpr void setWipe(const bool wipe) { mWipe = wipe; }
 
     /// Tells whether or not tht wipe flag is set
-    bool isWipe() const { return mWipe; }
+    constexpr bool isWipe() const { return mWipe; }
 
     template <class T2>
-    SecureAllocator(const SecureAllocator<T2>& other)
+    constexpr SecureAllocator(const SecureAllocator<T2>& other)
         : mWipe(other.mWipe) {}
 
-    SecureAllocator(const SecureAllocator& other)
+    constexpr SecureAllocator(const SecureAllocator& other)
         : mWipe(other.mWipe) {}
 
-    Pointer address(Reference ref) { return &ref; }
+    constexpr Pointer address(Reference ref) { return &ref; }
 
-    ConstPointer address(ConstReference ref) { return &ref; }
+    constexpr ConstPointer address(ConstReference ref) { return &ref; }
 
-    SizeType max_size() const { return std::numeric_limits<SizeType>::max() / sizeof(ValueType); }
+    constexpr SizeType max_size() const { return std::numeric_limits<SizeType>::max() / sizeof(ValueType); }
 
-    SizeType maxSize() const { return max_size(); };
+    constexpr SizeType maxSize() const { return max_size(); };
 
-    Pointer allocate(const SizeType count, const void* = 0) { return memory::allocate<ValueType>(count); }
+    constexpr Pointer allocate(const SizeType count, const void* = 0) {
+        return memory::allocate<ValueType>(count);
+    }
 
     void deallocate(Pointer ptr, const SizeType) { memory::deallocate(ptr); }
 
     template <typename... TArgs>
-    void construct(Pointer ptr, TArgs&&... value) {
+    constexpr void construct(Pointer ptr, TArgs&&... value) {
         memory::construct<ValueType>(ptr, std::forward<TArgs>(value)...);
     }
 
     /// Constructs an element range in-place the given memory
     ///
     /// Does not allocate any memory. Calls copy constructor of the type specified.
-    void constructRange(Pointer first, Pointer last, ConstPointer with) {
+    constexpr void constructRange(Pointer first, Pointer last, ConstPointer with) {
         memory::constructRange<ValueType>(first, last, with);
     }
 
-    void destroy(Reference ref) {
+    constexpr void destroy(Reference ref) {
         memory::destroy(ref);
         if (mWipe) {
             memory::wipe<ValueType>(&ref);
         }
     }
 
-    void destroy(Pointer ptr) { memory::destroy(*ptr); }
+    constexpr void destroy(Pointer ptr) { memory::destroy(*ptr); }
 
     /// Destructs range of elements
     ///
     /// Does not free any memory, only calls destructor
-    void destroy(Pointer first, Pointer last) {
+    constexpr void destroy(Pointer first, Pointer last) {
         for (Pointer it = first; it != last; ++it) {
             destroy(it);
         }
     }
 
     template <class T2>
-    bool operator==(SecureAllocator<T2> const&) const {
+    constexpr bool operator==(SecureAllocator<T2> const&) const {
         return true;
     }
 
     template <class T2>
-    bool operator!=(SecureAllocator<T2> const&) const {
+    constexpr bool operator!=(SecureAllocator<T2> const&) const {
         return false;
     }
 

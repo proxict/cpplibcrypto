@@ -14,7 +14,7 @@ namespace memory {
 /// Does not construct the elements
 /// \returns Pointer to the allocated memory
 template <typename T>
-inline T* allocate(const Size count) {
+constexpr inline T* allocate(const Size count) {
     return static_cast<T*>(::operator new(count * sizeof(T)));
 }
 
@@ -29,7 +29,7 @@ inline void deallocate(void* ptr) {
 ///
 /// Does not allocate any memory
 template <typename T, typename... TArgs>
-inline void construct(void* ptr, TArgs&&... value) {
+constexpr inline void construct(void* ptr, TArgs&&... value) {
     new (ptr) T(std::forward<TArgs>(value)...);
 }
 
@@ -37,7 +37,7 @@ inline void construct(void* ptr, TArgs&&... value) {
 ///
 /// Does not allocate any memory. Calls copy constructor of the type specified.
 template <typename T>
-inline void constructRange(T* first, T* last, const T* source) {
+constexpr inline void constructRange(T* first, T* last, const T* source) {
     const T* srcIt = source;
     for (T* it = first; it != last; ++it) {
         construct<T>(it, *(srcIt++));
@@ -48,7 +48,7 @@ inline void constructRange(T* first, T* last, const T* source) {
 ///
 /// Does not free any memory, only calls destructor
 template <typename T>
-inline void destroy(T& object) {
+constexpr inline void destroy(T& object) {
     object.~T();
 }
 
@@ -56,7 +56,7 @@ inline void destroy(T& object) {
 ///
 /// Does not free any memory, only calls destroctor
 template <typename TIterator>
-inline void destroy(TIterator first, TIterator last) {
+constexpr inline void destroy(TIterator first, TIterator last) {
     for (auto it = first; it != last; ++it) {
         destroy(*it);
     }
@@ -66,7 +66,7 @@ inline void destroy(TIterator first, TIterator last) {
 ///
 /// The memory can be set to a random byte sequence
 template <typename T>
-void wipe(T* ptr) {
+constexpr void wipe(T* ptr) {
     Byte* bytePtr = reinterpret_cast<Byte*>(ptr);
     for (Size i = 0; i < sizeof(T); ++i) {
         bytePtr[i] = 0;

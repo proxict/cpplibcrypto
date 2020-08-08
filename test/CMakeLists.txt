@@ -5,6 +5,7 @@ endif()
 add_executable(unittests
     main.cpp
     buffer/DynamicBufferTest.cpp
+    buffer/BackInserterTest.cpp
     buffer/StaticBufferTest.cpp
     buffer/HexStringTest.cpp
     common/HexTest.cpp

@@ -6,6 +6,8 @@
 #include "cpplibcrypto/buffer/HexString.h"
 #include "cpplibcrypto/common/Exception.h"
 
+#include <algorithm>
+
 NAMESPACE_CRYPTO_BEGIN
 
 TEST(DynamicBufferTest, ctor) {

@@ -11,7 +11,10 @@ enum class Functions { UNDEFINED, PUSH, PUSHBACK, PUSH_BACK };
 template <Functions TOverload>
 struct Container {
     using ValueType = int;
-    static constexpr Functions CURRENT_OVERLOAD = TOverload;
+
+    static constexpr Functions getCurrentOverload() {
+        return TOverload;
+    }
 
     template <Functions Fun = TOverload, EnableIf<Fun == Functions::PUSH, char> = 0>
     void push(const ValueType& value) {
@@ -49,7 +52,7 @@ TYPED_TEST_P(BackInsertTest, fill) {
     std::fill_n(backInserter(c), 3, -1);
 
     EXPECT_EQ(DynamicBuffer<int>(3, -1), c.mBuffer);
-    ASSERT_EQ(TypeParam::CURRENT_OVERLOAD, c.mCalledOverload);
+    ASSERT_EQ(TypeParam::getCurrentOverload(), c.mCalledOverload);
 }
 
 TYPED_TEST_P(BackInsertTest, increment) {
@@ -60,7 +63,7 @@ TYPED_TEST_P(BackInsertTest, increment) {
     }
 
     EXPECT_EQ(DynamicBuffer<int>({ 0, 1, 2, 3, 4 }), c.mBuffer);
-    ASSERT_EQ(TypeParam::CURRENT_OVERLOAD, c.mCalledOverload);
+    ASSERT_EQ(TypeParam::getCurrentOverload(), c.mCalledOverload);
 }
 
 using ContainerTypes = ::testing::

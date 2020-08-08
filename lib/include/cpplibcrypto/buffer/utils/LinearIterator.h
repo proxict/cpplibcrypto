@@ -118,7 +118,7 @@ public:
         return res;
     }
 
-    constexpr operator const Pointer() const { return mPtr; }
+    constexpr operator Pointer() const { return mPtr; }
 
     constexpr operator Pointer() { return mPtr; }
 

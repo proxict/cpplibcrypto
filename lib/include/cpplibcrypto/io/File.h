@@ -64,14 +64,12 @@ public:
         int whence = 0;
         switch (position) {
         case SeekPosition::BEGINNING:
-            ASSERT(offset >= 0);
             whence = SEEK_SET;
             break;
         case SeekPosition::CURRENT:
             whence = SEEK_CUR;
             break;
         case SeekPosition::END:
-            ASSERT(offset <= 0);
             whence = SEEK_END;
             break;
         default:

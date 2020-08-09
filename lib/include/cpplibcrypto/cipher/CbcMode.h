@@ -23,7 +23,7 @@ public:
         using CipherType = CipherT;
 
         template <typename TKey>
-        Encryption(const TKey& key, InitializationVector& iv)
+        Encryption(const TKey& key, const InitializationVector& iv)
             : mCipher(key)
             , mEncryptor(mCipher, iv) {}
 
@@ -48,7 +48,7 @@ public:
         using CipherType = CipherT;
 
         template <typename TKey>
-        Decryption(const TKey& key, InitializationVector& iv)
+        Decryption(const TKey& key, const InitializationVector& iv)
             : mCipher(key)
             , mDecryptor(mCipher, iv) {}
 

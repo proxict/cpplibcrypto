@@ -4,6 +4,8 @@
 #include "cpplibcrypto/buffer/utils/LinearIterator.h"
 #include "cpplibcrypto/common/common.h"
 
+#include <memory>
+
 NAMESPACE_CRYPTO_BEGIN
 
 class InitializationVector {
@@ -41,6 +43,9 @@ public:
 
     /// Returns a pointer to the beginning of the IV byte sequence
     virtual ConstPointer data() const = 0;
+
+    /// Creates a copy of the instance
+    virtual std::unique_ptr<InitializationVector> clone() const = 0;
 
     /// Returns an iterator to the beginning of the IV byte sequence
     ConstIterator begin() const { return cbegin(); }

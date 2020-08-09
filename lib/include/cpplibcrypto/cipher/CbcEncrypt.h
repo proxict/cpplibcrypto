@@ -22,10 +22,10 @@ public:
     /// \param key The key for the cipher
     /// \param IV IV for the CB chain. The size has to match the cipher block size
     /// \throws Exception in case the IV size does not match the cipher block size
-    CbcEncrypt(const BlockCipher& cipher, InitializationVector& iv)
+    CbcEncrypt(const BlockCipher& cipher, const InitializationVector& iv)
         : mCipher(cipher)
-        , mIv(iv) {
-        if (mIv.size() != mCipher.getBlockSize()) {
+        , mIv(iv.clone()) {
+        if (mIv->size() != mCipher.getBlockSize()) {
             throw Exception("CBC-Mode: The Initialization Vector size does not match the cipher block size");
         }
     }
@@ -40,7 +40,7 @@ public:
         StaticBuffer<Byte, 16> buffer;
         ASSERT(mLeftoverBuffer.size() < blockSize);
 
-        bufferUtils::pushXored(buffer, mLeftoverBuffer.cbegin(), mLeftoverBuffer.cend(), mIv.cbegin());
+        bufferUtils::pushXored(buffer, mLeftoverBuffer.cbegin(), mLeftoverBuffer.cend(), mIv->cbegin());
 
         Size processedInput = 0;
         const Size numberOfBlocks = (buffer.size() + in.size()) / blockSize;
@@ -53,14 +53,14 @@ public:
             const Size blockEnd = blockStart + toProcess;
 
             bufferUtils::pushXored(
-                buffer, in.cbegin() + blockStart, in.cbegin() + blockEnd, mIv.cbegin() + buffer.size());
+                buffer, in.cbegin() + blockStart, in.cbegin() + blockEnd, mIv->cbegin() + buffer.size());
 
             ASSERT(buffer.size() == blockSize);
             mCipher.encryptBlock(buffer);
             processedInput += toProcess;
 
             out.insert(out.end(), buffer.begin(), buffer.end());
-            mIv.setNew(buffer.begin());
+            mIv->setNew(buffer.begin());
             buffer.clear();
         }
 
@@ -84,22 +84,29 @@ public:
         }
 
         ASSERT(mLeftoverBuffer.size() == mCipher.getBlockSize());
-        bufferUtils::xorBuffer(mLeftoverBuffer, mIv);
+        bufferUtils::xorBuffer(mLeftoverBuffer, *mIv);
         mCipher.encryptBlock(mLeftoverBuffer);
         out.insert(out.end(), mLeftoverBuffer.begin(), mLeftoverBuffer.end());
         mLeftoverBuffer.clear();
     }
 
     /// Resets the CB chain
-    void resetChain() { mIv.reset(); }
+    void resetChain() { mIv->reset(); }
 
 private:
     // Forbid temporary BlockCipher
-    CbcEncrypt(const BlockCipher&& cipher, InitializationVector& iv) = delete;
+    template <typename ...TArgs>
+    CbcEncrypt(const BlockCipher&& cipher, TArgs&&...) = delete;
 
-    StaticBuffer<Byte, 16> mLeftoverBuffer;
+    CbcEncrypt(const CbcEncrypt&) = delete;
+    CbcEncrypt& operator=(const CbcEncrypt&) = delete;
+
+    CbcEncrypt(CbcEncrypt&&) = delete;
+    CbcEncrypt& operator=(CbcEncrypt&&) = delete;
+
     const BlockCipher& mCipher;
-    InitializationVector& mIv;
+    std::unique_ptr<InitializationVector> mIv;
+    StaticBuffer<Byte, 16> mLeftoverBuffer;
 };
 
 NAMESPACE_CRYPTO_END

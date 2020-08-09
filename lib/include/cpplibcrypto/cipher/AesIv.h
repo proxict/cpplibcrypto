@@ -51,6 +51,13 @@ public:
     /// Returns a pointer to the beginning of the IV byte sequence
     ConstPointer data() const override { return mIv.data(); }
 
+    /// Creates a copy of this instance
+    virtual std::unique_ptr<InitializationVector> clone() const override {
+        ByteBuffer ivCopy;
+        ivCopy << mIv;
+        return std::make_unique<AesIv>(std::move(ivCopy));
+    }
+
 private:
     ByteBuffer mIv;
 

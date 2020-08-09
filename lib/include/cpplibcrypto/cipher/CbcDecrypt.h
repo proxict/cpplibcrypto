@@ -22,10 +22,10 @@ public:
     /// \param key The key for the cipher
     /// \param IV IV for the CB chain. The size has to match the cipher block size
     /// \throws Exception in case the IV size does not match the cipher block size
-    CbcDecrypt(const BlockCipher& cipher, InitializationVector& iv)
+    CbcDecrypt(const BlockCipher& cipher, const InitializationVector& iv)
         : mCipher(cipher)
-        , mIv(iv) {
-        if (mIv.size() != mCipher.getBlockSize()) {
+        , mIv(iv.clone()) {
+        if (mIv->size() != mCipher.getBlockSize()) {
             throw Exception("CBC-Mode: The Initialization Vector size does not match the cipher block size");
         }
     }
@@ -66,9 +66,9 @@ public:
             StaticBuffer<Byte, 16> newIv;
             newIv << buffer;
             mCipher.decryptBlock(buffer);
-            bufferUtils::pushXored(out, buffer.cbegin(), buffer.cend(), mIv.cbegin());
+            bufferUtils::pushXored(out, buffer.cbegin(), buffer.cend(), mIv->cbegin());
             processedInput += toProcess;
-            mIv.setNew(newIv.begin());
+            mIv->setNew(newIv.begin());
             buffer.clear();
         }
         ASSERT(in.size() - processedInput <= blockSize);
@@ -82,20 +82,21 @@ public:
     void finalize(TBuffer& out, const Padding& padder) {
         ASSERT(mLeftoverBuffer.size() == mCipher.getBlockSize());
         mCipher.decryptBlock(mLeftoverBuffer);
-        bufferUtils::pushXored(out, mLeftoverBuffer.cbegin(), mLeftoverBuffer.cend(), mIv.cbegin());
+        bufferUtils::pushXored(out, mLeftoverBuffer.cbegin(), mLeftoverBuffer.cend(), mIv->cbegin());
         padder.unpad(out);
         mLeftoverBuffer.clear();
     }
 
     /// Resets the CB chain
-    void resetChain() { mIv.reset(); }
+    void resetChain() { mIv->reset(); }
 
 private:
     // Forbid temporary BlockCipher
-    CbcDecrypt(const BlockCipher&& cipher, InitializationVector& iv) = delete;
+    template <typename ...TArgs>
+    CbcDecrypt(const BlockCipher&& cipher, TArgs&&...) = delete;
 
     const BlockCipher& mCipher;
-    InitializationVector& mIv;
+    std::unique_ptr<InitializationVector> mIv;
     StaticBuffer<Byte, 16> mLeftoverBuffer;
 };
 

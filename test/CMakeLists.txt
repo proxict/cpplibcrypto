@@ -10,6 +10,8 @@ add_executable(unittests
     buffer/HexStringTest.cpp
     common/HexTest.cpp
     hash/Sha1Test.cpp
+    hash/Sha224Test.cpp
+    hash/Sha256Test.cpp
     hash/Md5Test.cpp
     hash/HmacTest.cpp
     kdf/PbkdfTest.cpp

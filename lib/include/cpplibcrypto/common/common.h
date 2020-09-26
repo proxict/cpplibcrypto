@@ -13,6 +13,8 @@ NAMESPACE_CRYPTO_BEGIN
 
 using Byte = uint8_t;
 using Size = std::size_t;
+using Dword = uint32_t;
+using Qword = uint64_t;
 
 NAMESPACE_CRYPTO_END
 

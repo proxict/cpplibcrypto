@@ -4,18 +4,15 @@
 #include <cassert>
 #include <cstdint>
 
-#define NAMESPACE_CRYPTO_BEGIN namespace crypto {
-#define NAMESPACE_CRYPTO_END }
-
 #define ASSERT(x) assert(x)
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 using Byte = uint8_t;
 using Size = std::size_t;
 using Dword = uint32_t;
 using Qword = uint64_t;
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

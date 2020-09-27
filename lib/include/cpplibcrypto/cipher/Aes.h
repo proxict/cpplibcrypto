@@ -12,7 +12,7 @@
 
 #include <memory>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// AES algorithm implementation in all common key sizes (128, 192, 256 bits)
 class Aes : public BlockCipherSized<16> {
@@ -147,6 +147,6 @@ private:
     }
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

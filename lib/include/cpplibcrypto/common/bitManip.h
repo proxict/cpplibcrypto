@@ -3,9 +3,7 @@
 
 #include "cpplibcrypto/common/common.h"
 
-NAMESPACE_CRYPTO_BEGIN
-
-namespace bits {
+namespace crypto::bits {
 
 /// Rotates bits to the left by the given amount of bits
 ///
@@ -27,8 +25,6 @@ inline constexpr T rotateRight(const T value, const Byte bits) {
     return (value >> bits) | (value << (8 * sizeof(T) - bits));
 }
 
-} // namespace bits
-
-NAMESPACE_CRYPTO_END
+} // namespace crypto::bits
 
 #endif // CPPLIBCRYPTO_COMMON_BITMANIP_H_

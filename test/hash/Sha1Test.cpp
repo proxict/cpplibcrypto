@@ -6,7 +6,7 @@
 #include "cpplibcrypto/common/Hex.h"
 #include "cpplibcrypto/hash/Sha1.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 TEST(Sha1Test, empty) {
     Sha1 sha1;
@@ -98,4 +98,4 @@ TEST(Sha1Test, move) {
     EXPECT_TRUE(bufferUtils::equal(Hex::decode("a9993e364706816aba3e25717850c26c9cd0d89d"), digest));
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

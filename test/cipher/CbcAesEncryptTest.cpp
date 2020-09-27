@@ -10,7 +10,7 @@
 #include "cpplibcrypto/common/Hex.h"
 #include "cpplibcrypto/padding/Pkcs7.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 TEST(CbcAes128EncryptTest, cbcEncryptBlock1) {
     AesIv iv(HexString("000102030405060708090A0B0C0D0E0F"));
@@ -233,4 +233,4 @@ TEST(CbcAes256EncryptTest, cbcEncryptResetChain) {
     EXPECT_EQ(16U, processed2);
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

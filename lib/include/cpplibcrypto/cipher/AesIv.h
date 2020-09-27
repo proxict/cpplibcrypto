@@ -10,7 +10,7 @@
 #include "cpplibcrypto/common/Exception.h"
 #include "cpplibcrypto/common/common.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Represents an initialization vector for AES
 class AesIv : public InitializationVectorSized<16> {
@@ -65,6 +65,6 @@ private:
     ByteBuffer mInitialIv;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_CIPHER_AESIV_H_

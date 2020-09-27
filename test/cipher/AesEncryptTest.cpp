@@ -7,7 +7,7 @@
 #include "cpplibcrypto/cipher/Aes.h"
 #include "cpplibcrypto/common/Hex.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 using ByteBufferSlice = BufferSlice<Byte>;
 
@@ -131,4 +131,4 @@ TEST(Aes256EncryptTest, encrypt4) {
     EXPECT_EQ(HexString("23304b7a39f9f3ff067d8d8f9e24ecc7"), HexString(Hex::encode(buffer)));
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

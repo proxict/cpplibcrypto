@@ -6,7 +6,7 @@
 
 #include <memory>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 class InitializationVector {
 public:
@@ -60,6 +60,6 @@ public:
     ConstIterator cend() const { return ConstIterator(data(), size()); }
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

@@ -5,7 +5,7 @@
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/common/Key.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 class SymmetricAlgorithm {
 public:
@@ -33,6 +33,6 @@ protected:
     Size mKeySize;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_CIPHER_SYMMETRICALGORITHM_H_

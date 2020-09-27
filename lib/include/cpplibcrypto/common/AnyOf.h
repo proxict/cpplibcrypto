@@ -6,7 +6,7 @@
 #include <array>
 #include <utility>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 template <typename T, int TSize>
 struct AnyOfThis {
@@ -28,6 +28,7 @@ template <typename T, int TSize>
 constexpr bool operator==(const T value, const AnyOfThis<typename std::decay<T>::type, TSize>& anyOfThis) {
     return find(anyOfThis.values.begin(), anyOfThis.values.end(), value) != anyOfThis.values.end();
 }
-NAMESPACE_CRYPTO_END
 
-#endif // COMMON_EXCEPTION_H_
+} // namespace crypto
+
+#endif // CPPLIBCRYPTO_COMMON_ANYOF_H_

@@ -6,7 +6,7 @@
 #include "cpplibcrypto/common/Hex.h"
 #include "cpplibcrypto/kdf/Pbkdf.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 TEST(Pbkdf2Test, case1) {
     crypto::Pbkdf2 kdf(crypto::Password(crypto::String("password")), crypto::Salt(crypto::String("salt")));
@@ -89,4 +89,4 @@ TEST(Pbkdf2Test, deriveMultipleKeys) {
     EXPECT_TRUE(bufferUtils::equal(Hex::decode("56fa6aa75548099dcc37d7f03425e0c3"), dk));
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

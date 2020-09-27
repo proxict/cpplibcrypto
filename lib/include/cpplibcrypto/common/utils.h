@@ -3,7 +3,7 @@
 
 #include "cpplibcrypto/common/TypeTraits.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 template <typename TIterator, typename T, typename = DisableIf<__cplusplus >= 202002L>>
 constexpr TIterator find(const TIterator first, const TIterator last, const T& value) {
@@ -15,6 +15,6 @@ constexpr TIterator find(const TIterator first, const TIterator last, const T& v
     return last;
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif // CPPLIBCRYPTO_COMMON_UTILS_H_

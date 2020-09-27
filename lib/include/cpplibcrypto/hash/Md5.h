@@ -8,14 +8,13 @@
 
 #include <cstring>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// MD5 hash algorithm implementation according to the RFC 1321 standard
+///
 /// Computes 16 byte digest
 class Md5 final {
 public:
-    using Dword = uint32_t;
-    using Qword = uint64_t;
     static constexpr Size DIGEST_SIZE = 16U;
     static constexpr Size BLOCK_SIZE = 64U;
 
@@ -222,6 +221,6 @@ private:
     bool mFinalized = false;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

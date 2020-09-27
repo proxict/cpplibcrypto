@@ -5,7 +5,7 @@
 
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Specifies the restraints for key size
 /// \param TMinKeySize Specifies the minimal key size required
@@ -33,6 +33,6 @@ protected:
     KeySized() = default;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

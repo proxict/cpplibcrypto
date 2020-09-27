@@ -7,7 +7,7 @@
 #include "cpplibcrypto/cipher/CbcEncrypt.h"
 #include "cpplibcrypto/common/Key.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Convenience class for constructing block cipher encryptors/decryptors
 ///
@@ -70,6 +70,6 @@ public:
     };
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

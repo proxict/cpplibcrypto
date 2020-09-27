@@ -7,7 +7,7 @@
 
 #include <utility>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 template <typename T>
 class StaticBufferBase {
@@ -393,6 +393,6 @@ constexpr bool operator==(const StaticBufferBase<T>& lhs, const StaticBufferBase
     return true;
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_BUFFER_STATICBYTEBUFFER_H_

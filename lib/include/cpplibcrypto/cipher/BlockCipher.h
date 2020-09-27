@@ -6,7 +6,7 @@
 #include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/common/Key.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Interface for block ciphers.
 ///
@@ -36,6 +36,6 @@ public:
     virtual void decryptBlock(ByteBufferSlice) const = 0;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

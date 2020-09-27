@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <iterator>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 template <typename TBuffer>
 class BackInsertIterator {
@@ -78,6 +78,6 @@ constexpr BackInsertIterator<TBuffer> backInserter(TBuffer& buffer) {
     return BackInsertIterator<TBuffer>(buffer);
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif // CPPLIBCRYPTO_BUFFER_UTILS_BACKINSERTITERATOR_H_

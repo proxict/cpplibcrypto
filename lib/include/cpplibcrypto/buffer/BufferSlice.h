@@ -5,7 +5,7 @@
 #include "cpplibcrypto/common/Memory.h"
 #include "cpplibcrypto/common/common.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Provides a useful way to pass a pointer to a buffer of a known size
 ///
@@ -128,6 +128,6 @@ private:
     Size mCapacity;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_BUFFER_BUFFERSLICE_H_

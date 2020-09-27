@@ -7,7 +7,7 @@
 #include "cpplibcrypto/cipher/Aes.h"
 #include "cpplibcrypto/common/Hex.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 TEST(Aes128DecryptTest, decrypt1) {
     Aes aes(AesKey(HexString("2b7e151628aed2a6abf7158809cf4f3c")));
@@ -129,4 +129,4 @@ TEST(Aes256DecryptTest, decrypt4) {
     EXPECT_EQ(HexString("f69f2445df4f9b17ad2b417be66c3710"), HexString(Hex::encode(buffer)));
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

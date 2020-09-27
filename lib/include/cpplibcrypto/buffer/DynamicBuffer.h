@@ -4,7 +4,7 @@
 #include "cpplibcrypto/buffer/utils/LinearIterator.h"
 #include "cpplibcrypto/buffer/utils/SecureAllocator.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Dynamically allocated buffer which also allowes to store references
 ///
@@ -356,6 +356,6 @@ private:
 
 using ByteBuffer = DynamicBuffer<Byte>;
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif // COMMON_BYTEBUFFER_H_
+#endif // CPPLIBCRYPTO_BUFFER_DYNAMICBUFFER_H_

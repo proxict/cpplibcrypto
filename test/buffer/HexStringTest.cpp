@@ -2,7 +2,7 @@
 
 #include "cpplibcrypto/buffer/HexString.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 TEST(HexStringTest, basic) {
     EXPECT_EQ(HexString("ab"), HexString("AB"));
@@ -17,4 +17,4 @@ TEST(HexStringTest, chaining) {
     EXPECT_EQ(HexString("abcdef00"), hs);
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

@@ -3,10 +3,10 @@
 #include "gtest/gtest.h"
 
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
-#include "cpplibcrypto/common/Hex.h"
 #include "cpplibcrypto/common/Exception.h"
+#include "cpplibcrypto/common/Hex.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 TEST(HexTest, basic) {
     ByteBuffer s;
@@ -65,4 +65,4 @@ TEST(HexTest, exception) {
     EXPECT_THROW(Hex::decode("0q"), Exception);
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

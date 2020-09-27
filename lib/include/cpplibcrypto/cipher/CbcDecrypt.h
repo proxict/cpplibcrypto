@@ -12,7 +12,7 @@
 #include "cpplibcrypto/common/common.h"
 #include "cpplibcrypto/padding/Padding.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Block cipher CBC decryptor
 class CbcDecrypt {
@@ -92,7 +92,7 @@ public:
 
 private:
     // Forbid temporary BlockCipher
-    template <typename ...TArgs>
+    template <typename... TArgs>
     CbcDecrypt(const BlockCipher&& cipher, TArgs&&...) = delete;
 
     const BlockCipher& mCipher;
@@ -100,6 +100,6 @@ private:
     StaticBuffer<Byte, 16> mLeftoverBuffer;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

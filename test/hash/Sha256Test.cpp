@@ -6,7 +6,7 @@
 #include "cpplibcrypto/common/Hex.h"
 #include "cpplibcrypto/hash/Sha2.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 TEST(Sha256Test, empty) {
     Sha256 sha256;
@@ -107,4 +107,4 @@ TEST(Sha256Test, move) {
         Hex::decode("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"), digest));
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

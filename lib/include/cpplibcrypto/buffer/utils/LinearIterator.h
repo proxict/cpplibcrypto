@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <iterator>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 template <class T>
 class LinearIterator {
@@ -126,6 +126,6 @@ protected:
     Pointer mPtr;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_BUFFER_UTILS_LINEARITERATOR_H_

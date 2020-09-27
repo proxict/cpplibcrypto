@@ -5,16 +5,14 @@
 
 #include <algorithm>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 enum class Functions { UNDEFINED, PUSH, PUSHBACK, PUSH_BACK };
 template <Functions TOverload>
 struct Container {
     using ValueType = int;
 
-    static constexpr Functions getCurrentOverload() {
-        return TOverload;
-    }
+    static constexpr Functions getCurrentOverload() { return TOverload; }
 
     template <Functions Fun = TOverload, EnableIf<Fun == Functions::PUSH, char> = 0>
     void push(const ValueType& value) {
@@ -72,4 +70,4 @@ using ContainerTypes = ::testing::
 REGISTER_TYPED_TEST_SUITE_P(BackInsertTest, fill, increment);
 INSTANTIATE_TYPED_TEST_SUITE_P(BackInserter, BackInsertTest, ContainerTypes);
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

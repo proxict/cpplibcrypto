@@ -5,27 +5,53 @@
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 #include "cpplibcrypto/common/AnyOf.h"
 #include "cpplibcrypto/common/Exception.h"
+#include "cpplibcrypto/common/bitManip.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto::sha {
 
-enum class ShaFamily { SHA1, SHA224, SHA256, SHA384, SHA512 };
+constexpr Dword sigma0(const Dword v) {
+    return bits::rotateRight(v, 7) ^ bits::rotateRight(v, 18) ^ (v >> 3);
+}
 
-template <ShaFamily TFamily>
-struct ShaState {
+constexpr Dword sigma1(const Dword v) {
+    return bits::rotateRight(v, 17) ^ bits::rotateRight(v, 19) ^ (v >> 10);
+}
+
+constexpr Dword bigSigma0(const Dword v) {
+    return bits::rotateRight(v, 2) ^ bits::rotateRight(v, 13) ^ bits::rotateRight(v, 22);
+}
+
+constexpr Dword bigSigma1(const Dword v) {
+    return bits::rotateRight(v, 6) ^ bits::rotateRight(v, 11) ^ bits::rotateRight(v, 25);
+}
+
+constexpr Dword choose(const Dword x, const Dword y, const Dword z) {
+    // Does "x ? y : z" for each bit
+    return (x & y) ^ (~x & z);
+}
+
+constexpr Dword majority(const Dword x, const Dword y, const Dword z) {
+    return (x & y) ^ (x & z) ^ (y & z);
+}
+
+enum class Family { SHA1, SHA224, SHA256, SHA384, SHA512 };
+
+template <Family TFamily>
+struct State {
     using Word =
-        Conditional<TFamily == anyOf(ShaFamily::SHA1, ShaFamily::SHA224, ShaFamily::SHA256), Dword, Qword>;
+        Conditional<TFamily == anyOf(Family::SHA1, Family::SHA224, Family::SHA256), Dword, Qword>;
 
     static constexpr Size getBlockSize() {
         switch (TFamily) {
-        case ShaFamily::SHA1:
+        case Family::SHA1:
             return 20;
-        case ShaFamily::SHA224:
+        case Family::SHA224:
             [[fallthrough]];
-        case ShaFamily::SHA256:
+        case Family::SHA256:
             return 32;
-        case ShaFamily::SHA384:
+        case Family::SHA384:
             [[fallthrough]];
-        case ShaFamily::SHA512:
+        case Family::SHA512:
             return 64;
         default:
             ASSERT(false);
@@ -35,11 +61,11 @@ struct ShaState {
 
     StaticBuffer<Word, getBlockSize() / 4> H;
 
-    ShaState() { reset(); }
+    State() { reset(); }
 
-    ShaState(ShaState&& other) { *this = std::move(other); }
+    State(State&& other) { *this = std::move(other); }
 
-    ShaState& operator=(ShaState&& other) {
+    State& operator=(State&& other) {
         std::swap(H, other.H);
         return *this;
     }
@@ -50,14 +76,14 @@ struct ShaState {
 
     void reset() {
         H.clear();
-        if constexpr (TFamily == ShaFamily::SHA1) {
+        if constexpr (TFamily == Family::SHA1) {
             // Constants defined in FIPS 180-4, section 5.3.1
             H.push(0x67452301);
             H.push(0xEFCDAB89);
             H.push(0x98BADCFE);
             H.push(0x10325476);
             H.push(0xC3D2E1F0);
-        } else if constexpr (TFamily == ShaFamily::SHA224) {
+        } else if constexpr (TFamily == Family::SHA224) {
             // Constants defined in FIPS 180-4, section 5.3.2
             H.push(0xc1059ed8);
             H.push(0x367cd507);
@@ -67,7 +93,7 @@ struct ShaState {
             H.push(0x68581511);
             H.push(0x64f98fa7);
             H.push(0xbefa4fa4);
-        } else if constexpr (TFamily == ShaFamily::SHA256) {
+        } else if constexpr (TFamily == Family::SHA256) {
             // Constants defined in FIPS 180-4, section 5.3.3
             H.push(0x6A09E667);
             H.push(0xBB67AE85);
@@ -77,7 +103,7 @@ struct ShaState {
             H.push(0x9B05688C);
             H.push(0x1F83D9AB);
             H.push(0x5BE0CD19);
-        } else if constexpr (TFamily == ShaFamily::SHA384) {
+        } else if constexpr (TFamily == Family::SHA384) {
             // Constants defined in FIPS 180-4, section 5.3.4
             H.push(0xcbbb9d5dc1059ed8ULL);
             H.push(0x629a292a367cd507ULL);
@@ -87,7 +113,7 @@ struct ShaState {
             H.push(0x8eb44a8768581511ULL);
             H.push(0xdb0c2e0d64f98fa7ULL);
             H.push(0x47b5481dbefa4fa4ULL);
-        } else if constexpr (TFamily == ShaFamily::SHA512) {
+        } else if constexpr (TFamily == Family::SHA512) {
             // Constants defined in FIPS 180-4, section 5.3.5
             H.push(0x6a09e667f3bcc908ULL);
             H.push(0xbb67ae8584caa73bULL);
@@ -103,23 +129,23 @@ struct ShaState {
     }
 
 private:
-    ShaState(const ShaState&) = delete;
-    ShaState& operator=(const ShaState&) = delete;
+    State(const State&) = delete;
+    State& operator=(const State&) = delete;
 };
 
-template <ShaFamily TFamily>
+template <Family TFamily>
 class Sha {
     static constexpr Size getDigestSize() {
         switch (TFamily) {
-        case ShaFamily::SHA1:
+        case Family::SHA1:
             return 160 / 8;
-        case ShaFamily::SHA224:
+        case Family::SHA224:
             return 224 / 8;
-        case ShaFamily::SHA256:
+        case Family::SHA256:
             return 256 / 8;
-        case ShaFamily::SHA384:
+        case Family::SHA384:
             return 384 / 8;
-        case ShaFamily::SHA512:
+        case Family::SHA512:
             return 512 / 8;
         default:
             ASSERT(false);
@@ -130,10 +156,6 @@ class Sha {
 public:
     static constexpr Size BLOCK_SIZE = 64U;
     static constexpr Size DIGEST_SIZE = getDigestSize();
-
-    using State = ShaState<TFamily>;
-
-    Sha() { reset(); }
 
     virtual ~Sha() noexcept = default;
 
@@ -146,8 +168,6 @@ public:
         std::swap(mFinalized, other.mFinalized);
         return *this;
     }
-
-    virtual void processBlock(BufferSlice<const Byte> in) = 0;
 
     /// Updates the state with the given data
     /// \throws Exception if the \ref finalize() has already been called or if the overall input size exceeded
@@ -192,9 +212,9 @@ public:
         mFinalized = true;
     }
 
-    State& getState() { return mState; }
+    State<TFamily>& getState() { return mState; }
 
-    void setState(State state) { mState = std::move(state); }
+    void setState(State<TFamily> state) { mState = std::move(state); }
 
     void reset() {
         mFinalized = false;
@@ -204,8 +224,9 @@ public:
     }
 
 protected:
-    Sha(const Sha&) = delete;
-    Sha& operator=(const Sha&) = delete;
+    Sha() { reset(); }
+
+    virtual void processBlock(BufferSlice<const Byte> in) = 0;
 
     void padBlock() {
         ASSERT(mBlock.size() < BLOCK_SIZE);
@@ -229,12 +250,16 @@ protected:
         mBlock.clear();
     }
 
-    ShaState<TFamily> mState;
+    State<TFamily> mState;
     StaticBuffer<Byte, BLOCK_SIZE> mBlock;
     Qword mTotalSize = 0;
     bool mFinalized = false;
+
+private:
+    Sha(const Sha&) = delete;
+    Sha& operator=(const Sha&) = delete;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto::sha
 
-#endif // CPPLIBCRYPTO_HASH_SHA224_H_
+#endif // CPPLIBCRYPTO_HASH_SHA_H_

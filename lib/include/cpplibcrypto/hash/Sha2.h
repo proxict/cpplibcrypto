@@ -4,13 +4,12 @@
 #include "cpplibcrypto/buffer/BufferSlice.h"
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 #include "cpplibcrypto/common/Exception.h"
-#include "cpplibcrypto/common/bitManip.h"
 #include "cpplibcrypto/hash/Sha.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
-template <ShaFamily TFamily>
-class Sha2 final : public Sha<TFamily> {
+template <sha::Family TFamily>
+class Sha2 final : public sha::Sha<TFamily> {
 public:
     Sha2() = default;
 
@@ -18,6 +17,9 @@ public:
     Sha2& operator=(Sha2&& other) = default;
 
 private:
+    Sha2(const Sha2&) = delete;
+    Sha2& operator=(const Sha2&) = delete;
+
     virtual void processBlock(BufferSlice<const Byte> in) override {
         // Constants defined in FIPS 180-4, section 4.2.2
         static const StaticBuffer<Dword, 64> K({ 0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b,
@@ -43,7 +45,7 @@ private:
         }
 
         for (int t = 16; t < 64; t++) {
-            W[t] = sigma1(W[t - 2]) + W[t - 7] + sigma0(W[t - 15]) + W[t - 16];
+            W[t] = sha::sigma1(W[t - 2]) + W[t - 7] + sha::sigma0(W[t - 15]) + W[t - 16];
         }
 
         Dword A = this->mState[0];
@@ -56,8 +58,8 @@ private:
         Dword H = this->mState[7];
 
         for (int t = 0; t < 64; t++) {
-            Dword temp1 = H + bigSigma1(E) + choose(E, F, G) + K[t] + W[t];
-            Dword temp2 = bigSigma0(A) + majority(A, B, C);
+            const Dword temp1 = H + sha::bigSigma1(E) + sha::choose(E, F, G) + K[t] + W[t];
+            const Dword temp2 = sha::bigSigma0(A) + sha::majority(A, B, C);
             H = G;
             G = F;
             F = E;
@@ -77,41 +79,18 @@ private:
         this->mState[6] += G;
         this->mState[7] += H;
     }
-
-    static constexpr Dword sigma0(const Dword v) {
-        return bits::rotateRight(v, 7) ^ bits::rotateRight(v, 18) ^ (v >> 3);
-    }
-
-    static constexpr Dword sigma1(const Dword v) {
-        return bits::rotateRight(v, 17) ^ bits::rotateRight(v, 19) ^ (v >> 10);
-    }
-
-    static constexpr Dword bigSigma0(const Dword v) {
-        return bits::rotateRight(v, 2) ^ bits::rotateRight(v, 13) ^ bits::rotateRight(v, 22);
-    }
-
-    static constexpr Dword bigSigma1(const Dword v) {
-        return bits::rotateRight(v, 6) ^ bits::rotateRight(v, 11) ^ bits::rotateRight(v, 25);
-    }
-
-    /// Basically like "x ? y : z" for each bit
-    static constexpr Dword choose(const Dword x, const Dword y, const Dword z) { return (x & y) ^ (~x & z); }
-
-    static constexpr Dword majority(const Dword x, const Dword y, const Dword z) {
-        return (x & y) ^ (x & z) ^ (y & z);
-    }
 };
 
 /// SHA224 224-bit hasing algorithm
 ///
 /// Computes 28 bytes digest
-using Sha224 = Sha2<ShaFamily::SHA224>;
+using Sha224 = Sha2<sha::Family::SHA224>;
 
 /// SHA256 256-bit hasing algorithm
 ///
 /// Computes 32 bytes digest
-using Sha256 = Sha2<ShaFamily::SHA256>;
+using Sha256 = Sha2<sha::Family::SHA256>;
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif // CPPLIBCRYPTO_HASH_SHA224_H_

@@ -7,12 +7,12 @@
 #include "cpplibcrypto/common/bitManip.h"
 #include "cpplibcrypto/hash/Sha.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// SHA1 160-bit hasing algorithm
 ///
 /// Computes 20 bytes digest
-class Sha1 final : public Sha<ShaFamily::SHA1> {
+class Sha1 final : public sha::Sha<sha::Family::SHA1> {
 public:
     Sha1() = default;
 
@@ -89,6 +89,6 @@ private:
     }
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

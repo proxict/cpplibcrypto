@@ -3,8 +3,7 @@
 
 #include "cpplibcrypto/common/common.h"
 
-NAMESPACE_CRYPTO_BEGIN
-namespace bufferUtils {
+namespace crypto::bufferUtils {
 
 /// Applies an XOR operation on the given container with the given source
 ///
@@ -59,7 +58,6 @@ constexpr inline bool equal(const TBuffer1& c1, const TBuffer2& c2) {
     return true;
 }
 
-} // namespace bufferUtils
-NAMESPACE_CRYPTO_END
+} // namespace crypto::bufferUtils
 
-#endif
+#endif // CPPLIBCRYPTO_BUFFER_UTILS_BUFFERUTILS_H_

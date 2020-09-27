@@ -6,7 +6,7 @@
 #include "cpplibcrypto/buffer/HexString.h"
 #include "cpplibcrypto/cipher/AesCore.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 using ByteBufferSlice = BufferSlice<Byte>;
 
@@ -50,4 +50,4 @@ TEST(AesCoreTest, mixColumns) {
     EXPECT_EQ(HexString("000102030405060708090A0B0C0D0E0F"), buffer);
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

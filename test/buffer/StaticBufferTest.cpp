@@ -4,7 +4,7 @@
 
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 template <Size TSize>
 using StaticByteBuffer = StaticBuffer<Byte, TSize>;
@@ -159,4 +159,4 @@ TEST(StaticBufferTest, resize) {
     EXPECT_EQ(0U, bb[10]);
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

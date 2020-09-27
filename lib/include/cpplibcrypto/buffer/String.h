@@ -6,10 +6,10 @@
 
 #include <string>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 using String = std::basic_string<char, std::char_traits<char>, SecureAllocator<char>>;
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_BUFFER_STRING_H_

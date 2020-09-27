@@ -8,7 +8,7 @@
 #include <sstream>
 #include <utility>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Base class for input streams
 class InputStream {
@@ -194,6 +194,6 @@ private:
     sstream mStream;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif // CPPLIBCRYPTO_IO_STREAM_H_

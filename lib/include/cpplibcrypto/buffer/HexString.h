@@ -7,7 +7,7 @@
 #include "cpplibcrypto/buffer/utils/bufferUtils.h"
 #include "cpplibcrypto/common/Hex.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Represents a base-16 string
 class HexString final {
@@ -84,6 +84,6 @@ private:
     ByteBuffer mDecoded;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_BUFFER_HEXSTRING_H_

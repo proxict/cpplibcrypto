@@ -2,7 +2,7 @@
 #include "cpplibcrypto/buffer/String.h"
 #include "cpplibcrypto/common/Exception.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 ByteBuffer Hex::decode(const String& hexStr) {
     if (hexStr.size() & 1) {
@@ -28,4 +28,4 @@ constexpr Byte Hex::hex2Byte(const char c) {
     }
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

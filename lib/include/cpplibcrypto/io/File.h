@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <utility>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 enum class SeekPosition { BEGINNING, CURRENT, END };
 
@@ -193,6 +193,6 @@ private:
     FILE* mFile = nullptr;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif // COMMON_FILE_H_

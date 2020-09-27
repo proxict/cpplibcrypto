@@ -10,7 +10,7 @@
 
 #include <memory>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// AES key representation
 ///
@@ -56,6 +56,6 @@ private:
     ByteBuffer mKey;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

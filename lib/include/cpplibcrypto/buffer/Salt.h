@@ -3,7 +3,7 @@
 
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 class Salt {
 public:
@@ -58,6 +58,6 @@ private:
     DynamicBuffer<Byte> mData;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_BUFFER_SALT_H_

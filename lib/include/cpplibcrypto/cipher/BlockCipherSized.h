@@ -3,7 +3,7 @@
 
 #include "cpplibcrypto/cipher/BlockCipher.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Base class for block ciphers
 ///
@@ -20,6 +20,6 @@ protected:
     BlockCipherSized() = default;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_CIPHER_BLOCKCIPHERSIZED_H_

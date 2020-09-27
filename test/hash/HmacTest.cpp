@@ -8,7 +8,7 @@
 #include "cpplibcrypto/hash/Md5.h"
 #include "cpplibcrypto/hash/Sha1.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 TEST(HmacTest, sha1empty) {
     Hmac<Sha1> hmac(HmacKey{});
@@ -88,4 +88,4 @@ TEST(HmacTest, setKey) {
     EXPECT_TRUE(bufferUtils::equal(Hex::decode("fbdb1d1b18aa6c08324b7d64b71fb76370690e1d"), digest));
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

@@ -6,7 +6,7 @@
 #include "cpplibcrypto/common/Hex.h"
 #include "cpplibcrypto/hash/Md5.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 TEST(Md5Test, empty) {
     Md5 md5;
@@ -93,4 +93,4 @@ TEST(Md5Test, move) {
     EXPECT_TRUE(bufferUtils::equal(Hex::decode("900150983cd24fb0d6963f7d28e17f72"), digest));
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

@@ -6,7 +6,7 @@
 #include "cpplibcrypto/buffer/HexString.h"
 #include "cpplibcrypto/cipher/Aes.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 class AesKeyScheduleTest : public testing::Test, public Aes {
 public:
@@ -186,4 +186,4 @@ TEST_F(AesKeyScheduleTest, aes256test3) {
     EXPECT_EQ(HexString("24fc79ccbf0979e9371ac23c6d68de36"), getNthRoundKey(14));
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

@@ -1,5 +1,5 @@
-#ifndef CPPLIBCRYPTO_KDF_PBKDF2_H_
-#define CPPLIBCRYPTO_KDF_PBKDF2_H_
+#ifndef CPPLIBCRYPTO_KDF_PBKDF_H_
+#define CPPLIBCRYPTO_KDF_PBKDF_H_
 
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/buffer/Password.h"
@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// RFC 2898 PBKDF2 implementation.
 /// Derives key from a given password and salt. Non-copyable, moveable.
@@ -111,6 +111,6 @@ private:
 
 using Pbkdf2 = Pbkdf<Sha1>;
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_KDF_PBKDF_H_

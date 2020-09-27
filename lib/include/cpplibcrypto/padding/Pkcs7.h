@@ -7,7 +7,7 @@
 
 #include <limits>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// RFC 2315 compliant PKCS#7 padding implementation
 class Pkcs7 : public Padding {
@@ -59,6 +59,6 @@ private:
     }
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

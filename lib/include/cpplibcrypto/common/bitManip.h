@@ -3,9 +3,7 @@
 
 #include "cpplibcrypto/common/common.h"
 
-NAMESPACE_CRYPTO_BEGIN
-
-namespace bits {
+namespace crypto::bits {
 
 /// Rotates bits to the left by the given amount of bits
 ///
@@ -13,12 +11,20 @@ namespace bits {
 /// \param bits The number of bits to rotate
 /// \returns The rotated value
 template <typename T>
-inline T rotateLeft(const T value, const Byte bits) {
+inline constexpr T rotateLeft(const T value, const Byte bits) {
     return (value << bits) | (value >> (8 * sizeof(T) - bits));
 }
 
-} // namespace bits
+/// Rotates bits to the right by the given amount of bits
+///
+/// \param value The value whose bit will get rotated
+/// \param bits The number of bits to rotate
+/// \returns The rotated value
+template <typename T>
+inline constexpr T rotateRight(const T value, const Byte bits) {
+    return (value >> bits) | (value << (8 * sizeof(T) - bits));
+}
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto::bits
 
 #endif // CPPLIBCRYPTO_COMMON_BITMANIP_H_

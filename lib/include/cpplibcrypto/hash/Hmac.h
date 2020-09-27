@@ -9,7 +9,7 @@
 #include "cpplibcrypto/common/Exception.h"
 #include "cpplibcrypto/common/KeySized.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Key for HMAC. Non-copyable, movable.
 class HmacKey : public KeySized<0, std::numeric_limits<Size>::max()> {
@@ -168,6 +168,6 @@ private:
     bool mFinalized = false;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_HASH_HMAC_H_

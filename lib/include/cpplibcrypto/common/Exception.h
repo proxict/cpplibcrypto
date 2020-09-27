@@ -6,7 +6,7 @@
 
 #include <utility>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Object expected to be thrown
 ///
@@ -20,7 +20,6 @@ public:
     virtual ~Exception() = default;
 
     Exception(Exception&&) = default;
-    Exception& operator=(Exception&&) = default;
 
     /// Returns a reference to the message telling what went wrong
     virtual const String& what() const noexcept { return mStr; }
@@ -29,10 +28,9 @@ private:
     Exception(const Exception&) = delete;
     Exception& operator=(const Exception&) = delete;
 
-private:
     const String mStr;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif // COMMON_EXCEPTION_H_
+#endif // CPPLIBCRYPTO_COMMON_EXCEPTION_H_

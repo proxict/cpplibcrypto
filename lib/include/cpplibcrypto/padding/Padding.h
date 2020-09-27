@@ -4,7 +4,7 @@
 #include "cpplibcrypto/buffer/DynamicBuffer.h"
 #include "cpplibcrypto/buffer/StaticBuffer.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Base class for padding implementations
 class Padding {
@@ -47,6 +47,6 @@ public:
     void unpad(TBuffer&) const {}
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_PADDING_PADDING_H_

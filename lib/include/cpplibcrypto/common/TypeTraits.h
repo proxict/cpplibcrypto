@@ -5,7 +5,7 @@
 
 #include <type_traits>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 template <bool TTest, typename TType = void>
 using EnableIf = typename std::enable_if_t<TTest, TType>;
@@ -35,6 +35,6 @@ template <typename T>
 using ReferenceStorage =
     Conditional<IsReference<T>::value, ReferenceWrapper<RemoveReference<T>>, RemoveReference<T>>;
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

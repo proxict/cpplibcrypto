@@ -7,7 +7,7 @@
 #include <limits>
 #include <memory>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 template <class T>
 class SecureAllocator {
@@ -123,6 +123,6 @@ protected:
     bool mWipe;
 };
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
-#endif
+#endif // CPPLIBCRYPTO_BUFFER_UTILS_SECUREALLOCATOR_H_

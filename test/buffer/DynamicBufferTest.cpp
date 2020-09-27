@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 TEST(DynamicBufferTest, ctor) {
     ByteBuffer bb{ 0x01, 0x02, 0x03, 0x04, 0x05 };
@@ -249,4 +249,4 @@ TEST(DynamicBufferTest, destroy) {
     EXPECT_EQ(1, d);
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto

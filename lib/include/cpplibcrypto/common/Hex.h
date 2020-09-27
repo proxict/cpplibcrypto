@@ -5,7 +5,7 @@
 #include "cpplibcrypto/buffer/String.h"
 #include "cpplibcrypto/io/Stream.h"
 
-NAMESPACE_CRYPTO_BEGIN
+namespace crypto {
 
 /// Converted from base-16 to base-10 and vice versa
 class Hex final {
@@ -36,6 +36,6 @@ String Hex::encode(const TBuffer& buf) {
     return bytes.toString();
 }
 
-NAMESPACE_CRYPTO_END
+} // namespace crypto
 
 #endif

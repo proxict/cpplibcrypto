@@ -6,8 +6,7 @@
 
 #include <utility>
 
-NAMESPACE_CRYPTO_BEGIN
-namespace memory {
+namespace crypto::memory {
 
 /// Allocates memory for the given number of elements
 ///
@@ -73,7 +72,6 @@ constexpr void wipe(T* ptr) {
     }
 }
 
-} // namespace memory
-NAMESPACE_CRYPTO_END
+} // namespace crypto::memory
 
 #endif

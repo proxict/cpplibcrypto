@@ -25,4 +25,4 @@ Building cpplibcrypto
  - `cmake --DCMAKE_BUILD_TYPE=Release ..`
  - `make -j$(nproc)`
  
-**Please, keep in mind, this is more intended for educational purposes rather than for use in any kind of a production environment.**
+**Please, keep in mind, this library is intended for educational purposes rather than for use in any kind of production environment.**
